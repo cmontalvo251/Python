@@ -1,0 +1,21 @@
+#!/bin/bash
+
+PASS_LOC=$HOME/Desktop
+PASS_FILE=Misc.txt
+PASS_ENCRYPTED=Password.zip
+
+#Move Password.zip to current directory
+cp $PASS_LOC/$PASS_ENCRYPTED ./
+#Unzip Password.zip
+unzip $PASS_ENCRYPTED
+#Open Misc.txt for editing
+nano $PASS_FILE
+#Zip txt file
+zip -e $PASS_ENCRYPTED $PASS_FILE
+#Remove Plain text file
+rm $PASS_FILE
+mv $PASS_ENCRYPTED $PASS_LOC/$PASS_ENCRYPTED
+
+# Copyright - Carlos Montalvo 2015
+# You may freely distribute this file but please keep my name in here
+# as the original owner

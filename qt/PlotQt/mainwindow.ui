@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FancyRLTools</class>
+ <widget class="QMainWindow" name="FancyRLTools">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>335</width>
+    <height>234</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>The Fanciest Root Locus</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="inputEdit"/>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="outputEdit"/>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="convertButton">
+      <property name="text">
+       <string>Convert</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Radians</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Degrees</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QPushButton" name="clearButton">
+      <property name="text">
+       <string>Clear</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QPushButton" name="plotButton">
+      <property name="text">
+       <string>Plot</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>335</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuMeters_to_Feet">
+    <property name="title">
+     <string>The Fanciest Root Locus</string>
+    </property>
+   </widget>
+   <addaction name="menuMeters_to_Feet"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

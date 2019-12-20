@@ -1,0 +1,14 @@
+python_games
+apps
+test_scripts
+*.zip
+*.dll
+*.exe
+*.mld
+*.wav
+*.pdf
+*.mp3
+*.png
+*.jpg
+*.pyc
+
