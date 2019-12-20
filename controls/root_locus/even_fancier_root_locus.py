@@ -6,12 +6,12 @@ import sys
 
 ##############DEFINE THE PLANT###############
 plant_zeros = []
-plant_poles = [-np.sqrt(1045.54/108.8),np.sqrt(1045.54/108.8)]
-plant_gain = [1./108.8]
+plant_poles = [-3,3]
+plant_gain = [1]
 
 ##############DEFINE THE CONTROLLER##########
 
-controller_zeros = [-8.32,-1.68]
+controller_zeros = [-5,-10]
 controller_poles = [0]
 controller_gain = [1]
 
@@ -23,9 +23,9 @@ sensor_gain = [1]
 
 ##############DEFINE THE LOCUS##############
 
-KMAX = 1000
-KSTEP = 10.0
-KSTAR = 1000.0
+KMAX = 100
+KSTEP = 1.0
+KSTAR = 50.0
 
 ######DO NOT EDIT ANYTHING BELOW THIS LINE#######
 
