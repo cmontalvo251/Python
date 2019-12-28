@@ -11,4 +11,5 @@ test_scripts
 *.png
 *.jpg
 *.pyc
+*.*~
 

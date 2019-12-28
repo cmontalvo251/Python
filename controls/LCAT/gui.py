@@ -1,0 +1,104 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'gui.ui'
+#
+# Created by: PyQt4 UI code generator 4.12.1
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+
+########EXTRA PLOTTING MODULES#################
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+#############################################
+
+try:
+    _fromUtf8 = QtCore.QString.fromUtf8
+except AttributeError:
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
+class Ui_GUI(object):
+    def setupUi(self, GUI):
+
+        #Main Window
+        GUI.setObjectName(_fromUtf8("GUI"))
+        GUI.resize(465, 299)
+
+        ##Central Window
+        self.centralwidget = QtGui.QWidget(GUI)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
+        self.centralwidget.setSizePolicy(sizePolicy)
+        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+
+        ##Grid Layout
+        self.gridLayout = QtGui.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
+        self.inputEdit = QtGui.QLineEdit(self.centralwidget)
+        self.inputEdit.setObjectName(_fromUtf8("inputEdit"))
+        self.gridLayout.addWidget(self.inputEdit, 1, 1, 1, 1)
+        self.outputEdit = QtGui.QLineEdit(self.centralwidget)
+        self.outputEdit.setObjectName(_fromUtf8("outputEdit"))
+        self.gridLayout.addWidget(self.outputEdit, 0, 1, 1, 1)
+        self.convertButton = QtGui.QPushButton(self.centralwidget)
+        self.convertButton.setObjectName(_fromUtf8("convertButton"))
+        self.gridLayout.addWidget(self.convertButton, 4, 1, 1, 1)
+        self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setObjectName(_fromUtf8("label"))
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.label_2 = QtGui.QLabel(self.centralwidget)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.gridLayout.addWidget(self.label_2, 1, 0, 1, 1)
+        self.clearButton = QtGui.QPushButton(self.centralwidget)
+        self.clearButton.setObjectName(_fromUtf8("clearButton"))
+        self.gridLayout.addWidget(self.clearButton, 4, 0, 1, 1)
+        self.plotButton = QtGui.QPushButton(self.centralwidget)
+        self.plotButton.setObjectName(_fromUtf8("plotButton"))
+        self.gridLayout.addWidget(self.plotButton, 5, 0, 1, 1)
+
+        ##################################################
+        ##This 5,1,1,1 basically tells where to put it
+        #Add the figure stuff
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.gridLayout.addWidget(self.canvas,5,1,1,1)
+        #################################################
+
+        ##Setup menu and status bars
+        GUI.setCentralWidget(self.centralwidget)
+        self.menubar = QtGui.QMenuBar(GUI)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 465, 25))
+        self.menubar.setObjectName(_fromUtf8("menubar"))
+        self.menuMeters_to_Feet = QtGui.QMenu(self.menubar)
+        self.menuMeters_to_Feet.setObjectName(_fromUtf8("menuMeters_to_Feet"))
+        GUI.setMenuBar(self.menubar)
+        self.statusbar = QtGui.QStatusBar(GUI)
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        GUI.setStatusBar(self.statusbar)
+        self.menubar.addAction(self.menuMeters_to_Feet.menuAction())
+
+        self.retranslateUi(GUI)
+        QtCore.QMetaObject.connectSlotsByName(GUI)
+
+    def retranslateUi(self, GUI):
+        GUI.setWindowTitle(_translate("GUI", "Linear Systems Analysis", None))
+        self.convertButton.setText(_translate("GUI", "Convert", None))
+        self.label.setText(_translate("GUI", "Radians", None))
+        self.label_2.setText(_translate("GUI", "Degrees", None))
+        self.clearButton.setText(_translate("GUI", "Clear", None))
+        self.plotButton.setText(_translate("GUI", "Plot", None))
+        self.menuMeters_to_Feet.setTitle(_translate("GUI", "Linear Systems Analysis", None))
+
