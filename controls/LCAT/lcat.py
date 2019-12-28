@@ -17,9 +17,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
 
         #Connect Slots
-        QtCore.QObject.connect(self.ui.convertButton,QtCore.SIGNAL('clicked()'),self.convert)
-        QtCore.QObject.connect(self.ui.clearButton,QtCore.SIGNAL('clicked()'),self.clear)
-        QtCore.QObject.connect(self.ui.plotButton,QtCore.SIGNAL('clicked()'),self.plot)
+        QtCore.QObject.connect(self.ui.simulateButton,QtCore.SIGNAL('clicked()'),self.plot)
 
     def plot(self):
         try:
@@ -54,14 +52,6 @@ class MainWindow(QtGui.QMainWindow):
         # refresh canvas
         self.ui.canvas.draw()
 
-    def convert(self):
-        print('We will convert stuff here')
-        radians = float(self.ui.inputEdit.text())
-        print('Radians = ',radians)
-        degrees = radians*180./np.pi
-        print('Degrees = ',degrees)
-        self.ui.outputEdit.setText(str(degrees))
-
     def clear(self):
         print('We will clear stuff here')
         self.ui.inputEdit.setText("")
@@ -77,6 +67,9 @@ if __name__ == "__main__":
     main = MainWindow()
     main.show()
     main.raise_()
+
+    #Plot immediately
+    main.plot()
 
     #quit program on exit
     sys.exit(app.exec_())
