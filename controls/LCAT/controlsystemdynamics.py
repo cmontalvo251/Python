@@ -22,14 +22,22 @@ class makeSystem():
             self.sysTF = ctl.ss2tf(self.sysSS)
             if verbose:
                 print('TF = ',self.sysTF)
-        elif systype == 'TF':
-            self.num = A
-            self.den = B
+        else:
+            if systype == 'TF':
+                self.num = A
+                self.den = B
+            elif systype == 'ZPK':
+                self.plant_zeros = A
+                self.plant_poles = B
+                self.plant_gain = C
+                [self.num,self.den] = sci.zpk2tf(self.plant_zeros,self.plant_poles,self.plant_gain)
+
             self.sysTF = ctl.tf(self.num,self.den)
             self.sysSS = ctl.tf2ss(self.sysTF)
             if verbose:
                 print('TF = ',self.sysTF)
                 print('State Space = ',self.sysSS)
+
 
         self.A = np.asarray(self.sysSS.A)
         self.B = np.asarray(self.sysSS.B)
@@ -47,9 +55,9 @@ class makeSystem():
         #Compute plant poles and zeros
         self.plant_poles = ctl.pole(self.sysTF)
         self.plant_zeros = ctl.zero(self.sysTF)
+        self.plant_gain = self.num[0]/self.den[0]
         if verbose:
-            print('ZPK = ',self.plant_zeros,self.plant_poles,1.0)
-        [self.num,self.den] = sci.zpk2tf(self.plant_zeros,self.plant_poles,1.0)
+            print('ZPK = ',self.plant_zeros,self.plant_poles,self.plant_gain)
 
         ##Let's compute the eigenvalues
         [self.sOL,self.vOL] = np.linalg.eig(self.A)
@@ -470,12 +478,13 @@ class makeSystem():
         if self.verbose:
             axishandle.show()
 
-    def rltools(self,KMAX,KSTEP,KSTAR,controller_zeros,controller_poles=[]):
+    def rltools(self,K0,KF,KN,KSTAR,controller_zeros,controller_poles=[]):
         #Save the KSTAR value
-        self.KMAX = KMAX
-        self.KSTEP = KSTEP
+        self.K0 = K0
+        self.KF = KF
+        self.KN = KN
         self.KSTAR = KSTAR
-        self.k_vec = np.arange(KSTEP,KMAX,KSTEP)
+        self.k_vec = np.linspace(self.K0,self.KF,self.KN)
 
         self.controller_zeros = controller_zeros
         self.controller_poles = controller_poles

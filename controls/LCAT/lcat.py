@@ -10,6 +10,16 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 import controlsystemdynamics as ctldyn
 
+##########################TASKS###############################################
+
+#None of the following ideas are necessary to say the least but it would be nice.
+
+
+#The following tasks are necessary to make the software function properly
+
+#1.) 
+
+
 class MainWindow(QtGui.QMainWindow):
     '''Main window class responsible for managing user interface'''
     def __init__(self,parent=None):
@@ -45,11 +55,34 @@ class MainWindow(QtGui.QMainWindow):
         #Then create a default controller
         #This will also create a root locus and simulate the
         #closed loop system
-        self.system.rltools(10,1,5,[],[]) #KMAX,KSTEP,KSTAR,zeros,poles
+        self.system.rltools(1,10,10,5,[],[]) #K0,KF,KN,KSTAR,zeros,poles
 
 
     def populate(self):
-        self.ui.zGEdit.setText("hello")        
+        self.ui.zGEdit.setText(str(self.system.plant_zeros))
+        self.ui.pGEdit.setText(str(self.system.plant_poles))
+        self.ui.kGEdit.setText(str(self.system.plant_gain))
+        self.ui.numGEdit.setText(str(self.system.num))
+        self.ui.denGEdit.setText(str(self.system.den))
+        self.ui.ssAEdit.setText(str(self.system.A))
+        self.ui.ssBEdit.setText(str(self.system.B))
+        self.ui.ssCEdit.setText(str(self.system.C))
+        self.ui.ssDEdit.setText(str(self.system.D))
+        self.ui.GEdit.setText(str(self.system.sysTF))
+        self.ui.t0Edit.setText(str(self.system.tstart))
+        self.ui.tfEdit.setText(str(self.system.tend))
+        self.ui.tnEdit.setText(str(self.system.tn))
+        self.ui.ssKEdit.setText(str(self.system.K))
+        self.ui.zCEdit.setText(str(self.system.controller_zeros))
+        self.ui.pCEdit.setText(str(self.system.controller_poles))
+        self.ui.kCEdit.setText(str(self.system.KSTAR))
+        self.ui.CEdit.setText(str(self.system.sysC))
+        self.ui.zGCLEdit.setText(str(self.system.closedloop_zeros))
+        self.ui.pGCLEdit.setText(str(self.system.closedloop_poles))
+        self.ui.GCLEdit.setText(str(self.system.GCL))
+        self.ui.k0Edit.setText(str(self.system.K0))
+        self.ui.kfEdit.setText(str(self.system.KF))
+        self.ui.knEdit.setText(str(self.system.KN))
 
     def plot(self):
         #Discard old axis
