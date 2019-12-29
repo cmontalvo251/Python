@@ -21,19 +21,19 @@ C = [1,0,0,0]
 D = [0]
 
 #Create a class instance to analyze everything
-sys = ctldyn.makeSystem(A,B,C,D,systype='SS')
+#sys = ctldyn.makeSystem(A,B,C,D,systype='SS')
 
 #I want this code to work even with the transfer function toolbox
-#num = np.asarray([1])
-#den = np.asarray([1,0,g/L])
-#sys = ctldyn.makeSystem(num,den,systype='TF')
+num = np.asarray([10])
+den = np.asarray([1,10])
+sys = ctldyn.makeSystem(num,den,systype='TF')
 
 ##Integrate openloop no initial conditions
-#sys.integrateOpenLoop(0,10,ic=np.asarray([0,0]),input='step')
+sys.integrateOpenLoop(0,10,ic=np.asarray([0,0]),input='step')
 
 #Now let's tune the controller
 #Since our system is a 2x2 we need to pick one zero and then give parameters for K
-sys.rltools(10000,100,5000,[-10,-8],[0]) #KMAX,KSTEP,KSTAR,zeros,poles
+sys.rltools(10,5,5,[],[]) #KMAX,KSTEP,KSTAR,zeros,poles
 
 #Now is when the magic starts. So now what I want is for the computer to compute K for me
 #to put the poles exactly where I want them.
@@ -44,4 +44,4 @@ sys.rltools(10000,100,5000,[-10,-8],[0]) #KMAX,KSTEP,KSTAR,zeros,poles
 
 ##Integrate the closed loop system
 #tfinal = sys.howlong(sys.closedloop_poles)
-sys.integrateClosedLoop(0,10,ic=np.asarray([30*np.pi/180,0,0,0]),input='none')
+# sys.integrateClosedLoop(0,10,ic=np.asarray([0,0]),input='none')

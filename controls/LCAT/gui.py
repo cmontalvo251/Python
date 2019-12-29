@@ -347,8 +347,10 @@ class Ui_GUI(object):
         self.fig, ((self.ax1, self.ax2), (self.ax3, self.ax4)) = plt.subplots(nrows=2, ncols=2)
         #self.figure = Figure()
         self.canvas = FigureCanvas(self.fig)
+        self.toolbar = NavigationToolbar(self.canvas,GUI)
         plt.tight_layout()
         self.gridLayout.addWidget(self.canvas,22,1,1,1)
+        self.gridLayout.addWidget(self.toolbar,21,1,1,1)
         #################################################
 
         ##Add the central widget to the main window

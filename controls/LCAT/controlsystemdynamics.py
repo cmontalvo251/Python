@@ -55,7 +55,12 @@ class makeSystem():
         [self.sOL,self.vOL] = np.linalg.eig(self.A)
         if verbose:
             print('Eigenvalues = ',self.sOL)
+
+        ##And compute the controllability gramian
         self.gram()
+
+        ##Let's also compute a bode plot
+        self.mag, self.phase, self.omega = ctl.bode(self.sysTF,Plot=False)
 
     def gram(self):
         ##Let's also compute the controllability gramian to see if we're controllable
@@ -211,10 +216,10 @@ class makeSystem():
         #Compute the input
         if input == 'step':
             if self.inverse:
-                xcommand[-1] = -1.0
+                xcommand[-1] = -1.0/self.C[-1]
                 self.xinitial[0] = -self.KSTAR
             else:
-                xcommand[0] = 1.0 
+                xcommand[0] = 1.0/self.C[-1]
                 self.xinitial[-1] = self.KSTAR
 
         if len(ic) > 0:
@@ -241,7 +246,20 @@ class makeSystem():
         #Let's plot it
         if self.verbose:
             self.plotClosedLoop(plt)
-        
+
+    def plotBode(self,axishandle):
+        axishandle.loglog(self.omega,self.mag)
+        axishandle.grid()
+        if self.verbose:
+            axishandle.xlabel('Frequency (Hz)')
+            axishandle.ylabel('Magnitude (dB)')
+            axishandle.title('Gain Plot')
+            axishandle.show()
+        else:
+            axishandle.set_title('Gain Plot')
+            axishandle.set_xlabel('Frequency (Hz)')
+            axishandle.set_ylabel('Magnitude (dB)')
+            
     def Cx(self,xout):
         [r,c] = np.shape(xout)
         y = np.zeros((r,1))
@@ -536,12 +554,14 @@ class makeSystem():
 
         #Plot the root locuse
         if self.verbose:
-            self.plotrootlocus()
+            self.plotrootlocus(plt)
 
         #Since we have a closed loop system let's simulate the closed loop system
         #in this case let's dynamically determine how long to simulate
         if self.verbose:
             self.tend = self.howlong(self.closedloop_poles)
+        if self.tstart not in locals():
+            self.tstart = 0
         self.integrateClosedLoop(self.tstart,self.tend,ic=self.xinitial)
 
     def howlong(self,cpoles):
