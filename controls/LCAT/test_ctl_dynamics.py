@@ -33,7 +33,7 @@ sys = ctldyn.makeSystem(A,B,C,D,systype='SS')
 
 #Now let's tune the controller
 #Since our system is a 2x2 we need to pick one zero and then give parameters for K
-sys.rltools(10000,100,5000,[-10,-8],[0]) #KMAX,KSTEP,KSTAR,zeros
+sys.rltools(10000,100,5000,[-10,-8],[0]) #KMAX,KSTEP,KSTAR,zeros,poles
 
 #Now is when the magic starts. So now what I want is for the computer to compute K for me
 #to put the poles exactly where I want them.

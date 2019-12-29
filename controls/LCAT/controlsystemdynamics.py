@@ -9,23 +9,27 @@ import sympy as sp
 import sys
 
 class makeSystem():
-    def __init__(self,A,B,C=1,D=0,systype='SS'):
+    def __init__(self,A,B,C=1,D=0,systype='SS',verbose=True):
+        self.verbose = verbose
         if systype == 'SS':
             #State space matrices given
             ##Let's make a state space system
             self.sysSS = ctl.StateSpace(A,B,C,D)
-            print('State Space = ',self.sysSS)
+            if verbose:
+                print('State Space = ',self.sysSS)
 
             #Let's convert the system to a transfer function
             self.sysTF = ctl.ss2tf(self.sysSS)
-            print('TF = ',self.sysTF)
+            if verbose:
+                print('TF = ',self.sysTF)
         elif systype == 'TF':
             self.num = A
             self.den = B
             self.sysTF = ctl.tf(self.num,self.den)
-            print('TF = ',self.sysTF)
             self.sysSS = ctl.tf2ss(self.sysTF)
-            print('State Space = ',self.sysSS)
+            if verbose:
+                print('TF = ',self.sysTF)
+                print('State Space = ',self.sysSS)
 
         self.A = np.asarray(self.sysSS.A)
         self.B = np.asarray(self.sysSS.B)
@@ -35,20 +39,23 @@ class makeSystem():
 
         if self.C[0][0] == 0:
             self.inverse = True
-            print("INVERSION DETECTED IN STATE SPACE")
+            if verbose:
+                print("INVERSION DETECTED IN STATE SPACE")
         else:
             self.inverse = False
 
         #Compute plant poles and zeros
         self.plant_poles = ctl.pole(self.sysTF)
         self.plant_zeros = ctl.zero(self.sysTF)
-        print('ZPK = ',self.plant_zeros,self.plant_poles,1.0)
+        if verbose:
+            print('ZPK = ',self.plant_zeros,self.plant_poles,1.0)
         [self.num,self.den] = sci.zpk2tf(self.plant_zeros,self.plant_poles,1.0)
 
         ##Let's compute the eigenvalues
         [self.sOL,self.vOL] = np.linalg.eig(self.A)
-        print('Eigenvalues = ',self.sOL)
-        self.gram()    
+        if verbose:
+            print('Eigenvalues = ',self.sOL)
+        self.gram()
 
     def gram(self):
         ##Let's also compute the controllability gramian to see if we're controllable
@@ -69,14 +76,17 @@ class makeSystem():
         a = self.check_controllability()
 
     def check_controllability(self):
-        print('System is a ',self.N,' x ',self.N)
-        print('Controllability Gramian = ',self.Wc)
-        print('Rank of Wc Matrix = ',self.rank)
+        if self.verbose:
+            print('System is a ',self.N,' x ',self.N)
+            print('Controllability Gramian = ',self.Wc)
+            print('Rank of Wc Matrix = ',self.rank)
         if self.rank == self.N:
-            print('Full Rank. System is controllable')
+            if self.verbose:
+                print('Full Rank. System is controllable')
             return 1
         else:
-            print('System is not fully controllable')
+            if self.verbose:
+                print('System is not fully controllable')
             return 0 
 
     def place(self,desired_closedloop_poles):
@@ -180,7 +190,7 @@ class makeSystem():
                 controller_zeros = np.roots(Kvals[-1::-1]) 
 
             self.controllerTF(controller_zeros)
-            self.GCL = self.closed_loop(self.KSTAR,verbose=True)
+            self.GCL = self.closed_loop(self.KSTAR)
             self.closedloopStateSpace()
             
             return 1
@@ -189,73 +199,49 @@ class makeSystem():
             return 0
 
     def integrateClosedLoop(self,tstart,tend,num=1000,ic = [],input='step'):
-        print('Integrating closed loop from ',tstart,' to ',tend)
-        tout = np.linspace(tstart,tend,num)
+
+        if self.verbose:
+            print('Integrating closed loop from ',tstart,' to ',tend)
+        self.tout = np.linspace(tstart,tend,num)
         
         ##Let's now simulate the system open loop with a step input and zero initial conditions
-        xinitial = np.zeros(self.N)
+        self.xinitial = np.zeros(self.N)
         xcommand = np.zeros(self.N)
 
         #Compute the input
         if input == 'step':
             if self.inverse:
                 xcommand[-1] = -1.0
-                xinitial[0] = -self.KSTAR
+                self.xinitial[0] = -self.KSTAR
             else:
                 xcommand[0] = 1.0 
-                xinitial[-1] = self.KSTAR
+                self.xinitial[-1] = self.KSTAR
 
         if len(ic) > 0:
-            xinitial = ic
+            self.xinitial = ic
 
-        print('Initial Conditions = ',xinitial)
-        print('Input Type = ',input)
+        if self.verbose:
+            print('Initial Conditions = ',self.xinitial)
+            print('Input Type = ',input)
 
         #Numerical Integration
         if input != 'impulse' and self.statespace:
             self.BKxc = np.matmul(self.BK,xcommand)
-            self.xoutSS = sint.odeint(DerivativesClosedLoop,xinitial,tout,args=(self.ACL,self.BKxc))
+            self.xoutSS = sint.odeint(DerivativesClosedLoop,self.xinitial,self.tout,args=(self.ACL,self.BKxc))
             #self.xoutNOICs = sint.odeint(DerivativesClosedLoop,0*xinitial,tout,args=(self.ACL,self.BKxc))
             self.ySS = self.Cx(self.xoutSS)
             #self.yNOICs = self.Cx(self.xoutNOICs)
 
         ##We can also simulate the system using the transfer function
         if input == 'step':
-            tout,self.xoutTF = ctl.step_response(self.GCL,tout)
+            self.tout,self.xoutTF = ctl.step_response(self.GCL,self.tout)
         elif input == 'impulse':
-            tout,self.xoutTF = ctl.impulse_response(self.GCL,tout)
+            self.tout,self.xoutTF = ctl.impulse_response(self.GCL,self.tout)
 
         #Let's plot it
-        self.plot = 0
-        plt.figure()
-        if input != 'impulse' and self.statespace:
-            self.plot = 1
-            plt.plot(tout,self.ySS,'b-',label='State Space')
-            #plt.plot(tout,self.yNOICs,'g-',label='State Space (x0=0)')
-        if input != 'none' and np.sum(ic) == 0:
-            self.plot = 1
-            plt.plot(tout,self.xoutTF,'r-',label='Transfer Function')
-        plt.xlabel('Time (sec)')
-        plt.ylabel('X1')
-        plt.grid()
-        plt.legend()
-
-        if input != 'impulse' and self.statespace:
-            self.plot = 1
-            for i in range(0,self.N):
-                plt.figure()
-                plt.plot(tout,self.xoutSS[:,i])
-                plt.xlabel('Time (sec)')
-                plt.ylabel('State = '+str(i))
-                plt.grid()
-        if self.plot:
-            plt.show()
-        else:
-            print('No plots to show. Remember state space cannot simulate an impulse')
-            print('and transfer functions must have zero initial conditions')
-            print('Furthermore if you tuned the controller with rltools() your state')
-            print('system must be the same order as your transfer function')
-
+        if self.verbose:
+            self.plotClosedLoop(plt)
+        
     def Cx(self,xout):
         [r,c] = np.shape(xout)
         y = np.zeros((r,1))
@@ -264,67 +250,133 @@ class makeSystem():
         return y
 
     def integrateOpenLoop(self,tstart,tend,ic=[],num=1000,input='step'):
-        print('Integrating from ',tstart,' to ',tend)
-        tout = np.linspace(tstart,tend,num)
+        if self.verbose:
+            print('Integrating from ',tstart,' to ',tend)
+        self.tstart = tstart
+        self.tend = tend
+        self.tn = num
+        self.tout = np.linspace(tstart,tend,num)
         ##Let's now simulate the system open loop with a step input and zero initial conditions
+        self.tfsim = False
         if len(ic) == 0 or np.sum(ic) == 0:
-            xinitial = np.zeros(self.N)
+            self.xinitial = np.zeros(self.N)
             ##We can simulate the system using the transfer function
             #Since the initial conditions are zero
             if input == 'impulse':
-                tout,self.xoutTF = ctl.impulse_response(self.sysTF,tout)
+                self.tout,self.xoutTFopen = ctl.impulse_response(self.sysTF,self.tout)
+                self.tfsim = True
             elif input == 'step':
-                tout,self.xoutTF = ctl.step_response(self.sysTF,tout)
-        else:
-            xinitial = ic
-        print('Initial Conditions = ',xinitial)
-        print('Input Type = ',input)
+                self.tout,self.xoutTFopen = ctl.step_response(self.sysTF,self.tout)
+                self.tfsim = True
+            else:
+                self.xinitial = ic
+
+        if self.verbose:
+            print('Initial Conditions = ',self.xinitial)
+            print('Input Type = ',input)
 
         #Numerical Integration
-        ssint = False
+        self.ssint = False
         if input == 'step':
-            self.xout = sint.odeint(DerivativesOpenLoopStep,xinitial,tout,args=(self.A,self.B))
-            ssint = True
+            self.xout = sint.odeint(DerivativesOpenLoopStep,self.xinitial,self.tout,args=(self.A,self.B))
+            self.ssint = True
         elif input == 'none':
-            self.xout = sint.odeint(DerivativesOpenLoop,xinitial,tout,args=(self.A,self.B))
-            ssint = True
+            self.xout = sint.odeint(DerivativesOpenLoop,self.xinitial,self.tout,args=(self.A,self.B))
+            self.ssint = True
+        if self.ssint == True:
+            self.yopen = self.Cx(self.xout)
 
+        if self.verbose:
+            self.plotOpenLoop(plt)
+
+    def plotOpenLoop(self,axishandle):
         #Let's plot it
-        plt.figure()
-        if ssint == True:
-            self.y = self.Cx(self.xout)
-            plt.plot(tout,self.y,'b-',label='State Space')
-        if len(ic) == 0 and input != 'none':
-            plt.plot(tout,self.xoutTF,'r-',label='Transfer Function')
-        plt.xlabel('Time (sec)')
-        plt.ylabel('X1')
-        plt.grid()
-        plt.legend()
-        plt.show()
+        if self.verbose:
+            axishandle.figure()
+        if self.ssint == True:
+            axishandle.plot(self.tout,self.yopen,'b-',label='State Space')
+        if self.tfsim == True:
+            axishandle.plot(self.tout,self.xoutTFopen,'r-',label='Transfer Function')
+        if self.verbose == False:
+            axishandle.set_xlabel('Time (sec)')
+            axishandle.set_ylabel('Y')
+            axishandle.set_title('Open Loop')
+        else:
+            axishandle.xlabel('Time (sec)')
+            axishandle.ylabel('Y')
+            axishandle.title('Open Loop')
+        axishandle.grid()
+        axishandle.legend()
+        if self.verbose:
+            axishandle.show()
 
+    def plotClosedLoop(self,axishandle):
+        self.plot = 0
+        if self.verbose:
+            axishandle.figure()
+        if self.ssint == True:
+            self.plot = 1
+            axishandle.plot(self.tout,self.ySS,'b-',label='State Space')
+            #axishandle.plot(tout,self.yNOICs,'g-',label='State Space (x0=0)')
+        if self.tfsim == True:
+            self.plot = 1
+            axishandle.plot(self.tout,self.xoutTF,'r-',label='Transfer Function')
+        if self.verbose:
+            axishandle.xlabel('Time (sec)')
+            axishandle.ylabel('Y')
+            axishandle.title('Closed Loop')
+        else:
+            axishandle.set_xlabel('Time (sec)')
+            axishandle.set_ylabel('Y')
+            axishandle.set_title('Closed Loop')
+        axishandle.grid()
+        axishandle.legend()
+
+        # if input != 'impulse' and self.statespace:
+        #     self.plot = 1
+        #     for i in range(0,self.N):
+        #         axishandle.figure()
+        #         axishandle.plot(tout,self.xoutSS[:,i])
+        #         axishandle.xlabel('Time (sec)')
+        #         axishandle.ylabel('State = '+str(i))
+        #         axishandle.grid()
+
+        if self.plot:
+            if self.verbose:
+                axishandle.show()
+        else:
+            if self.verbose:
+                print('No plots to show. Remember state space cannot simulate an impulse')
+                print('and transfer functions must have zero initial conditions')
+                print('Furthermore if you tuned the controller with rltools() your state')
+                print('system must be the same order as your transfer function')
+            
     #Closed Loop TF function
-    def closed_loop(self,k,verbose=False):
+    def closed_loop(self,k):
         if 'self.sysC' in locals():
-            print('Cannot compute closed loop. Need controller first')
-            sys.exit()
+            if self.verbose:
+                print('Cannot compute closed loop. Need controller first')
+                return 0
         else:
             GCL = ctl.minreal(k*self.sysC*self.sysTF/(1+k*self.sysC*self.sysTF),verbose=False)
-            if verbose:
+            self.closedloop_poles = ctl.pole(GCL)
+            self.closedloop_zeros = ctl.zero(GCL)
+            if self.verbose:
                 print('Closed Loop Transfer Function = ')
                 print(GCL)
-                self.closedloop_poles = ctl.pole(GCL)
                 print('Closed Loop Poles (TF) = ',self.closedloop_poles)
-                self.closedloop_zeros = ctl.zero(GCL)
             return GCL
 
     def controllerTF(self,controller_zeros,controller_poles=[]):
-        print('Computing Compensator...')
+        if self.verbose:
+            print('Computing Compensator...')
         #Create the Controller Transfer Function
         self.controller_zeros = controller_zeros
         self.controller_poles = controller_poles
         [self.NC,self.DC] = sci.zpk2tf(self.controller_zeros,controller_poles,1.0) 
         self.sysC = ctl.tf(self.NC,self.DC)
-        print('C_tf=',self.sysC)
+        if self.verbose:
+            print('C_tf=',self.sysC)
 
     def closedloopStateSpace(self):
         if len(self.DC) == 1:
@@ -346,29 +398,74 @@ class makeSystem():
                 self.BK = np.matmul(self.B,self.K)
                 self.ACL = self.A-self.BK
                 [self.sCL,self.vCL] = np.linalg.eig(self.ACL)
-                print('Closed Loop Full State Feedback Matrix = ',self.K)
-                print('Closed Loop State Transition Matrix = ',self.ACL)
-                print('Closed Loop Poles (SS) = ',self.sCL)
+                if self.verbose:
+                    print('Closed Loop Full State Feedback Matrix = ',self.K)
+                    print('Closed Loop State Transition Matrix = ',self.ACL)
+                    print('Closed Loop Poles (SS) = ',self.sCL)
         else:
-            print('Cannot create a closed loop system in state space')
-            print('Controller has extra poles requiring a larger state space system')
-            print('Recommend including controller dynamics into transfer function')
-            print('and converting to state space')
+            if self.verbose:
+                print('Cannot create a closed loop system in state space')
+                print('Controller has extra poles requiring a larger state space system')
+                print('Recommend including controller dynamics into transfer function')
+                print('and converting to state space')
             self.statespace = False
+
+    def plotrootlocus(self,axishandle):
+        if self.verbose:
+            axishandle.figure()
+
+        axishandle.plot(np.real(self.plant_zeros),np.imag(self.plant_zeros),'go',label='Plant Open Loop Zeros',markersize=10)
+        axishandle.plot(np.real(self.plant_poles),np.imag(self.plant_poles),'gx',label='Plant Open Loop Poles',markersize=15)
+        axishandle.plot(np.real(self.controller_zeros),np.imag(self.controller_zeros),'ro',label='Controller Zeros',markersize=10)
+        axishandle.plot(np.real(self.controller_poles),np.imag(self.controller_poles),'rx',label='Controller Poles',markersize=10)
+
+        for i in range(0,len(self.k_vec)):
+            axishandle.plot(np.real(self.p_vec[i]),np.imag(self.p_vec[i]),'b*')
+            axishandle.plot(np.real(self.z_vec[i]),np.imag(self.z_vec[i]),'r*')
+        axishandle.plot(np.real(self.p_vec[-1]),np.imag(self.p_vec[-1]),'b*',label='Root Locus')
+        axishandle.plot(np.real(self.z_vec[-1]),np.imag(self.z_vec[-1]),'r*',label='Zero Locus')
+
+        #Plot the last bits of the root locus
+        axishandle.plot(np.real(self.closedloop_poles),np.imag(self.closedloop_poles),'ms',label='K='+str(self.KSTAR))
+
+        #Extra Bits
+        #Plot real and imaginary axes
+        axishandle.plot([self.xmin,self.xmax],[0,0],'k-')
+        axishandle.plot([0,0],[self.ymin,self.ymax],'k-')
+        if self.verbose:
+            #Set Range
+            axishandle.xlim([self.xmin,self.xmax])
+            axishandle.ylim([self.ymin,self.ymax])
+            #Set labels
+            axishandle.xlabel('Real')
+            axishandle.ylabel('Imaginary')
+            axishandle.title('Root Locus')
+        else:
+            axishandle.set_xlim([self.xmin,self.xmax])
+            axishandle.set_ylim([self.ymin,self.ymax])
+            axishandle.set_xlabel('Real')
+            axishandle.set_ylabel('Imaginary')
+            axishandle.set_title('Root Locus')
+        #axishandle.legend()
+        axishandle.grid()
+
+        if self.verbose:
+            axishandle.show()
 
     def rltools(self,KMAX,KSTEP,KSTAR,controller_zeros,controller_poles=[]):
         #Save the KSTAR value
+        self.KMAX = KMAX
+        self.KSTEP = KSTEP
         self.KSTAR = KSTAR
+        self.k_vec = np.arange(KSTEP,KMAX,KSTEP)
+
+        self.controller_zeros = controller_zeros
+        self.controller_poles = controller_poles
 
         #Create Controller
         self.controllerTF(controller_zeros,controller_poles)
 
         ##PLOT POLES AND ZEROS OF PLANT AND CONTROLLER
-        plt.figure()
-        plt.plot(np.real(self.plant_zeros),np.imag(self.plant_zeros),'go',label='Plant Open Loop Zeros',markersize=10)
-        plt.plot(np.real(self.plant_poles),np.imag(self.plant_poles),'gx',label='Plant Open Loop Poles',markersize=15)
-        plt.plot(np.real(controller_zeros),np.imag(controller_zeros),'ro',label='Controller Zeros',markersize=10)
-        plt.plot(np.real(controller_poles),np.imag(controller_poles),'rx',label='Controller Poles',markersize=10)
         ##Determine Range on plots
         self.xmins = []
         self.ymins = []
@@ -387,11 +484,11 @@ class makeSystem():
         self.ymin = np.min(self.ymins)
         self.ymax = np.max(self.ymaxs)
         ###LOOP ON K TO MAKE LOCUS
-        print('Calculating Root Locus...')
-        k_vec = np.arange(KSTEP,KMAX,KSTEP)
-        #p_vec = []
-        #z_vec = []
-        for k in k_vec:
+        if self.verbose:
+            print('Calculating Root Locus...')
+        self.p_vec = []
+        self.z_vec = []
+        for k in self.k_vec:
             #Compute closed loop TF
             GCL = self.closed_loop(k)
             poles = ctl.pole(GCL)
@@ -400,12 +497,12 @@ class makeSystem():
             self.check_range(poles)
             self.check_range(zeros)
             #Plot poles and zeros
-            #p_vec.append(poles)
-            #z_vec.append(zeros)
-            plt.plot(np.real(poles),np.imag(poles),'b*')
-            plt.plot(np.real(zeros),np.imag(zeros),'r*')
-        plt.plot(np.real(poles),np.imag(poles),'b*',label='Root Locus')
-        plt.plot(np.real(zeros),np.imag(zeros),'r*',label='Zero Locus')
+            self.p_vec.append(poles)
+            self.z_vec.append(zeros)
+            # plt.plot(np.real(poles),np.imag(poles),'b*')
+            # plt.plot(np.real(zeros),np.imag(zeros),'r*')
+        # plt.plot(np.real(poles),np.imag(poles),'b*',label='Root Locus')
+        # plt.plot(np.real(zeros),np.imag(zeros),'r*',label='Zero Locus')
 
         #This part doesn't quite work yet because
         #I think MATLAB uses an adaptive step to compute
@@ -420,14 +517,12 @@ class makeSystem():
         #    plt.plot(np.real(p_vec[:,i]),np.imag(p_vec[:,i]),'b-')
 
         #Now compute the transfer function for KSTAR
-        self.GCL = self.closed_loop(self.KSTAR,verbose=True)
+        self.GCL = self.closed_loop(self.KSTAR)
 
         #In order to get the gain matrix K for state space we just need to grab the numerator of the
         ##controller and then multiply by KSTAR
         self.closedloopStateSpace()
 
-        #Plot the last bits of the root locus
-        plt.plot(np.real(self.closedloop_poles),np.imag(self.closedloop_poles),'ms',label='K='+str(KSTAR))
         #Last minute range check
         if self.xmax < 0:
             self.xmax = -0.1*self.xmin
@@ -438,25 +533,16 @@ class makeSystem():
         self.xmin *= 1.11
         self.ymin *= 1.11
         self.ymax *= 1.11
-        #Extra Bits
-        #Plot real and imaginary axes
-        plt.plot([self.xmin,self.xmax],[0,0],'k-')
-        plt.plot([0,0],[self.ymin,self.ymax],'k-')
-        #Set Range
-        plt.xlim([self.xmin,self.xmax])
-        plt.ylim([self.ymin,self.ymax])
-        #Set labels
-        plt.xlabel('Real')
-        plt.ylabel('Imaginary')
-        plt.legend()
-        plt.grid()
+
+        #Plot the root locuse
+        if self.verbose:
+            self.plotrootlocus()
 
         #Since we have a closed loop system let's simulate the closed loop system
         #in this case let's dynamically determine how long to simulate
-        tfinal = self.howlong(self.closedloop_poles)
-        self.integrateClosedLoop(0,tfinal)
-
-        plt.show()
+        if self.verbose:
+            self.tend = self.howlong(self.closedloop_poles)
+        self.integrateClosedLoop(self.tstart,self.tend,ic=self.xinitial)
 
     def howlong(self,cpoles):
         closedloop_real_pole = np.max(np.real(cpoles))

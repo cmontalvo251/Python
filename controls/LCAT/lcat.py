@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+import controlsystemdynamics as ctldyn
 
 class MainWindow(QtGui.QMainWindow):
     '''Main window class responsible for managing user interface'''
@@ -17,37 +18,52 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.setupUi(self)
 
         #Connect Slots
-        QtCore.QObject.connect(self.ui.simulateButton,QtCore.SIGNAL('clicked()'),self.plot)
+        #QtCore.QObject.connect(self.ui.simulateButton,QtCore.SIGNAL('clicked()'),self.plot)
+
+        #Create the default system
+        num = np.asarray([1])
+        den = np.asarray([1,0])
+        self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=False)
+
+        ##From here we need to integrate the open loop system
+        self.system.integrateOpenLoop(0,10,ic=np.asarray([0,0]),input='step')
+
+        #Then create a default controller
+        #This will also create a root locus and simulate the
+        #closed loop system
+        self.system.rltools(100,1,10,[],[]) #KMAX,KSTEP,KSTAR,zeros,poles
+
+        ##Then plot right away
+        self.plot()
+
+        #And integrate the closed loop system
+        #self.system.integrateClosedLoop(0,10,ic=np.asarray([0,0]),input='step')
 
     def plot(self):
-        try:
-            radians = float(self.ui.inputEdit.text() ) 
-        except:
-            radians = 2*np.pi
-
-        x = np.linspace(-radians,radians,1000)
-        y = np.sin(x)
+        x = np.linspace(-np.pi,np.pi,1000)
+        y = np.sin(x*30)
 
         # create an axis
-        ax = self.ui.figure.add_subplot(221)
-
+        #ax = self.ui.figure.add_subplot(221)
         # discards the old graph
-        ax.clear()
+        self.ui.ax1.clear()
 
-        # plot data
-        ax.plot(x,y)
+        # plot open loop data
+        self.system.plotOpenLoop(self.ui.ax1)
 
-        ax2 = self.ui.figure.add_subplot(222)
-        ax2.clear()
-        ax2.plot(y,x)
+        # create second axis and clear it
+        #ax2 = self.ui.figure.add_subplot(222)
+        self.ui.ax2.clear()
+        self.system.plotrootlocus(self.ui.ax2)
 
-        ax3 = self.ui.figure.add_subplot(223)
-        ax3.clear()
-        ax3.plot(y,x,'g-')
+        # third axis
+        #ax3 = self.ui.figure.add_subplot(223)
+        self.ui.ax3.clear()
+        self.system.plotClosedLoop(self.ui.ax3)        
 
-        ax4 = self.ui.figure.add_subplot(224)
-        ax4.clear()
-        ax4.plot(x,y,'r-')
+        #ax4 = self.ui.figure.add_subplot(224)
+        self.ui.ax4.clear()
+        self.ui.ax4.plot(x,y,'r-')
 
         # refresh canvas
         self.ui.canvas.draw()

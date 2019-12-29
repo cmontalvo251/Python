@@ -12,6 +12,7 @@ from PyQt4 import QtCore, QtGui
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 #############################################
 
 try:
@@ -76,14 +77,6 @@ class Ui_GUI(object):
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.gridLayout_2.addWidget(self.label_5, 10, 1, 1, 1)
 
-        self.label_25 = QtGui.QLabel(self.frame)
-        self.label_25.setObjectName(_fromUtf8("label_25"))
-        self.gridLayout_2.addWidget(self.label_25, 8, 3, 1, 1)
-
-        self.label_17 = QtGui.QLabel(self.frame)
-        self.label_17.setObjectName(_fromUtf8("label_17"))
-        self.gridLayout_2.addWidget(self.label_17, 0, 2, 1, 1)
-
         self.label_14 = QtGui.QLabel(self.frame)
         self.label_14.setObjectName(_fromUtf8("label_14"))
         self.gridLayout_2.addWidget(self.label_14, 15, 1, 1, 1)
@@ -92,17 +85,9 @@ class Ui_GUI(object):
         self.label_20.setObjectName(_fromUtf8("label_20"))
         self.gridLayout_2.addWidget(self.label_20, 4, 1, 1, 1)
 
-        self.label_2 = QtGui.QLabel(self.frame)
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.gridLayout_2.addWidget(self.label_2, 4, 3, 1, 1)
-
         self.label_24 = QtGui.QLabel(self.frame)
         self.label_24.setObjectName(_fromUtf8("label_24"))
         self.gridLayout_2.addWidget(self.label_24, 13, 1, 1, 1)
-
-        self.label_27 = QtGui.QLabel(self.frame)
-        self.label_27.setObjectName(_fromUtf8("label_27"))
-        self.gridLayout_2.addWidget(self.label_27, 15, 3, 1, 1)
 
         self.label_4 = QtGui.QLabel(self.frame)
         self.label_4.setObjectName(_fromUtf8("label_4"))
@@ -124,21 +109,9 @@ class Ui_GUI(object):
         self.label_9.setObjectName(_fromUtf8("label_9"))
         self.gridLayout_2.addWidget(self.label_9, 6, 1, 1, 1)
 
-        self.label_18 = QtGui.QLabel(self.frame)
-        self.label_18.setObjectName(_fromUtf8("label_18"))
-        self.gridLayout_2.addWidget(self.label_18, 1, 3, 1, 1)
-
         self.label_6 = QtGui.QLabel(self.frame)
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.gridLayout_2.addWidget(self.label_6, 11, 1, 1, 1)
-
-        self.label_26 = QtGui.QLabel(self.frame)
-        self.label_26.setObjectName(_fromUtf8("label_26"))
-        self.gridLayout_2.addWidget(self.label_26, 13, 3, 1, 1)
-
-        self.label_11 = QtGui.QLabel(self.frame)
-        self.label_11.setObjectName(_fromUtf8("label_11"))
-        self.gridLayout_2.addWidget(self.label_11, 16, 3, 1, 1)
 
         self.label_13 = QtGui.QLabel(self.frame)
         self.label_13.setObjectName(_fromUtf8("label_13"))
@@ -156,17 +129,34 @@ class Ui_GUI(object):
         self.label_10.setObjectName(_fromUtf8("label_10"))
         self.gridLayout_2.addWidget(self.label_10, 7, 1, 1, 1)
 
-        self.label_8 = QtGui.QLabel(self.frame)
-        self.label_8.setObjectName(_fromUtf8("label_8"))
-        self.gridLayout_2.addWidget(self.label_8, 5, 3, 1, 1)
-
         self.label = QtGui.QLabel(self.frame)
         self.label.setObjectName(_fromUtf8("label"))
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
+        self.label_16 = QtGui.QLabel(self.frame)
+        self.label_16.setObjectName(_fromUtf8("label_16"))
+        self.gridLayout_2.addWidget(self.label_16, 17, 1, 1, 1)
+
+        #Third Column Labels
+        self.label_18 = QtGui.QLabel(self.frame)
+        self.label_18.setObjectName(_fromUtf8("label_18"))
+        self.gridLayout_2.addWidget(self.label_18, 2, 3, 1, 1)
+
         self.label_7 = QtGui.QLabel(self.frame)
         self.label_7.setObjectName(_fromUtf8("label_7"))
-        self.gridLayout_2.addWidget(self.label_7, 2, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.label_7, 4, 3, 1, 1)
+        
+        self.label_2 = QtGui.QLabel(self.frame)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.gridLayout_2.addWidget(self.label_2, 5, 3, 1, 1)
+
+        self.label_8 = QtGui.QLabel(self.frame)
+        self.label_8.setObjectName(_fromUtf8("label_8"))
+        self.gridLayout_2.addWidget(self.label_8, 6, 3, 1, 1)
+
+        self.label_25 = QtGui.QLabel(self.frame)
+        self.label_25.setObjectName(_fromUtf8("label_25"))
+        self.gridLayout_2.addWidget(self.label_25, 8, 3, 1, 1)
 
         self.label_23 = QtGui.QLabel(self.frame)
         self.label_23.setObjectName(_fromUtf8("label_23"))
@@ -176,17 +166,22 @@ class Ui_GUI(object):
         self.label_22.setObjectName(_fromUtf8("label_22"))
         self.gridLayout_2.addWidget(self.label_22, 11, 3, 1, 1)
 
+        self.label_26 = QtGui.QLabel(self.frame)
+        self.label_26.setObjectName(_fromUtf8("label_26"))
+        self.gridLayout_2.addWidget(self.label_26, 13, 3, 1, 1)
+
+        self.label_27 = QtGui.QLabel(self.frame)
+        self.label_27.setObjectName(_fromUtf8("label_27"))
+        self.gridLayout_2.addWidget(self.label_27, 15, 3, 1, 1)
+
+        self.label_11 = QtGui.QLabel(self.frame)
+        self.label_11.setObjectName(_fromUtf8("label_11"))
+        self.gridLayout_2.addWidget(self.label_11, 16, 3, 1, 1)
+
         self.label_12 = QtGui.QLabel(self.frame)
         self.label_12.setObjectName(_fromUtf8("label_12"))
         self.gridLayout_2.addWidget(self.label_12, 17, 3, 1, 1)
 
-        self.label_16 = QtGui.QLabel(self.frame)
-        self.label_16.setObjectName(_fromUtf8("label_16"))
-        self.gridLayout_2.addWidget(self.label_16, 17, 1, 1, 1)
-
-        self.label_29 = QtGui.QLabel(self.frame)
-        self.label_29.setObjectName(_fromUtf8("label_29"))
-        self.gridLayout_2.addWidget(self.label_29, 9, 2, 1, 1)
         
         ##Now add Line Edits and combo boxes in the order you'd like to tab things
         self.sysTypeBox = QtGui.QComboBox(self.frame)
@@ -259,27 +254,45 @@ class Ui_GUI(object):
 
         self.simulateButton = QtGui.QPushButton(self.frame)
         self.simulateButton.setObjectName(_fromUtf8("simulateButton"))
-        self.gridLayout_2.addWidget(self.simulateButton, 22, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.simulateButton, 19, 0, 1, 1)
+
+        self.importButton = QtGui.QPushButton(self.frame)
+        self.importButton.setObjectName(_fromUtf8("importButton"))
+        self.gridLayout_2.addWidget(self.importButton, 0, 2, 1, 1)
+        
+        #Control Design with labels
+        self.label_17 = QtGui.QLabel(self.frame)
+        self.label_17.setObjectName(_fromUtf8("label_17"))
+        self.gridLayout_2.addWidget(self.label_17, 1, 2, 1, 1)
 
         self.ssKEdit = QtGui.QLineEdit(self.frame)
         self.ssKEdit.setObjectName(_fromUtf8("ssKEdit"))
-        self.gridLayout_2.addWidget(self.ssKEdit, 1, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.ssKEdit, 2, 2, 1, 1)
 
         self.zCEdit = QtGui.QLineEdit(self.frame)
         self.zCEdit.setObjectName(_fromUtf8("zCEdit"))
-        self.gridLayout_2.addWidget(self.zCEdit, 2, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.zCEdit, 4, 2, 1, 1)
 
         self.pCEdit = QtGui.QLineEdit(self.frame)
         self.pCEdit.setObjectName(_fromUtf8("pCEdit"))
-        self.gridLayout_2.addWidget(self.pCEdit, 4, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.pCEdit, 5, 2, 1, 1)
 
         self.kCEdit = QtGui.QLineEdit(self.frame)
         self.kCEdit.setObjectName(_fromUtf8("kCEdit"))
-        self.gridLayout_2.addWidget(self.kCEdit, 5, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.kCEdit, 6, 2, 1, 1)
 
         self.feedbackButton = QtGui.QPushButton(self.frame)
         self.feedbackButton.setObjectName(_fromUtf8("feedbackButton"))
-        self.gridLayout_2.addWidget(self.feedbackButton, 6, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.feedbackButton, 7, 2, 1, 1)
+
+        self.CEdit = QtGui.QTextEdit(self.frame)
+        self.CEdit.setObjectName(_fromUtf8("CEdit"))
+        self.CEdit.setReadOnly(True)
+        self.gridLayout_2.addWidget(self.CEdit, 8, 2, 1, 1)
+
+        self.label_29 = QtGui.QLabel(self.frame)
+        self.label_29.setObjectName(_fromUtf8("label_29"))
+        self.gridLayout_2.addWidget(self.label_29, 9, 2, 1, 1)
 
         self.zGCLEdit = QtGui.QLineEdit(self.frame)
         self.zGCLEdit.setObjectName(_fromUtf8("zGCLEdit"))
@@ -309,16 +322,16 @@ class Ui_GUI(object):
         self.locusButton.setObjectName(_fromUtf8("locusButton"))
         self.gridLayout_2.addWidget(self.locusButton, 18, 2, 1, 1)
 
+        self.exportButton = QtGui.QPushButton(self.frame)
+        self.exportButton.setObjectName(_fromUtf8("exportButton"))
+        self.gridLayout_2.addWidget(self.exportButton, 19, 2, 1, 1)
+
         ##These are just diplays so it doesn't really matter what order they are
         self.GEdit = QtGui.QTextEdit(self.frame)
         self.GEdit.setObjectName(_fromUtf8("GEdit"))
         self.GEdit.setReadOnly(True)
         self.gridLayout_2.addWidget(self.GEdit, 13, 0, 1, 1)
 
-        self.CEdit = QtGui.QTextEdit(self.frame)
-        self.CEdit.setObjectName(_fromUtf8("CEdit"))
-        self.CEdit.setReadOnly(True)
-        self.gridLayout_2.addWidget(self.CEdit, 8, 2, 1, 1)
 
         self.GCLEdit = QtGui.QTextEdit(self.frame)
         self.GCLEdit.setObjectName(_fromUtf8("GCLEdit"))
@@ -331,8 +344,10 @@ class Ui_GUI(object):
         ##################################################
         ##This 5,1,1,1 basically tells where to put it
         #Add the figure stuff to the gridlayout as well
-        self.figure = Figure()
-        self.canvas = FigureCanvas(self.figure)
+        self.fig, ((self.ax1, self.ax2), (self.ax3, self.ax4)) = plt.subplots(nrows=2, ncols=2)
+        #self.figure = Figure()
+        self.canvas = FigureCanvas(self.fig)
+        plt.tight_layout()
         self.gridLayout.addWidget(self.canvas,22,1,1,1)
         #################################################
 
@@ -383,6 +398,7 @@ class Ui_GUI(object):
         self.label_9.setText(_translate("GUI", "num", None))
         self.label_18.setText(_translate("GUI", "ss K", None))
         self.simulateButton.setText(_translate("GUI", "SIMULATE", None))
+        self.importButton.setText(_translate("GUI", "IMPORT", None))
         self.label_6.setText(_translate("GUI", "D", None))
         self.label_26.setText(_translate("GUI", "GCL{s}", None))
         self.label_11.setText(_translate("GUI", "KF", None))
@@ -399,6 +415,7 @@ class Ui_GUI(object):
         self.label_23.setText(_translate("GUI", "GCL z", None))
         self.label_22.setText(_translate("GUI", "GCL p", None))
         self.locusButton.setText(_translate("GUI", "LOCUS", None))
+        self.exportButton.setText(_translate("GUI", "EXPORT", None))
         self.label_12.setText(_translate("GUI", "KN", None))
         self.label_16.setText(_translate("GUI", "N", None))
         self.label_29.setText(_translate("GUI", "Closed Loop", None))
