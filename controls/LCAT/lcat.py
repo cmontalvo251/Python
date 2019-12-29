@@ -5,20 +5,33 @@ import sys
 from gui import Ui_GUI
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
+#from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+#from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
+#from matplotlib.figure import Figure
 import controlsystemdynamics as ctldyn
 
 ##########################TASKS###############################################
 
-#None of the following ideas are necessary to say the least but it would be nice.
-
-
 #The following tasks are necessary to make the software function properly
+#1.) read() function to read all of the lineEdits from the different modules.
+#2.) read() function will require subread() functions where only
+#certain lineEdits are read depending on button presses
+#3.) Connect button presses to functions. Each button press will call
+#a subread() function and then perform the computation and then the
+#populate routine
+#4.) Create the export functionality to first generate all the plots
+#individually so you can save them in high res.
+#5.) Append to the export routine by exporting the textEdits to a text
+#file
+#6.) With a file generated get the import routine working
+#7.) Rename the program to LInear Systems Analysis (LISA)
 
-#1.) 
-
+#None of the following ideas are necessary to say the least but it would be nice.
+#1.) I'd like to have the Frame widget on the left be tabbed so I can
+#shrink the window and see the plots more. Partition everything just
+#the way you have it just this time have each section on a tab
+#2.) Do the same tab stuffs for the plots so you only see one plot at
+#a time.
 
 class MainWindow(QtGui.QMainWindow):
     '''Main window class responsible for managing user interface'''
@@ -39,9 +52,6 @@ class MainWindow(QtGui.QMainWindow):
         ##Then plot right away
         if not self.system.verbose:
             self.plot()
-
-        #And integrate the closed loop system
-        #self.system.integrateClosedLoop(0,10,ic=np.asarray([0,0]),input='step')
 
     def defaultSystem(self):
         #Create the default system
