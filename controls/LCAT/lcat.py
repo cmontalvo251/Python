@@ -11,9 +11,7 @@ import controlsystemdynamics as ctldyn
 ##########################TASKS###############################################
 
 #The following tasks are necessary to make the software function properly
-#3.) Connect button presses to functions. Each button press will call
-#a subread() function and then perform the computation and then the
-#populate routine
+#3.5) The default system is broken and needs to be fixed
 #4.) Create the export functionality to first generate all the plots
 #individually so you can save them in high res.
 #5.) Append to the export routine by exporting the textEdits to a text
@@ -27,6 +25,11 @@ import controlsystemdynamics as ctldyn
 #the way you have it just this time have each section on a tab
 #2.) Do the same tab stuffs for the plots so you only see one plot at
 #a time.
+#3.) There is no lineEdit for ICs. Not sure where to put this but if
+#you make tabs there will probably be room.
+#4.) I don't think ramp and parabola inputs are working
+#5.) Controller does not support the ability to take a state space K
+#at the moment
 
 class MainWindow(QtGui.QMainWindow):
     '''Main window class responsible for managing user interface'''
@@ -36,37 +39,104 @@ class MainWindow(QtGui.QMainWindow):
         self.ui = Ui_GUI()
         self.ui.setupUi(self)
 
+        ##There are CREATE, SIMULATE, IMPORT, FEEDBACK, PLACE, LOCUS
+        ##and EXPORT buttons. Each button press will need to read only
+        ##a subset of the fields, perform some necessary calculation
+        ##and then run the populate routine
+
         #Connect Slots
-        #QtCore.QObject.connect(self.ui.simulateButton,QtCore.SIGNAL('clicked()'),self.plot)
+        QtCore.QObject.connect(self.ui.createButton,QtCore.SIGNAL('clicked()'),self.CREATE)
+        QtCore.QObject.connect(self.ui.simulateButton,QtCore.SIGNAL('clicked()'),self.SIMULATE)
+        QtCore.QObject.connect(self.ui.importButton,QtCore.SIGNAL('clicked()'),self.IMPORT)
+        QtCore.QObject.connect(self.ui.feedbackButton,QtCore.SIGNAL('clicked()'),self.FEEDBACK)
+        QtCore.QObject.connect(self.ui.placeButton,QtCore.SIGNAL('clicked()'),self.PLACE)
+        QtCore.QObject.connect(self.ui.locusButton,QtCore.SIGNAL('clicked()'),self.LOCUS)
+        QtCore.QObject.connect(self.ui.exportButton,QtCore.SIGNAL('clicked()'),self.EXPORT)
 
         #Setup default system
         self.defaultSystem()
 
-        #Then populate all the LineEdits
+        #Then populate all the LineEdits and plots
         self.populate()
 
         ##Then read for debugging
         #if self.verbose:
         self.readALL()
-        
-        ##Then plot right away
-        if not self.system.verbose:
-            self.plot()
 
+    def CREATE(self):
+        #The create button must first readCREATE
+        typ,z,p,k,num,den,A,B,C,D = self.readCREATE()
+        #Then depending on the system type it will create a new system
+        if typ == 'tf':
+            self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=self.verbose)
+        elif typ == 'zpk':
+            self.system = ctldyn.makeSystem(z,p,k,systype='ZPK',verbose=self.verbose)
+        elif typ == 'ss':
+            self.system = ctldyn.makeSystem(A,B,C,D,systype='SS',verbose=self.verbose)
+        #Once the system is created we need to recompute everything
+        #since the entire system has changed
+        self.SIMULATE(oc=[1,0])
+        self.FEEDBACK() ##FEEDBACK calls the locus routine
+        #Then we re-run the populate routine
+        self.populate()
+            
+    def SIMULATE(self,oc=[1,1]):
+        ##The simulate button must first readSIMULATE
+        t0,tf,tn,typ = self.readSIMULATE()
+        #Then we need to simulate the open and closed loop systems
+        if oc[0] == 1:
+            self.system.integrateOpenLoop(t0,tf,num=tn,ic=np.asarray([0,0]),input=typ)
+        if oc[1] == 1:
+            self.system.integrateClosedLoop(t0,tf,num=tn,ic=np.asarray([0,0]),input=typ)
+        if oc[0] + oc[1] == 2:
+            self.populate()
+
+    def IMPORT(self):
+        print('Import Button')
+
+    def FEEDBACK(self):
+        #The feedback button is the locus button but the
+        #user does not need to know that
+        #Then again perhaps we could get rid of this button
+        #And put the initial conditions in here
+        self.LOCUS()
+        
+    def PLACE(self):
+        #The place button will read the desired closed loop poles and
+        #zeros and compute the controller required to do so
+        #first we need to read the poles and zeros
+        z,p = self.readPLACE()
+        self.system.place(p)
+        #Then populate
+        self.populate()
+
+    def LOCUS(self):
+        #First things first though we need to read all the control variables
+        ssK,z,p,k,typ = self.readFEEDBACK()
+        #Then we need to read all the locus variables
+        k0,kf,kn = self.readLOCUS()
+        #Then run the rltools
+        self.system.rltools(k0,kf,kn,k,z,p)
+        #Then run the populate routine
+        self.populate()
+
+    def EXPORT(self):
+        print('Export Button')
+                
     def defaultSystem(self):
         #Create the default system
-        num = np.asarray([2])
-        den = np.asarray([1,2,2])
+        num = np.asarray([10])
+        den = np.asarray([1,2,10])
         self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=self.verbose)
         #print(self.system.sysTF)
         
         ##From here we need to integrate the open loop system
-        self.system.integrateOpenLoop(0,10,ic=np.asarray([0,0]),input='step')
+        self.system.integrateOpenLoop(0,5,ic=np.asarray([0,0]),input='step')
 
         #Then create a default controller
         #This will also create a root locus and simulate the
         #closed loop system
-        self.system.rltools(1,10,10,5,[],[]) #K0,KF,KN,KSTAR,zeros,poles
+        self.system.rltools(0.1,3,100,2,[-5],[]) #K0,KF,KN,KSTAR,zeros,poles
 
     def readCREATE(self):
         system_type = str(self.ui.sysTypeBox.currentText())
@@ -79,6 +149,7 @@ class MainWindow(QtGui.QMainWindow):
         B = self.toarray(str(self.ui.ssBEdit.text()))
         C = self.toarray(str(self.ui.ssCEdit.text()))
         D = self.toarray(str(self.ui.ssDEdit.text()))
+        return system_type,plant_zeros,plant_poles,plant_gain,plant_num,plant_den,A,B,C,D
         #G{s} block is readOnly
 
     def readSIMULATE(self):
@@ -86,6 +157,7 @@ class MainWindow(QtGui.QMainWindow):
         tf = self.tofloat(str(self.ui.tfEdit.text()))
         tn = self.tofloat(str(self.ui.tnEdit.text()))
         input_type = str(self.ui.inputBox.currentText())
+        return t0,tf,tn,input_type
 
     def readFEEDBACK(self):
         K = self.toarray(str(self.ui.ssKEdit.text()))
@@ -97,15 +169,19 @@ class MainWindow(QtGui.QMainWindow):
         ##Feedback needs to know whether the system is state space or not
         system_type = str(self.ui.sysTypeBox.currentText())
 
+        return K,controller_zeros,controller_poles,controller_gain,system_type
+
     def readPLACE(self):
         closed_loop_zeros = self.toarray(str(self.ui.zGCLEdit.text()))
         closed_loop_poles = self.toarray(str(self.ui.pGCLEdit.text()))
         #GCL{s} block is readOnly
+        return closed_loop_zeros,closed_loop_poles
 
     def readLOCUS(self):
         k0 = self.tofloat(str(self.ui.k0Edit.text()))
         kf = self.tofloat(str(self.ui.kfEdit.text()))
         kn = self.tofloat(str(self.ui.knEdit.text()))
+        return k0,kf,kn
         
     def readALL(self):
         ##There are CREATE, SIMULATE, IMPORT, FEEDBACK, PLACE, LOCUS
@@ -147,6 +223,8 @@ class MainWindow(QtGui.QMainWindow):
         for ri in range(0,r):
             if ri > 0:
                 output+=','
+            if ri < r and ri != 0:
+                output+='\n'
             if c > 0:
                 output += '['
                 for ci in range(0,c):
@@ -211,7 +289,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.k0Edit.setText(self.tostring1(self.system.K0))
         self.ui.kfEdit.setText(self.tostring1(self.system.KF))
         self.ui.knEdit.setText(self.tostring1(self.system.KN))
-
+        ##Then plot right away
+        if not self.system.verbose:
+            self.plot()
+            
     def plot(self):
         #Discard old axis
         self.ui.ax1.clear()

@@ -106,7 +106,8 @@ class makeSystem():
         #First things first. Check for rank of matrix
         if self.check_controllability():
             self.desired_closedloop_poles = desired_closedloop_poles
-            print('Desired Closed Loop Poles = ',self.desired_closedloop_poles)
+            if self.verbose:
+                print('Desired Closed Loop Poles = ',self.desired_closedloop_poles)
             
             ###########This is the easy way############
             #Basically this use a bunch of built in python functions
@@ -139,10 +140,12 @@ class makeSystem():
                     RHS *= (self.s-self.desired_closedloop_poles[i])
                     K.append(sp.Symbol('k'+str(i+1)))
                 RHS = sp.simplify(RHS)
-                print('RHS = ',RHS)
+                if self.verbose:
+                    print('RHS = ',RHS)
                 RHS = sp.Poly(RHS,self.s)
                 desired_coefficients = RHS.coeffs()
-                print('Desired Coefficients = ',desired_coefficients)
+                if self.verbose:
+                    print('Desired Coefficients = ',desired_coefficients)
                 #Alright now we need to get the LHS
                 #First we need K
                 K = np.asarray(K)
@@ -154,20 +157,21 @@ class makeSystem():
                 sIA = sp.Matrix(sIA)
                 self.LHS = sp.simplify(sIA.det())
 
-                print('K = ',K)
-                print('A = ',self.A)
-                print('B = ',self.B)
-                print('BK = ',BK)
-                print('ACL = ',ACL)
-                print('sI = ',sI)
-                print('sIA = ',sIA)
-                print('Determinant = ',self.LHS)
+                if self.verbose:
+                    print('K = ',K)
+                    print('A = ',self.A)
+                    print('B = ',self.B)
+                    print('BK = ',BK)
+                    print('ACL = ',ACL)
+                    print('sI = ',sI)
+                    print('sIA = ',sIA)
+                    print('Determinant = ',self.LHS)
 
                 #Now we need to extract the coefficients from the LHS
                 self.LHS = sp.Poly(self.LHS,self.s)
                 current_coefficients = self.LHS.coeffs()
-                print('Current Coefficients = ',current_coefficients)
-
+                if self.verbose:
+                    print('Current Coefficients = ',current_coefficients)
                 ##Alright now we need to solve a system of equations
                 self.expressions = []
                 length = 0
@@ -175,9 +179,11 @@ class makeSystem():
                     self.expressions.append(current_coefficients[i]-desired_coefficients[i])
                     if self.expressions[-1] == 0:
                         self.expressions.pop()
-                print('Expressions Needed to be solved = ',self.expressions)
+                if self.verbose:
+                    print('Expressions Needed to be solved = ',self.expressions)
                 sol = sp.solve(self.expressions)
-                print('Solution = ',sol)
+                if self.verbose:
+                    print('Solution = ',sol)
                 #We have the solution now we need to go and populate the K matrix
                 Kvals = []
                 for i in range(0,self.N):
@@ -189,18 +195,24 @@ class makeSystem():
             else:
                 #I haven't figured this out for larger than 2nd order systems
                 Kvals = ctl.place(self.A,self.B,desired_closedloop_poles)[0]
-            print('Kvals = ',Kvals)
             self.K = Kvals
+            if self.verbose:
+                print('Kvals = ',Kvals)
+                print('State Space K = ',self.K)
 
             #In order to get a transfer function we need to make a controller C
             #but to do that we need the controller zeros
-            self.KSTAR = Kvals[-1]*self.C[0][0]
             #It's possible the state space matrices are inverted
             if self.inverse:
-                self.KSTAR = Kvals[0]*self.C[0][-1]
-                controller_zeros = np.roots(Kvals) 
+                self.KSTAR = Kvals[0]/self.C[0][-1]
+                controller_zeros = np.roots(Kvals)
             else:
-                controller_zeros = np.roots(Kvals[-1::-1]) 
+                self.KSTAR = Kvals[0]/self.C[0][0]
+                controller_zeros = np.roots(Kvals[-1::-1])
+
+            if self.verbose:
+                print('KSTAR = ',self.KSTAR)
+                print('Controller Zeros = ',controller_zeros)
 
             self.controllerTF(controller_zeros)
             self.GCL = self.closed_loop(self.KSTAR)
@@ -212,7 +224,6 @@ class makeSystem():
             return 0
 
     def integrateClosedLoop(self,tstart,tend,num=1000,ic = [],input='step'):
-
         if self.verbose:
             print('Integrating closed loop from ',tstart,' to ',tend)
         self.tout = np.linspace(tstart,tend,num)
@@ -225,10 +236,10 @@ class makeSystem():
         if input == 'step':
             if self.inverse:
                 xcommand[-1] = 1.0/self.C[0][-1]
-                self.xinitial[0] = -self.KSTAR
+                self.xinitial[0] = -self.KSTAR/self.C[0][-1]
             else:
                 xcommand[0] = 1.0/self.C[0][-1]
-                self.xinitial[-1] = self.KSTAR
+                self.xinitial[-1] = self.KSTAR/self.C[0][-1]
 
         if len(ic) > 0:
             self.xinitial = ic
@@ -414,9 +425,11 @@ class makeSystem():
             else:
                 self.K = np.zeros((1,self.N))
                 #It's possible the state space matrices are inverted
+                if self.verbose:
+                    print('Numerator = ',self.NC)
                 if self.inverse:
                     for i in range(0,len(self.NC)):
-                        self.K[0][-1-i] = self.KSTAR*self.NC[i]*self.C[0][-1]
+                        self.K[0][-1-i] = self.KSTAR*self.NC[-1-i]*self.C[0][-1]
                 else:
                     #So we need to flip the NC matrix around
                     for i in range(0,len(self.NC)):

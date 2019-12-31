@@ -419,7 +419,7 @@ class Ui_GUI(object):
         self.locusButton.setText(_translate("GUI", "LOCUS", None))
         self.exportButton.setText(_translate("GUI", "EXPORT", None))
         self.label_12.setText(_translate("GUI", "KN", None))
-        self.label_16.setText(_translate("GUI", "N", None))
+        self.label_16.setText(_translate("GUI", "TN", None))
         self.label_29.setText(_translate("GUI", "Closed Loop", None))
         self.menu.setTitle(_translate("GUI", "Linear Controls Analysis Tool (LCAT)", None))
 
