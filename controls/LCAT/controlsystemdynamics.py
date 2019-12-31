@@ -33,7 +33,9 @@ class makeSystem():
                 [self.num,self.den] = sci.zpk2tf(self.plant_zeros,self.plant_poles,self.plant_gain)
 
             self.sysTF = ctl.tf(self.num,self.den)
-            self.sysSS = ctl.tf2ss(self.sysTF)
+            #self.sysSS = ctl.tf2ss(self.sysTF)
+            A,B,C,D = self.tf2ss(self.num,self.den)
+            self.sysSS = ctl.StateSpace(A,B,C,D)
             if verbose:
                 print('TF = ',self.sysTF)
                 print('State Space = ',self.sysSS)
@@ -88,6 +90,33 @@ class makeSystem():
         self.rank = np.linalg.matrix_rank(self.Wc)
         a = self.check_controllability()
 
+    def tf2ss(self,num,den):
+        s = len(den)-1
+        #print('Size of State Space System = ',s)
+        A = np.zeros((s,s))
+
+        #The top rows of the A matrix are just diagonal's of 1's
+        for i in range(0,s-1):
+            A[i][i-1] = 1.0
+
+        #The bottom row is then just the negative of the coefficients of the denominator
+        for i in range(0,len(den)-1):
+            A[-1][i] = -den[-1-i]/den[0]
+
+        #B always has a 1 in the bottom row
+        B = np.zeros((s,1))
+        B[-1][0] = 1.0
+
+        ##C is simply the coefficients of the numerator starting from the back
+        C = np.zeros((1,s))
+        for i in range(0,len(num)):
+            C[0][i] = num[-1-i]/den[0] #make sure to divide out the coefficient of the denominator
+        
+        #D is always zero
+        D = np.zeros((1,1))
+        
+        return A,B,C,D
+
     def check_controllability(self):
         if self.verbose:
             print('System is a ',self.N,' x ',self.N)
@@ -103,6 +132,7 @@ class makeSystem():
             return 0 
 
     def place(self,desired_closedloop_poles):
+        #self.verbose = True
         #First things first. Check for rank of matrix
         if self.check_controllability():
             self.desired_closedloop_poles = desired_closedloop_poles
@@ -195,7 +225,7 @@ class makeSystem():
             else:
                 #I haven't figured this out for larger than 2nd order systems
                 Kvals = ctl.place(self.A,self.B,desired_closedloop_poles)[0]
-            self.K = Kvals
+            self.K = -Kvals
             if self.verbose:
                 print('Kvals = ',Kvals)
                 print('State Space K = ',self.K)
@@ -209,12 +239,17 @@ class makeSystem():
             else:
                 self.KSTAR = Kvals[0]/self.C[0][0]
                 controller_zeros = np.roots(Kvals[-1::-1])
+                
+            self.controllerTF(controller_zeros)
+
+            [num,den] = sci.zpk2tf(controller_zeros,[],1.0)
+
+            self.KSTAR /= num[-1]
 
             if self.verbose:
                 print('KSTAR = ',self.KSTAR)
                 print('Controller Zeros = ',controller_zeros)
-
-            self.controllerTF(controller_zeros)
+            
             self.GCL = self.closed_loop(self.KSTAR)
             self.closedloopStateSpace()
             
@@ -238,16 +273,16 @@ class makeSystem():
                 xcommand[-1] = 1.0/self.C[0][-1]
                 #self.xinitial[0] = -self.KSTAR/self.C[0][-1]
             else:
-                xcommand[0] = 1.0/self.C[0][-1]
-                #self.xinitial[-1] = self.KSTAR/self.C[0][-1]
+                xcommand[0] = -1.0/self.C[0][0]
+                self.xinitial[-1] = self.KSTAR
 
         # if len(ic) > 0:
         #     self.xinitial = ic
 
         if self.verbose:
-            print('Initial Conditions = ',self.xinitial)
             print('Input Type = ',input)
-
+            print('Initial Conditions = ',self.xinitial)
+            
         #Numerical Integration
         if input != 'impulse' and self.statespace:
             self.BKxc = np.matmul(self.BK,xcommand)
@@ -429,14 +464,14 @@ class makeSystem():
                     print('Numerator = ',self.NC)
                 if self.inverse:
                     for i in range(0,len(self.NC)):
-                        self.K[0][-1-i] = self.KSTAR*self.NC[-1-i]*self.C[0][-1]
+                        self.K[0][-1-i] = -self.KSTAR*self.NC[-1-i]*self.C[0][-1]
                 else:
                     #So we need to flip the NC matrix around
                     for i in range(0,len(self.NC)):
-                        self.K[0][i] = self.KSTAR*self.NC[-1-i]*self.C[0][0]
+                        self.K[0][i] = -self.KSTAR*self.NC[-1-i]*self.C[0][0]
 
                 self.BK = np.matmul(self.B,self.K)
-                self.ACL = self.A-self.BK
+                self.ACL = self.A+self.BK
                 [self.sCL,self.vCL] = np.linalg.eig(self.ACL)
                 if self.verbose:
                     print('Closed Loop Full State Feedback Matrix = ',self.K)
