@@ -5,9 +5,7 @@ import sys
 from gui import Ui_GUI
 import numpy as np
 import matplotlib.pyplot as plt
-#from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-#from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-#from matplotlib.figure import Figure
+import ast
 import controlsystemdynamics as ctldyn
 
 ##########################TASKS###############################################
@@ -48,6 +46,9 @@ class MainWindow(QtGui.QMainWindow):
 
         #Then populate all the LineEdits
         self.populate()
+
+        ##Then read for debugging
+        self.read()
         
         ##Then plot right away
         if not self.system.verbose:
@@ -55,44 +56,92 @@ class MainWindow(QtGui.QMainWindow):
 
     def defaultSystem(self):
         #Create the default system
-        num = np.asarray([1])
-        den = np.asarray([1,0])
+        num = np.asarray([2])
+        den = np.asarray([1,2,2])
         self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=False)
-
+        #print(self.system.sysTF)
+        
         ##From here we need to integrate the open loop system
-        self.system.integrateOpenLoop(0,2,ic=np.asarray([0,0]),input='step')
+        self.system.integrateOpenLoop(0,10,ic=np.asarray([0,0]),input='step')
 
         #Then create a default controller
         #This will also create a root locus and simulate the
         #closed loop system
         self.system.rltools(1,10,10,5,[],[]) #K0,KF,KN,KSTAR,zeros,poles
 
+    def read(self):
+        plant_zeros = self.toarray(str(self.ui.zGEdit.text()))
+        plant_poles = self.toarray(str(self.ui.pGEdit.text()))
+        plant_gain = self.toarray(str(self.ui.kGEdit.text()))
+        plant_num = self.toarray(str(self.ui.numGEdit.text()))
+        plant_den = self.toarray(str(self.ui.denGEdit.text()))
+        A = self.toarray(str(self.ui.ssAEdit.toPlainText()))
+        sys.exit()
 
+    def tostring(self,input):
+        print('Numpy = ',input)
+        s = np.shape(input)
+        if len(s) == 1:
+            r = s[0]
+            c = 0
+        else:
+            r = s[0]
+            c = s[1]
+        output = '['
+        for ri in range(0,r):
+            if ri > 0:
+                output+=','
+            if c > 0:
+                output += '['
+                for ci in range(0,c):
+                    if ci > 0:
+                        output += ','
+                    output+= str(input[ri][ci])
+                output += ']'
+            else:
+                output += str(input[ri])
+        output+= ']'
+        print('String = ',output)
+        return output
+        
+    def tostring1(self,input):
+        print('Numpy = ',input)
+        output = str(input)
+        print('String = ',output)
+        return output
+
+    def toarray(self,input):
+        print('String = ',input)
+        input_ = input.replace(' ',',')
+        output = np.asarray(ast.literal_eval(input_))
+        print('Numpy = ',output)
+        return output
+        
     def populate(self):
-        self.ui.zGEdit.setText(str(self.system.plant_zeros))
-        self.ui.pGEdit.setText(str(self.system.plant_poles))
-        self.ui.kGEdit.setText(str(self.system.plant_gain))
-        self.ui.numGEdit.setText(str(self.system.num))
-        self.ui.denGEdit.setText(str(self.system.den))
-        self.ui.ssAEdit.setText(str(self.system.A))
-        self.ui.ssBEdit.setText(str(self.system.B))
-        self.ui.ssCEdit.setText(str(self.system.C))
-        self.ui.ssDEdit.setText(str(self.system.D))
-        self.ui.GEdit.setText(str(self.system.sysTF))
-        self.ui.t0Edit.setText(str(self.system.tstart))
-        self.ui.tfEdit.setText(str(self.system.tend))
-        self.ui.tnEdit.setText(str(self.system.tn))
-        self.ui.ssKEdit.setText(str(self.system.K))
-        self.ui.zCEdit.setText(str(self.system.controller_zeros))
-        self.ui.pCEdit.setText(str(self.system.controller_poles))
-        self.ui.kCEdit.setText(str(self.system.KSTAR))
-        self.ui.CEdit.setText(str(self.system.sysC))
-        self.ui.zGCLEdit.setText(str(self.system.closedloop_zeros))
-        self.ui.pGCLEdit.setText(str(self.system.closedloop_poles))
-        self.ui.GCLEdit.setText(str(self.system.GCL))
-        self.ui.k0Edit.setText(str(self.system.K0))
-        self.ui.kfEdit.setText(str(self.system.KF))
-        self.ui.knEdit.setText(str(self.system.KN))
+        self.ui.zGEdit.setText(self.tostring(self.system.plant_zeros))
+        self.ui.pGEdit.setText(self.tostring(self.system.plant_poles))
+        self.ui.kGEdit.setText(self.tostring1(self.system.plant_gain))
+        self.ui.numGEdit.setText(self.tostring(self.system.num))
+        self.ui.denGEdit.setText(self.tostring(self.system.den))
+        self.ui.ssAEdit.setText(self.tostring(self.system.A))
+        self.ui.ssBEdit.setText(self.tostring(self.system.B))
+        self.ui.ssCEdit.setText(self.tostring(self.system.C))
+        self.ui.ssDEdit.setText(self.tostring(self.system.D))
+        self.ui.GEdit.setText(self.tostring1(self.system.sysTF))
+        self.ui.t0Edit.setText(self.tostring1(self.system.tstart))
+        self.ui.tfEdit.setText(self.tostring1(self.system.tend))
+        self.ui.tnEdit.setText(self.tostring1(self.system.tn))
+        self.ui.ssKEdit.setText(self.tostring(self.system.K))
+        self.ui.zCEdit.setText(self.tostring(self.system.controller_zeros))
+        self.ui.pCEdit.setText(self.tostring(self.system.controller_poles))
+        self.ui.kCEdit.setText(self.tostring1(self.system.KSTAR))
+        self.ui.CEdit.setText(self.tostring1(self.system.sysC))
+        self.ui.zGCLEdit.setText(self.tostring(self.system.closedloop_zeros))
+        self.ui.pGCLEdit.setText(self.tostring(self.system.closedloop_poles))
+        self.ui.GCLEdit.setText(self.tostring1(self.system.GCL))
+        self.ui.k0Edit.setText(self.tostring1(self.system.K0))
+        self.ui.kfEdit.setText(self.tostring1(self.system.KF))
+        self.ui.knEdit.setText(self.tostring1(self.system.KN))
 
     def plot(self):
         #Discard old axis

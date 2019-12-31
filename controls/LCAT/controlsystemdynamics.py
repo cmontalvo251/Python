@@ -224,10 +224,10 @@ class makeSystem():
         #Compute the input
         if input == 'step':
             if self.inverse:
-                xcommand[-1] = -1.0/self.C[-1]
+                xcommand[-1] = 1.0/self.C[0][-1]
                 self.xinitial[0] = -self.KSTAR
             else:
-                xcommand[0] = 1.0/self.C[-1]
+                xcommand[0] = 1.0/self.C[0][-1]
                 self.xinitial[-1] = self.KSTAR
 
         if len(ic) > 0:
@@ -406,20 +406,21 @@ class makeSystem():
 
     def closedloopStateSpace(self):
         if len(self.DC) == 1:
-            if len(self.NC) != self.N:
+            if len(self.NC) > self.N:
                 print('Cannot create a closed loop system in state space')
-                print('Controller has extra poles requiring a larger state space system')
-                print('Recommend including controller dynamics into transfer function')
-                print('and converting to state space')
+                print('Numerator of Compensator = ',self.NC)
+                print('Number of States = ',self.N)
                 self.statespace = False
             else:
                 self.K = np.zeros((1,self.N))
                 #It's possible the state space matrices are inverted
                 if self.inverse:
-                    #So we need to flip the NC matrix around
-                    self.K[0] = self.KSTAR*self.NC*self.C[0][-1]
+                    for i in range(0,len(self.NC)):
+                        self.K[0][-1-i] = self.KSTAR*self.NC[i]*self.C[0][-1]
                 else:
-                    self.K[0] = self.KSTAR*self.NC[-1::-1]*self.C[0][0]
+                    #So we need to flip the NC matrix around
+                    for i in range(0,len(self.NC)):
+                        self.K[0][i] = self.KSTAR*self.NC[-1-i]*self.C[0][0]
 
                 self.BK = np.matmul(self.B,self.K)
                 self.ACL = self.A-self.BK
@@ -434,6 +435,7 @@ class makeSystem():
                 print('Controller has extra poles requiring a larger state space system')
                 print('Recommend including controller dynamics into transfer function')
                 print('and converting to state space')
+                print('Denominator of Compensator = ',self.DC)
             self.statespace = False
 
     def plotrootlocus(self,axishandle):
