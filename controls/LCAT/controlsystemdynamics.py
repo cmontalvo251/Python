@@ -236,13 +236,13 @@ class makeSystem():
         if input == 'step':
             if self.inverse:
                 xcommand[-1] = 1.0/self.C[0][-1]
-                self.xinitial[0] = -self.KSTAR/self.C[0][-1]
+                #self.xinitial[0] = -self.KSTAR/self.C[0][-1]
             else:
                 xcommand[0] = 1.0/self.C[0][-1]
-                self.xinitial[-1] = self.KSTAR/self.C[0][-1]
+                #self.xinitial[-1] = self.KSTAR/self.C[0][-1]
 
-        if len(ic) > 0:
-            self.xinitial = ic
+        # if len(ic) > 0:
+        #     self.xinitial = ic
 
         if self.verbose:
             print('Initial Conditions = ',self.xinitial)

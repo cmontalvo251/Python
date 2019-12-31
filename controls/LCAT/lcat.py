@@ -11,7 +11,8 @@ import controlsystemdynamics as ctldyn
 ##########################TASKS###############################################
 
 #The following tasks are necessary to make the software function properly
-#3.5) The default system is broken and needs to be fixed
+#3.5) The state space stuff is completely broken. I have no idea
+#what's going on
 #4.) Create the export functionality to first generate all the plots
 #individually so you can save them in high res.
 #5.) Append to the export routine by exporting the textEdits to a text
