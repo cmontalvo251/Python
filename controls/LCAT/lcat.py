@@ -11,8 +11,6 @@ import controlsystemdynamics as ctldyn
 ##########################TASKS###############################################
 
 #The following tasks are necessary to make the software function properly
-#2.) read() function will require subread() functions where only
-#certain lineEdits are read depending on button presses
 #3.) Connect button presses to functions. Each button press will call
 #a subread() function and then perform the computation and then the
 #populate routine
@@ -48,8 +46,8 @@ class MainWindow(QtGui.QMainWindow):
         self.populate()
 
         ##Then read for debugging
-        if self.verbose:
-            self.read()
+        #if self.verbose:
+        self.readALL()
         
         ##Then plot right away
         if not self.system.verbose:
@@ -70,7 +68,7 @@ class MainWindow(QtGui.QMainWindow):
         #closed loop system
         self.system.rltools(1,10,10,5,[],[]) #K0,KF,KN,KSTAR,zeros,poles
 
-    def read(self):
+    def readCREATE(self):
         system_type = str(self.ui.sysTypeBox.currentText())
         plant_zeros = self.toarray(str(self.ui.zGEdit.text()))
         plant_poles = self.toarray(str(self.ui.pGEdit.text()))
@@ -82,21 +80,58 @@ class MainWindow(QtGui.QMainWindow):
         C = self.toarray(str(self.ui.ssCEdit.text()))
         D = self.toarray(str(self.ui.ssDEdit.text()))
         #G{s} block is readOnly
+
+    def readSIMULATE(self):
         t0 = self.tofloat(str(self.ui.t0Edit.text()))
         tf = self.tofloat(str(self.ui.tfEdit.text()))
         tn = self.tofloat(str(self.ui.tnEdit.text()))
         input_type = str(self.ui.inputBox.currentText())
+
+    def readFEEDBACK(self):
         K = self.toarray(str(self.ui.ssKEdit.text()))
         controller_zeros = self.toarray(str(self.ui.zCEdit.text()))
         controller_poles = self.toarray(str(self.ui.pCEdit.text()))
         controller_gain = self.tofloat(str(self.ui.kCEdit.text()))
         #C{s} block is readOnly
+
+        ##Feedback needs to know whether the system is state space or not
+        system_type = str(self.ui.sysTypeBox.currentText())
+
+    def readPLACE(self):
         closed_loop_zeros = self.toarray(str(self.ui.zGCLEdit.text()))
         closed_loop_poles = self.toarray(str(self.ui.pGCLEdit.text()))
         #GCL{s} block is readOnly
+
+    def readLOCUS(self):
         k0 = self.tofloat(str(self.ui.k0Edit.text()))
         kf = self.tofloat(str(self.ui.kfEdit.text()))
         kn = self.tofloat(str(self.ui.knEdit.text()))
+        
+    def readALL(self):
+        ##There are CREATE, SIMULATE, IMPORT, FEEDBACK, PLACE, LOCUS
+        ##and EXPORT buttons. Each button press will need to read only
+        ##a subset of the fields so we need subread functions for
+        ##every button press.
+
+        #CREATE fields
+        self.readCREATE()
+
+        #SIMULATE Fields
+        self.readSIMULATE()
+
+        #IMPORT is a separate functionality
+
+        #FEEDBACK
+        self.readFEEDBACK()
+
+        #PLACE
+        self.readPLACE()
+
+        #LOCUS
+        self.readLOCUS()
+
+        #EXPORT will just read everything which is essentially just
+        #this routine
 
     def tostring(self,input):
         if self.verbose:
