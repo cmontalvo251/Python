@@ -11,7 +11,6 @@ import controlsystemdynamics as ctldyn
 ##########################TASKS###############################################
 
 #The following tasks are necessary to make the software function properly
-#1.) read() function to read all of the lineEdits from the different modules.
 #2.) read() function will require subread() functions where only
 #certain lineEdits are read depending on button presses
 #3.) Connect button presses to functions. Each button press will call
@@ -33,8 +32,9 @@ import controlsystemdynamics as ctldyn
 
 class MainWindow(QtGui.QMainWindow):
     '''Main window class responsible for managing user interface'''
-    def __init__(self,parent=None):
+    def __init__(self,v=True,parent=None):
         QtGui.QMainWindow.__init__(self, parent)
+        self.verbose = v
         self.ui = Ui_GUI()
         self.ui.setupUi(self)
 
@@ -48,7 +48,8 @@ class MainWindow(QtGui.QMainWindow):
         self.populate()
 
         ##Then read for debugging
-        self.read()
+        if self.verbose:
+            self.read()
         
         ##Then plot right away
         if not self.system.verbose:
@@ -58,7 +59,7 @@ class MainWindow(QtGui.QMainWindow):
         #Create the default system
         num = np.asarray([2])
         den = np.asarray([1,2,2])
-        self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=False)
+        self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=self.verbose)
         #print(self.system.sysTF)
         
         ##From here we need to integrate the open loop system
@@ -70,16 +71,36 @@ class MainWindow(QtGui.QMainWindow):
         self.system.rltools(1,10,10,5,[],[]) #K0,KF,KN,KSTAR,zeros,poles
 
     def read(self):
+        system_type = str(self.ui.sysTypeBox.currentText())
         plant_zeros = self.toarray(str(self.ui.zGEdit.text()))
         plant_poles = self.toarray(str(self.ui.pGEdit.text()))
-        plant_gain = self.toarray(str(self.ui.kGEdit.text()))
+        plant_gain = self.tofloat(str(self.ui.kGEdit.text()))
         plant_num = self.toarray(str(self.ui.numGEdit.text()))
         plant_den = self.toarray(str(self.ui.denGEdit.text()))
         A = self.toarray(str(self.ui.ssAEdit.toPlainText()))
-        sys.exit()
+        B = self.toarray(str(self.ui.ssBEdit.text()))
+        C = self.toarray(str(self.ui.ssCEdit.text()))
+        D = self.toarray(str(self.ui.ssDEdit.text()))
+        #G{s} block is readOnly
+        t0 = self.tofloat(str(self.ui.t0Edit.text()))
+        tf = self.tofloat(str(self.ui.tfEdit.text()))
+        tn = self.tofloat(str(self.ui.tnEdit.text()))
+        input_type = str(self.ui.inputBox.currentText())
+        K = self.toarray(str(self.ui.ssKEdit.text()))
+        controller_zeros = self.toarray(str(self.ui.zCEdit.text()))
+        controller_poles = self.toarray(str(self.ui.pCEdit.text()))
+        controller_gain = self.tofloat(str(self.ui.kCEdit.text()))
+        #C{s} block is readOnly
+        closed_loop_zeros = self.toarray(str(self.ui.zGCLEdit.text()))
+        closed_loop_poles = self.toarray(str(self.ui.pGCLEdit.text()))
+        #GCL{s} block is readOnly
+        k0 = self.tofloat(str(self.ui.k0Edit.text()))
+        kf = self.tofloat(str(self.ui.kfEdit.text()))
+        kn = self.tofloat(str(self.ui.knEdit.text()))
 
     def tostring(self,input):
-        print('Numpy = ',input)
+        if self.verbose:
+            print('Numpy (input) = ',input)
         s = np.shape(input)
         if len(s) == 1:
             r = s[0]
@@ -101,20 +122,33 @@ class MainWindow(QtGui.QMainWindow):
             else:
                 output += str(input[ri])
         output+= ']'
-        print('String = ',output)
+        if self.verbose:
+            print('String (output) = ',output)
         return output
         
     def tostring1(self,input):
-        print('Numpy = ',input)
+        if self.verbose:
+            print('Numpy (input) = ',input)
         output = str(input)
-        print('String = ',output)
+        if self.verbose:
+            print('String (output) = ',output)
+        return output
+
+    def tofloat(self,input):
+        if self.verbose:
+            print('String (input) = ',input)
+        output = np.float(input)
+        if self.verbose:
+            print('Numpy (output) = ',output)
         return output
 
     def toarray(self,input):
-        print('String = ',input)
+        if self.verbose:
+            print('String (input) = ',input)
         input_ = input.replace(' ',',')
         output = np.asarray(ast.literal_eval(input_))
-        print('Numpy = ',output)
+        if self.verbose:
+            print('Numpy (output) = ',output)
         return output
         
     def populate(self):
@@ -171,7 +205,7 @@ if __name__ == "__main__":
 
     #start up GUI
     app = QtGui.QApplication(sys.argv)
-    main = MainWindow()
+    main = MainWindow(False) ##Set false so we supress the output
     main.show()
     main.raise_()
 
