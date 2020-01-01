@@ -12,7 +12,6 @@ import controlsystemdynamics as ctldyn
 
 #The following tasks are necessary to make the software function properly
 #6.) With a file generated get the import routine working
-#7.) Rename the program to LInear Systems Analysis (LISA)
 
 #None of the following ideas are necessary to say the least but it would be nice.
 #1.) I'd like to have the Frame widget on the left be tabbed so I can
