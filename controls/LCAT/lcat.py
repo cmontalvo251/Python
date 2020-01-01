@@ -11,10 +11,6 @@ import controlsystemdynamics as ctldyn
 ##########################TASKS###############################################
 
 #The following tasks are necessary to make the software function properly
-#4.) Create the export functionality to first generate all the plots
-#individually so you can save them in high res.
-#5.) Append to the export routine by exporting the textEdits to a text
-#file
 #6.) With a file generated get the import routine working
 #7.) Rename the program to LInear Systems Analysis (LISA)
 
@@ -108,6 +104,8 @@ class MainWindow(QtGui.QMainWindow):
         self.system.place(p)
         #Then populate
         self.populate()
+        #After you populate you need to run feedback again
+        self.FEEDBACK()
 
     def LOCUS(self):
         #First things first though we need to read all the control variables
@@ -120,12 +118,14 @@ class MainWindow(QtGui.QMainWindow):
         self.populate()
 
     def EXPORT(self):
-        print('Export Button')
+        ##Here we need to run all the read routines with the export
+        ##flag set
+        self.readALL(export=True)
                 
     def defaultSystem(self):
         #Create the default system
-        num = np.asarray([10])
-        den = np.asarray([1,2,10])
+        num = np.asarray([1])
+        den = np.asarray([1,1])
         self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=self.verbose)
         #print(self.system.sysTF)
         
@@ -135,7 +135,7 @@ class MainWindow(QtGui.QMainWindow):
         #Then create a default controller
         #This will also create a root locus and simulate the
         #closed loop system
-        self.system.rltools(0.1,3,100,2,[-5],[]) #K0,KF,KN,KSTAR,zeros,poles
+        self.system.rltools(0.1,3,100,1,[],[]) #K0,KF,KN,KSTAR,zeros,poles
 
     def readCREATE(self):
         system_type = str(self.ui.sysTypeBox.currentText())
@@ -182,31 +182,80 @@ class MainWindow(QtGui.QMainWindow):
         kn = self.tofloat(str(self.ui.knEdit.text()))
         return k0,kf,kn
         
-    def readALL(self):
+    def readALL(self,export=False):
         ##There are CREATE, SIMULATE, IMPORT, FEEDBACK, PLACE, LOCUS
         ##and EXPORT buttons. Each button press will need to read only
         ##a subset of the fields so we need subread functions for
         ##every button press.
 
         #CREATE fields
-        self.readCREATE()
+        systyp,zG,pG,kG,num,den,A,B,C,D = self.readCREATE()
 
         #SIMULATE Fields
-        self.readSIMULATE()
+        t0,tf,tn,intyp = self.readSIMULATE()
 
         #IMPORT is a separate functionality
 
         #FEEDBACK
-        self.readFEEDBACK()
+        K,zC,pC,kC,dummy = self.readFEEDBACK()
 
         #PLACE
-        self.readPLACE()
+        zGCL,pGCL = self.readPLACE()
 
         #LOCUS
-        self.readLOCUS()
+        k0,kf,kn = self.readLOCUS()
 
-        #EXPORT will just read everything which is essentially just
-        #this routine
+        #EXPORT will call this routine but also export everything to a file
+        if export:
+            file = open('LCAT_OUTPUT.txt','w')
+            file.write('----\n')
+            file.write(self.tostring1(systyp)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(zG)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(pG)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(kG)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(num)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(den)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(A)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(B)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(C)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(D)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(t0)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(tf)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(tn)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(intyp)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(K)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(zC)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(pC)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(kC)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(zGCL)+'\n')
+            file.write('----\n')
+            file.write(self.tostring(pGCL)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(k0)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(kf)+'\n')
+            file.write('----\n')
+            file.write(self.tostring1(kn)+'\n')
+            file.close()
+            self.plot(export=True)
 
     def tostring(self,input):
         if self.verbose:
@@ -292,26 +341,50 @@ class MainWindow(QtGui.QMainWindow):
         if not self.system.verbose:
             self.plot()
             
-    def plot(self):
-        #Discard old axis
-        self.ui.ax1.clear()
+    def plot(self,export=False):
         # plot open loop data
-        self.system.plotOpenLoop(self.ui.ax1)
+        if export:
+            plt.close("all")
+            axis1 = plt
+            plt.figure()
+        else:
+            #Discard old axis
+            self.ui.ax1.clear()
+            axis1 = self.ui.ax1
+        self.system.plotOpenLoop(axis1,export)
 
         # create second axis and clear it
-        self.ui.ax2.clear()
-        self.system.plotrootlocus(self.ui.ax2)
+        if export:
+            axis2 = plt
+            plt.figure()
+        else:
+            self.ui.ax2.clear()
+            axis2 = self.ui.ax2
+        self.system.plotrootlocus(axis2,export)
 
         # third axis
-        self.ui.ax3.clear()
-        self.system.plotClosedLoop(self.ui.ax3)        
+        if export:
+            axis3 = plt
+            plt.figure()
+        else:
+            self.ui.ax3.clear()
+            axis3 = self.ui.ax3
+        self.system.plotClosedLoop(axis3,export)        
 
         ##4th axis?? what to do here?
-        self.ui.ax4.clear()
-        self.system.plotBode(self.ui.ax4)
+        if export:
+            axis4 = plt
+            plt.figure()
+        else:
+            self.ui.ax4.clear()
+            axis4 = self.ui.ax4
+        self.system.plotBode(axis4,export)
         
         # refresh canvas
-        self.ui.canvas.draw()
+        if export:
+            plt.show()
+        else:
+            self.ui.canvas.draw()
 
     def closeEvent(self,event):
         print('put something here if you want something to run when the program quits')

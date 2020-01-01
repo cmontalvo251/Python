@@ -274,7 +274,7 @@ class makeSystem():
                 #self.xinitial[0] = -self.KSTAR/self.C[0][-1]
             else:
                 xcommand[0] = -1.0/self.C[0][0]
-                self.xinitial[-1] = self.KSTAR
+                #self.xinitial[-1] = self.KSTAR
 
         # if len(ic) > 0:
         #     self.xinitial = ic
@@ -301,18 +301,20 @@ class makeSystem():
         if self.verbose:
             self.plotClosedLoop(plt)
 
-    def plotBode(self,axishandle):
+    def plotBode(self,axishandle,export=False):
         axishandle.loglog(self.omega,self.mag)
         axishandle.grid()
-        if self.verbose:
+        if self.verbose or export:
             axishandle.xlabel('Frequency (Hz)')
             axishandle.ylabel('Magnitude (dB)')
             axishandle.title('Gain Plot')
-            axishandle.show()
         else:
             axishandle.set_title('Gain Plot')
             axishandle.set_xlabel('Frequency (Hz)')
             axishandle.set_ylabel('Magnitude (dB)')
+
+        if self.verbose or export:
+            axishandle.show()
             
     def Cx(self,xout):
         [r,c] = np.shape(xout)
@@ -361,7 +363,7 @@ class makeSystem():
         if self.verbose:
             self.plotOpenLoop(plt)
 
-    def plotOpenLoop(self,axishandle):
+    def plotOpenLoop(self,axishandle,export=False):
         #Let's plot it
         if self.verbose:
             axishandle.figure()
@@ -369,7 +371,7 @@ class makeSystem():
             axishandle.plot(self.tout,self.yopen,'b-',label='State Space')
         if self.tfsim == True:
             axishandle.plot(self.tout,self.xoutTFopen,'r-',label='Transfer Function')
-        if self.verbose == False:
+        if self.verbose == False and export == False:
             axishandle.set_xlabel('Time (sec)')
             axishandle.set_ylabel('Y')
             axishandle.set_title('Open Loop')
@@ -382,18 +384,18 @@ class makeSystem():
         if self.verbose:
             axishandle.show()
 
-    def plotClosedLoop(self,axishandle):
+    def plotClosedLoop(self,axishandle,export=False):
         self.plot = 0
         if self.verbose:
             axishandle.figure()
-        if self.ssint == True:
+        if self.ssint == True and self.statespace:
             self.plot = 1
             axishandle.plot(self.tout,self.ySS,'b-',label='State Space')
             #axishandle.plot(tout,self.yNOICs,'g-',label='State Space (x0=0)')
         if self.tfsim == True:
             self.plot = 1
             axishandle.plot(self.tout,self.xoutTF,'r-',label='Transfer Function')
-        if self.verbose:
+        if self.verbose or export == True:
             axishandle.xlabel('Time (sec)')
             axishandle.ylabel('Y')
             axishandle.title('Closed Loop')
@@ -451,6 +453,7 @@ class makeSystem():
             print('C_tf=',self.sysC)
 
     def closedloopStateSpace(self):
+        self.K = np.zeros((1,self.N))
         if len(self.DC) == 1:
             if len(self.NC) > self.N:
                 print('Cannot create a closed loop system in state space')
@@ -458,7 +461,6 @@ class makeSystem():
                 print('Number of States = ',self.N)
                 self.statespace = False
             else:
-                self.K = np.zeros((1,self.N))
                 #It's possible the state space matrices are inverted
                 if self.verbose:
                     print('Numerator = ',self.NC)
@@ -486,7 +488,7 @@ class makeSystem():
                 print('Denominator of Compensator = ',self.DC)
             self.statespace = False
 
-    def plotrootlocus(self,axishandle):
+    def plotrootlocus(self,axishandle,export=False):
         if self.verbose:
             axishandle.figure()
 
@@ -508,7 +510,7 @@ class makeSystem():
         #Plot real and imaginary axes
         axishandle.plot([self.xmin,self.xmax],[0,0],'k-')
         axishandle.plot([0,0],[self.ymin,self.ymax],'k-')
-        if self.verbose:
+        if self.verbose or export:
             #Set Range
             axishandle.xlim([self.xmin,self.xmax])
             axishandle.ylim([self.ymin,self.ymax])
@@ -617,8 +619,8 @@ class makeSystem():
 
         #Since we have a closed loop system let's simulate the closed loop system
         #in this case let's dynamically determine how long to simulate
-        if self.verbose:
-            self.tend = self.howlong(self.closedloop_poles)
+        #if self.verbose:
+        #    self.tend = self.howlong(self.closedloop_poles)
         if self.tstart not in locals():
             self.tstart = 0
         self.integrateClosedLoop(self.tstart,self.tend,ic=self.xinitial)
