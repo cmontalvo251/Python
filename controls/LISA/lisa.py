@@ -207,7 +207,7 @@ class MainWindow(QtGui.QMainWindow):
 
         #EXPORT will call this routine but also export everything to a file
         if export:
-            file = open('LCAT_OUTPUT.txt','w')
+            file = open('LISA_OUTPUT.txt','w')
             file.write('----\n')
             file.write(self.tostring1(systyp)+'\n')
             file.write('----\n')

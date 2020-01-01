@@ -377,7 +377,7 @@ class Ui_GUI(object):
     def retranslateUi(self, GUI):
 
         ##THIS IS WHERE WE NAME EVERYTHING and add things to the combo boxes
-        GUI.setWindowTitle(_translate("GUI", "Linear Controls Analysis Tool (LCAT)", None))
+        GUI.setWindowTitle(_translate("GUI", "LInear Systems Analysis (LISA)", None))
         self.label_5.setText(_translate("GUI", "C", None))
         self.label_25.setText(_translate("GUI", "C{s}", None))
         self.label_17.setText(_translate("GUI", "Control Design", None))
@@ -421,5 +421,5 @@ class Ui_GUI(object):
         self.label_12.setText(_translate("GUI", "KN", None))
         self.label_16.setText(_translate("GUI", "TN", None))
         self.label_29.setText(_translate("GUI", "Closed Loop", None))
-        self.menu.setTitle(_translate("GUI", "Linear Controls Analysis Tool (LCAT)", None))
+        self.menu.setTitle(_translate("GUI", "LInear Systems Analysis (LISA)", None))
 
