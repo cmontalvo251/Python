@@ -30,6 +30,9 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.QObject.connect(self.ui.pushButton,QtCore.SIGNAL('clicked()'),self.IMPORT)
 
     def IMPORT(self):
+        ###NEED TO LOOK FOR A SSC FILE
+        ###YOU NEED TO LOG INTO SSC AND COPY AND PASTE THEIR TRANSCRIPT INTO
+        ###A TEXT FILE
         value = str(QtGui.QFileDialog.getOpenFileNameAndFilter(caption='Select Desired Transcript for import',filter='txt (*.txt)')[0]).rstrip()
         #Read in the students courses
         self.student = Catalog('Student',value,' ')
