@@ -81,7 +81,7 @@ L = 1.0 #length of pendulum, m
 
 #INITIAL CONDITIONS
 x_init = 0.0 #cart position, m
-theta_init = -np.pi/4 #pendulum angle, rad
+theta_init = -60*np.pi/180.0 #pendulum angle, rad
 xdot_init = 0.0 #cart velocity, m/s
 thetadot_init = 0.0 #pendulum angular rate, rad/s
 state_init = np.asarray([x_init,theta_init,xdot_init,thetadot_init])
@@ -131,20 +131,20 @@ thetadotL_out = stateL_out[:,3]
 #x
 plt.figure()
 plt.plot(tspan,x_out,label='Non-Linear')
-#plt.plot(tspan,xL_out,label='Linear')
+plt.plot(tspan,xL_out,label='Linear')
 plt.xlabel('Time (sec)')
 plt.ylabel('X (m)')
 plt.grid()
-#plt.legend()
+plt.legend()
 
 #THETA
 plt.figure()
 plt.plot(tspan,theta_out*180/np.pi,label='Non-Linear')
-#plt.plot(tspan,thetaL_out,label='Linear')
+plt.plot(tspan,thetaL_out*180/np.pi,label='Linear')
 plt.xlabel('Time (sec)')
 plt.ylabel('Theta (deg)')
 plt.grid()
-#plt.legend()
+plt.legend()
 """
 #XDOT
 plt.figure()

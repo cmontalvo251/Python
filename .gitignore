@@ -1,3 +1,5 @@
+South/*.txt
+*.ods
 python_games
 apps
 test_scripts
