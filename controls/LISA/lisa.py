@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ast
 import controlsystemdynamics as ctldyn
+import time
 
 ##########################TASKS###############################################
 
@@ -58,6 +59,8 @@ class MainWindow(QtGui.QMainWindow):
         self.readALL()
 
     def CREATE(self):
+        print('Time = ',time.time())
+        print('CREATE BUTTON')
         #The create button must first readCREATE
         typ,z,p,k,num,den,A,B,C,D = self.readCREATE()
         #Then depending on the system type it will create a new system
@@ -75,6 +78,8 @@ class MainWindow(QtGui.QMainWindow):
         self.populate()
             
     def SIMULATE(self,oc=[1,1]):
+        print('Time = ',time.time())
+        print('SIMULATE BUTTON')
         ##The simulate button must first readSIMULATE
         t0,tf,tn,typ = self.readSIMULATE()
         #Then we need to simulate the open and closed loop systems
@@ -86,9 +91,12 @@ class MainWindow(QtGui.QMainWindow):
             self.populate()
 
     def IMPORT(self):
-        print('Import Button')
+        print('Time = ',time.time())
+        print('IMPORT BUTTON')
 
     def FEEDBACK(self):
+        print('Time = ',time.time())
+        print('FEEDBACK BUTTON')
         #The feedback button is the locus button but the
         #user does not need to know that
         #Then again perhaps we could get rid of this button
@@ -96,6 +104,8 @@ class MainWindow(QtGui.QMainWindow):
         self.LOCUS()
         
     def PLACE(self):
+        print('Time = ',time.time())
+        print('PLACE BUTTON')
         #The place button will read the desired closed loop poles and
         #zeros and compute the controller required to do so
         #first we need to read the poles and zeros
@@ -107,6 +117,8 @@ class MainWindow(QtGui.QMainWindow):
         self.FEEDBACK()
 
     def LOCUS(self):
+        print('Time = ',time.time())
+        print('LOCUS BUTTON')
         #First things first though we need to read all the control variables
         ssK,z,p,k,typ = self.readFEEDBACK()
         #Then we need to read all the locus variables
@@ -117,6 +129,8 @@ class MainWindow(QtGui.QMainWindow):
         self.populate()
 
     def EXPORT(self):
+        print('Time = ',time.time())
+        print('EXPORT BUTTON')
         ##Here we need to run all the read routines with the export
         ##flag set
         self.readALL(export=True)
@@ -124,7 +138,7 @@ class MainWindow(QtGui.QMainWindow):
     def defaultSystem(self):
         #Create the default system
         num = np.asarray([1])
-        den = np.asarray([1,1])
+        den = np.asarray([1,0,4])
         self.system = ctldyn.makeSystem(num,den,systype='TF',verbose=self.verbose)
         #print(self.system.sysTF)
         

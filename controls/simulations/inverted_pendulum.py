@@ -10,8 +10,8 @@ m = 5.0
 K = 10.0
 b = 10.0
 c = 0.0
-theta0 = 50*np.pi/180.
-thetac = 0*30*np.pi/180.
+theta0 = 0*np.pi/180.
+thetac = 180*np.pi/180.
 
 def controller(x):
     thetacdot = 0.0
