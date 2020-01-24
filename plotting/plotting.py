@@ -27,8 +27,11 @@ import matplotlib.patches as patch
 # done
 # export PYTHONPATH
 
-def plot_margins(sys):
-    mag,phase,omega = ctl.bode(sys,dB=True,Plot=False)
+def plot_margins(sys,omegaIN=None):
+    if omegaIN is not None:
+        mag,phase,omega = ctl.bode(sys,omega=omegaIN,dB=True,Plot=False)
+    else:
+        mag,phase,omega = ctl.bode(sys,dB=True,Plot=False)
     magdB = 20*np.log10(mag)
     phase_deg = phase*180.0/np.pi
     Gm,Pm,Wcg,Wcp = ctl.margin(sys)
@@ -48,15 +51,23 @@ def plot_margins(sys):
     ax1.plot(omega,0*omega,'k--',lineWidth=2)
     ###Plot the -180 deg lin
     ax2.plot(omega,-180+0*omega,'k--',lineWidth=2)
-    ##Plot the vertical line from -180 to 0 at Wcg
-    ax2.plot([Wcg,Wcg],[-180,0],'r--',lineWidth=2)
-    ##Plot the vertical line from -180+Pm to 0 at Wcp
-    ax2.plot([Wcp,Wcp],[-180+Pm,0],'g--',lineWidth=2)
+    #Does the plot cross positive 180?
+    if np.any(phase_deg > 180):
+        ax2.plot(omega,180+0*omega,'k--',lineWidth=2)
+        ##Plot the vertical line from -180 to 0 at Wcg
+        ax2.plot([Wcg,Wcg],[-180,180],'r--',lineWidth=2)
+        ##Plot the vertical line from -180+Pm to 0 at Wcp
+        ax2.plot([Wcp,Wcp],[-180+Pm,180-Pm],'g--',lineWidth=2)
+    else:
+        ##Plot the vertical line from -180 to 0 at Wcg
+        ax2.plot([Wcg,Wcg],[-180,0],'r--',lineWidth=2)
+        ##Plot the vertical line from -180+Pm to 0 at Wcp
+        ax2.plot([Wcp,Wcp],[-180+Pm,0],'g--',lineWidth=2)
     ##Plot the vertical line from min(magdB) to 0-GmdB at Wcg
     ax1.plot([Wcg,Wcg],[np.min(magdB),0-GmdB],'r--',lineWidth=2)
     ##Plot the vertical line from min(magdB) to 0db at Wcp
     ax1.plot([Wcp,Wcp],[np.min(magdB),0],'g--',lineWidth=2)
-    return Gm,Pm,Wcg,Wcp
+    return Gm,Pm,Wcg,Wcp,phase_deg,omega
 
 def xlim_auto(x0,xf,x,y):
     plt.xlim([x0,xf])

@@ -38,7 +38,7 @@ def plot_margins(sys):
 #%%%Actuator Dynamics
 A = ctl.tf([3],[1,3])
 wn = 20.0
-G = ctl.tf([wn**2],[1,2,wn**2])*A
+G = ctl.tf([5*wn**2],[1,2,wn**2])*A
 #G = ctl.tf([1],[1,2,1,0])
 Gm,Pm,Wcg,Wcp=plot_margins(G)
 #%%%The Margins are
