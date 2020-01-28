@@ -35,6 +35,8 @@ def plot_margins(sys,omegaIN=None):
     magdB = 20*np.log10(mag)
     phase_deg = phase*180.0/np.pi
     Gm,Pm,Wcg,Wcp = ctl.margin(sys)
+    print('Gain Margin = ',Gm,' at frequency = ',Wcg)
+    print('Phase Margin = ',Pm,' at frequency = ',Wcp)
     GmdB = 20*np.log10(Gm)
     ##Plot Gain and Phase
     f,(ax1,ax2) = plt.subplots(2,1)

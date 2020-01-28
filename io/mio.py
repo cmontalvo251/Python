@@ -17,7 +17,19 @@ import numpy as np
 # export PYTHONPATH
 
 # For Thonny make symbolic links here
-# ~/.thonny/BundledPython36/lib/python3.6/site-packages$ 
+# ~/.thonny/BundledPython36/lib/python3.6/site-packages$
+
+def loadtxt(filename):
+    try:
+        file_ID = open(filename)
+    except:
+        print(filename,"Does Not Exist")
+        return None;
+    file_ID.close()
+    print("Successfully Opened File = ",filename)
+    data_np = np.loadtxt(filename)
+    print('(Rows,Cols) = ',np.shape(data_np))
+    return data_np
 
 def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=0):
 
