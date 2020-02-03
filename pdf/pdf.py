@@ -55,7 +55,8 @@ class PDF():
             print('Plots Saved')
 
             #AND THEN USE EVINCE TO OPEN PDF if on linux
-            if sys.platform == 'linux2':
+            if sys.platform == 'linux2' or sys.platform == 'linux':
+                print('Opening Plots')
                 os.system('evince plots.pdf &')
 
     def savefig(self,*extra):

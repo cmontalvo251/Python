@@ -129,11 +129,11 @@ def fft(f,t,nmax,iplot,pp=None):
     L = t[-1]
     d = (1.0/L)*Reimmann(f,t)
     for i in range(0,len(iters)):
-        print 'FFT frequency = ' + str(i) + ' out of ' + str(len(iters))
+        print('FFT frequency = ' + str(i) + ' out of ' + str(len(iters)))
         n = iters[i]
         #Frequency
         w = 2.0*n*np.pi/L
-        print 'Frequency (Hz) = ' + str(i/L)
+        print('Frequency (Hz) = ' + str(i/L))
         data_a = np.cos(w*tfft)
         data_b = np.sin(w*tfft)
         #Reimann Sum
