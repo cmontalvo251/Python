@@ -19,7 +19,7 @@ tout = np.linspace(0,10,10000)
 # X = 15 / ((s^2+9) * (s^2 + 6s + 8) )
 N,D = S.zpk2tf([],[-2,-4,-3j,3j],15)
 sys = ctl.tf(N,D)
-print sys
+print(sys)
 tout,yout = ctl.impulse_response(sys,tout)
 plt.plot(tout,yout,'g-',label='Control Toolbox')
 

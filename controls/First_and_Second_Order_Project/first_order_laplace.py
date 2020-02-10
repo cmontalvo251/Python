@@ -119,14 +119,14 @@ plt.plot(xdata-5,ydata,'b*',label='Experimental Data')
 
 ###Zeros poles and gains
 # X = k / (s + c)
-c = 0.5
-k = 0.02
-N = [120*k]
+c = 1./3
+k = 5.1*c
+N = [k]
 D = [1,c]
-sys = ctl.tf(N,D)
-print sys
+G = ctl.tf(N,D)
+print(G)
 tout = np.linspace(0,10,1000)
-tout,yout = ctl.step_response(sys,tout)
+tout,yout = ctl.step_response(G,tout)
 plt.plot(tout,yout,'g--',label='Simulation')
 plt.xlabel('Time (sec)')
 plt.ylabel('Measured Windspeed (m/s)')
