@@ -47,16 +47,17 @@ wn = 2*np.pi/period
 
 chat = 2*zeta*wn
 khat = wn**2
-sys = ctl.tf([360,0+chat*360],[1,chat,khat])
+sys = ctl.tf([360*wn**2],[1,chat,khat])
+print(sys)
 
 tout = np.linspace(0,2,1000)
 
-[tout,yout] = ctl.impulse_response(sys,tout)
+[tout,yout] = ctl.step_response(sys,tout)
 
-plt.plot(time,Tether44in,'bs',label='Experimental Data')
+plt.plot(time,-(Tether44in-360),'bs',label='Experimental Data')
 plt.plot(tout,yout,'r--',label='Simulation')
 
-    
+plt.grid()
     
 plt.show()
     
