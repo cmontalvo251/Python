@@ -16,7 +16,7 @@ ki = 10.
 
 sys = ctl.tf([3*kd,3*kp,3*ki],[1,(4+3*kd),(4+3*kp),3*ki])
 
-print sys
+print(sys)
 
 tout = np.linspace(0,4,1000)
 aflacommand = tout*0 + 1
@@ -29,4 +29,4 @@ plt.show()
 
 alfass = 3*kp/(4+3*kp)
 ess = 1.- alfass
-print alfass,ess
+print(alfass,ess)
