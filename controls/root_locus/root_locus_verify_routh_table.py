@@ -6,7 +6,7 @@ import scipy.signal as S
 import scipy.linalg as slin
 
 ##This makes a vector of K values from 0 to 10 with 1000 data points
-K = np.linspace(0,10,1000)
+K = np.linspace(0,10,100)
 
 ##This drops a figure down
 plt.figure()
@@ -21,7 +21,8 @@ for Ki in K:
     
     ###This plots the real and imaginary components on the s-plane
     plt.plot(np.real(s),np.imag(s),'b*')
-    #plt.pause(0.1)
+    plt.pause(0.0001)
+    #this is me typing randomly so we see how the audio shakes out.
     
     
 plt.show()
