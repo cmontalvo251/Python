@@ -35,7 +35,7 @@ deltaP_atm = deltaP_kPa/101.325
 ##There are two
 ## V1 = 2*dP_Pa/density
 density = 1.225 #kg/m^3
-V1 = 2*deltaP_Pa/density
+V1 = np.sqrt(2*deltaP_Pa/density)
 
 ##The incompressibility equation
 a0 = 331.0 #speed of sound at sea-level
