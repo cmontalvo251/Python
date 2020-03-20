@@ -10,8 +10,7 @@ ro = 15.
 wo = -3.
 
 ##Transfer Functions
-Hr = 3.
-Hy = 4.
+Hy = a/A
 G = ctl.tf([A],[1,a])
 print(G)
 D = ctl.tf([B],[1,a])
@@ -21,11 +20,11 @@ print(D)
 Hr = Hy
 
 ##Design my controller
-kp = a/(A*Hr)
+kp = 100
 print('kp=',kp)
-C = kp*100
+C = kp
 
-GOL = Hr*C*G
+GOL = Hr*1*G ##let kp = 1 so we can compare apples to apples
 print(GOL)
 
 tout = np.linspace(0,10,1000)
@@ -43,11 +42,11 @@ xout *= ro
 yout = wdout + xout
 
 ##Close the loop without a disturbance
-GCL = C*G/(1+C*G*Hy)
+GDEN = 1/(1+C*G*Hy)
 
-tout,xoutCL = ctl.step_response(Hr*GCL,tout)
+tout,xoutCL = ctl.step_response(Hr*C*G*GDEN,tout)
 
-tout,wdoutCL = ctl.step_response(D*GCL,tout)
+tout,wdoutCL = ctl.step_response(D*GDEN,tout)
 
 #scale the output
 wdoutCL *= wo
@@ -60,8 +59,8 @@ youtCL = xoutCL + wdoutCL
 plt.figure()
 plt.plot(tout,xoutCL,label='Closed Loop No Disturbance')
 plt.plot(tout,youtCL,label='Closed Loop with Disturbance')
-#plt.plot(tout,xout,label='Open Loop No Disturbance')
-#plt.plot(tout,yout,label='Open Loop With Disturbance')
+plt.plot(tout,xout,label='Open Loop No Disturbance')
+plt.plot(tout,yout,label='Open Loop With Disturbance')
 plt.grid()
 plt.legend()
 plt.xlabel('Time (sec')
