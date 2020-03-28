@@ -1,0 +1,14 @@
+naca 0012
+ppar
+N 200
+
+
+psav Save_Airfoil.txt
+
+oper
+visc 1000000
+Mach 0.2
+alfa 20.0
+cpwr Save_Cp.txt
+
+quit 
