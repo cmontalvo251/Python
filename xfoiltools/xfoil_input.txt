@@ -1,14 +1,14 @@
 naca 0012
 ppar
-N 200
+N 150
 
 
-psav Save_Airfoil.txt
+psav Airfoil15.0.txt
 
 oper
 visc 1000000
 Mach 0.2
-alfa 20.0
-cpwr Save_Cp.txt
+alfa 15.0
+cpwr Cp15.0.txt
 
 quit 
