@@ -11,42 +11,57 @@ from xfoiltools import computeclcd
 os.system('rm plots.pdf')
 pdfhandle = PdfPages('plots.pdf')
 
-aoa_vec = np.linspace(-15,15,10)
+aoa_vec = np.linspace(-15,15,30)
 cl_vec = 0*aoa_vec
 cd_vec = 0*aoa_vec
 
 ##############PARAMETERS###########
-NACA       = '0012'
-numNodes   = '150'
-Re         = '1000000'
-Mach       = '0.2'
-saveFlnmAFp = 'Airfoil'
 saveFlnmCpp = 'Cp'
 xfoilFlnm  = 'xfoil_input.txt'
+
+AIRFOIL    = 1 ##if airfoil is set to 1 the code will look for a file called saveFlnmAFp + '.txt'
+#if AIRFOIL is set to 0 the code will create a NACA airfoil defined below
+NACA       = '0012'
+numNodes   = '150'
+saveFlnmAFp = 'Airfoil'
+
+VISCOUS    = 0
+Re         = '1000000'
+Mach       = '0.2'
 
 for actr in range(0,len(aoa_vec)):
 
     AoA = str(aoa_vec[actr])
 
-    saveFlnmAF = saveFlnmAFp + AoA + '.txt'
     saveFlnmCp = saveFlnmCpp + AoA + '.txt'
 
+    if AIRFOIL:
+        saveFlnmAF = saveFlnmAFp + '.txt'
+    else:
+        saveFlnmAF = saveFlnmAFp + AoA + '.txt'
+        #Remove file if it exists
+        if os.path.exists(saveFlnmAF):
+            os.remove(saveFlnmAF)
+    
     # Delete files if they exist
-    if os.path.exists(saveFlnmAF):
-        os.remove(saveFlnmAF)
     if os.path.exists(saveFlnmCp):
         os.remove(saveFlnmCp)
     
     # Write all parameters to xfoil input file name
     fid = open(xfoilFlnm,"w")
-    fid.write("naca " + NACA + "\n")
-    fid.write("ppar\n")
-    fid.write("N " + numNodes + "\n")
-    fid.write("\n\n")
-    fid.write("psav " + saveFlnmAF + "\n\n")
+    if AIRFOIL:
+        fid.write("load " + saveFlnmAF + "\n")
+        fid.write(saveFlnmAF + "\n")
+    else:
+        fid.write("naca " + NACA + "\n")
+        fid.write("ppar\n")
+        fid.write("N " + numNodes + "\n")
+        fid.write("\n\n")
+        fid.write("psav " + saveFlnmAF + "\n\n")
     fid.write("oper\n")
-    fid.write("visc " + Re + "\n") #Turn this on if you want viscous effects
-    fid.write("Mach " + Mach + "\n") #Turn this on if you want viscous effects
+    if VISCOUS:
+        fid.write("visc " + Re + "\n") #Turn this on if you want viscous effects
+        fid.write("Mach " + Mach + "\n") #Turn this on if you want viscous effects
     fid.write("alfa " + AoA + "\n")
     fid.write("cpwr " + saveFlnmCp + "\n\n")
     fid.write("quit \n")
