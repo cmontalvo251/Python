@@ -1,0 +1,28 @@
+import control as ctl
+import matplotlib.pyplot as plt
+import numpy as np
+m = 1000
+c = 50
+
+G = ctl.tf([1],[m,c,0])
+print(G)
+
+tout = np.linspace(0,1000,10000)
+
+
+
+ki = 1.
+kd = 5.0
+kp = 2*(ki/50.+kd)
+C = ctl.tf([kd,kp,ki],[1,0])
+
+GCL = ctl.minreal((C*G)/(1+C*G))
+print(GCL)
+
+tout,yout_closed_loop = ctl.step_response(GCL,tout)
+
+plt.figure()
+plt.plot(tout,yout_closed_loop)
+
+plt.show()
+
