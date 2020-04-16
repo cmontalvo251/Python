@@ -73,6 +73,17 @@ def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=0):
         print('(Rows,Cols) = ',np.shape(data_np))
         return data_np
 
+def dlmwrite(outfilename,outarray):
+    #Output Contents to File
+    [r,c] = np.shape(outarray)
+    outfile = open(outfilename,'w')
+    for x in range(0,r):
+        out = outarray[x,:]
+        list = out.tolist()
+        s = " ".join(map(str,list))
+        outfile.write(s+'\n')
+    outfile.close()
+    
 # Copyright - Carlos Montalvo 2017
 # You may freely distribute this file but please keep my name in here
 # as the original owner
