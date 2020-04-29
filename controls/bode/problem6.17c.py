@@ -3,14 +3,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 G1 = ctl.tf([1],[1,2])
-wn = 3
+g = 9.81
+L = 2
+wn = np.sqrt(g/L)
 zed = 0.001
-G2 = ctl.tf([1],[1,2*zed*wn,wn**2])
+G2 = ctl.tf([1,5],[1,2*zed*wn,wn**2])
 print(G1)
 print(G2)
 
 GOL = G1*G2
-w = np.linspace(1,10,1000)
+w = np.linspace(1,100,1000)
 ctl.bode(G1,dB=True,label='G1',omega=w)
 ctl.bode(G2,dB=True,label='G2',omega=w)
 ctl.bode(GOL,dB=True,label='G3',omega=w)
