@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import sounddevice as sd
 import time
 import mymath as MYM
+import mio as myIO
 
 if len(sys.argv) == 1:
     print('Need length of time to record')
@@ -44,6 +45,8 @@ print('Recording Finished')
 time_long = np.linspace(0,duration,len(audio_long))
 audio = audio_long[time_long>0.5]
 time = np.linspace(0,duration-0.5,len(audio))
+outarray = np.vstack((time,audio))
+myIO.dlmwrite('Audio.txt',outarray)
 
 ###Plot stream
 plt.plot(time,audio)

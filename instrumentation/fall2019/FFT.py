@@ -9,7 +9,7 @@ f = 2*np.sin(2*np.pi*10*t) + np.sin(2*np.pi*15*t)
 ###Sampling Period
 ###Nyquist Frequency
 ###
-fs = 31.
+fs = 100.
 Ts = 1.0/fs
 
 ts = np.arange(0.,1.,Ts)

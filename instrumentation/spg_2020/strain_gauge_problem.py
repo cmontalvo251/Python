@@ -26,8 +26,10 @@ R2 = 100.
 R3i = 100.
 R4 = 100.
 Vs = 5.
-Vo = strain*Vs*R2*R3i/(R2+R3i)**2
-print(Vo)
+print('Vs = ',Vs)
+print('Strain = ',strain)
+Vo = strain*Vs*S*R2*R3i/(R2+R3i)**2
+print('Vo=',Vo)
 
 resolution = (5-0)/2**16
 

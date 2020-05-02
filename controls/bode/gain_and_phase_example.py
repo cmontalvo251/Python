@@ -2,11 +2,13 @@ import control as ctl
 import matplotlib.pyplot as plt
 import numpy as np
 
-sig = 100
+sig = 10
 
 G1 = ctl.tf([sig],[1,sig])
 G2 = G1
-G3 = G1
+#K(s+a)
+C = ctl.tf([1,3],[1])
+
 #print(G1)
 #print(G2)
 #print(G3)
@@ -14,11 +16,11 @@ G3 = G1
 #wc = 1000
 #G4 = ctl.tf([wc],[1,wc])
 
-GOL = G1*G2*G3
+GOL = C*G1*G2
 
 ctl.bode(G1,dB=True,label='G1')
 ctl.bode(G2,dB=True,label='G2')
-ctl.bode(G3,dB=True,label='G3')
+ctl.bode(C,dB=True,label='C')
 ctl.bode(GOL,dB=True)
 plt.legend()
 gm,pm,wg,wp = ctl.margin(GOL)
@@ -36,7 +38,7 @@ for k in np.linspace(0.1,10,100):
     s = ctl.pole(k*GOL/(1+k*GOL))
     plt.plot(np.real(s),np.imag(s),'b*')
 plt.grid()
-k = 9
+k = 7.5
 s = ctl.pole(k*GOL/(1+k*GOL))
 plt.plot(np.real(s),np.imag(s),'r*')
 
@@ -46,4 +48,7 @@ tout,yout = ctl.step_response(GCL,tout)
 plt.figure()
 plt.plot(tout,yout)
 plt.grid()
+
+ctl.rlocus(GOL)
+
 plt.show()
