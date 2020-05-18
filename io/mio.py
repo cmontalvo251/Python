@@ -31,7 +31,7 @@ def loadtxt(filename):
     print('(Rows,Cols) = ',np.shape(data_np))
     return data_np
 
-def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=0):
+def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=False):
 
     try:
         file_ID = open(filename)
@@ -39,6 +39,24 @@ def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=0):
         if suppressWarnings == False:
             print(filename,"Does Not Exist")
         return None;
+
+    maxlength = 0
+    if variableLength == True:
+        #We need to loop through the file and figure out the maximum number of columns
+        for line in file_ID:
+            row = line.split(delimiter)
+            #Remove the line endings
+            try:
+                row.remove('\n')
+            except:
+                pass
+            if len(row) > maxlength:
+                maxlength = len(row)
+        #//Close the file and then
+        file_ID.close()
+        #re open it 
+        file_ID = open(filename)
+        print('Max Width of File = ' + str(maxlength))
     
     if 1: ##Wha? Why is this here? ***facepalm***
         print("Successfully Opened File = ",filename)
@@ -62,8 +80,8 @@ def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=0):
             #     print 'row =',row
             #     print 'row_np=',row_np,len(row_np)
             if len(row_np) > 0:
-                if (variableLength != 0):
-                        while len(row_np) != variableLength:
+                if (variableLength == True):
+                        while len(row_np) < maxlength:
                             #Pad vector with zeros
                             row_np.append(0)
                 #print row_np,len(row_np)
