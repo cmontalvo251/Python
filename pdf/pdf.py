@@ -52,12 +52,15 @@ class PDF():
             self.plt.show()
         else:
             self.pdfhandle.close()
-            print('Plots Saved')
+            print('Saving plots...')
 
             #AND THEN USE EVINCE TO OPEN PDF if on linux
-            if sys.platform == 'linux2' or sys.platform == 'linux':
-                print('Opening Plots')
-                os.system('evince plots.pdf &')
+            if 1: #sometimes I just want to turn this off
+                if sys.platform == 'linux2' or sys.platform == 'linux':
+                    print('Opening Plots')
+                    os.system('evince plots.pdf &')
+            else:
+                print('Just gonna finish rather than opening evince')
 
     def savefig(self,*extra):
         if self.SHOWPLOTS == 0:
