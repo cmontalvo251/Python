@@ -73,25 +73,25 @@ def Derivatives(state,t):
     #https://www.youtube.com/watch?v=ASHRPo4sw80
     #A few problems here. First Cd is a function of Mach Number and Reynolds number
     #so......I think I'll just leave this off
-    Cd = 0.24
+    Cd = 0.4
     S = 0.01
     qinf = -np.pi*rho*S*Cd/mass
     aerox = qinf*abs(velx)*velx
     aeroz = qinf*abs(velz)*velz
     
     #And of course thrust
-    mass_endtons = 1.4
+    mass_endtons = 2.8
     mass_end = mass_endtons*2000/2.2
     if mass < mass_end:
         thrustx = 0.0
         thrustz = 0.0
     else:
-        thrustx = 81.45*1000.0
+        thrustx = 167.97*1000.0
         thrustz = 0.0
     thrust = np.sqrt(thrustx**2 + thrustz**2)
     
     #But when thrust is fired we lose mass
-    Isp = 140.0
+    Isp = 250.
     ve = Isp*abs(surface_gravity)
     mdot = -thrust/ve
     
@@ -111,14 +111,14 @@ atm_model = np.loadtxt('kerbin_atmosphere.txt')
 altx = atm_model[:,0]
 deny = atm_model[:,3]
 
-tout = np.linspace(0,100,10000)  #linspace(start,end,number of data points)
+tout = np.linspace(0,300,100000)  #linspace(start,end,number of data points)
 
 sidereal_rotational_velocity,mu,surface_gravity,R = planet_parameters()
 x0 = R
 z0 = 0.
 velx0 = 0.0
 velz0 = 0.0
-masstons = 2.4
+masstons = 5.3
 mass0 = masstons*2000/2.2
 stateinitial = np.asarray([x0,z0,velx0,velz0,mass0])
 stateout = I.odeint(Derivatives,stateinitial,tout) ##This is the ode toolbox from scipy (Scientific Python)
