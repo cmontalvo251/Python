@@ -25,7 +25,7 @@ def planet_parameters():
     
     G = 6.6742*10**-11; #%%Gravitational constant
     Mkerbin = 5.2915158*10**22 #
-    muKerbin = -G*Mkerbin
+    muKerbin = G*Mkerbin
     Rkerbin = 600000 #meters
     sidereal_period = 21549.425
     sidereal_angular_velocity = 2*np.pi/sidereal_period
@@ -60,9 +60,9 @@ def Derivatives(state,t):
     rSat = np.sqrt((x**2) +(z**2))
     #MNeed to get parameters of the planet
     sidereal_rotational_velocity,mu,surface_gravity,R = planet_parameters()
-    gravx = mu*x/(rSat**3)
-    gravz = mu*z/(rSat**3)
-   
+    gravx = -mu*x/(rSat**3)
+    gravz = -mu*z/(rSat**3)
+
     ##Now let's do Aerodynamics 
     #https://wiki.kerbalspaceprogram.com/wiki/Atmosphere
     #https://wiki.kerbalspaceprogram.com/wiki/Kerbin#Atmosphere
@@ -78,17 +78,17 @@ def Derivatives(state,t):
     qinf = -np.pi*rho*S*Cd/mass
     aerox = qinf*abs(velx)*velx
     aeroz = qinf*abs(velz)*velz
-    
+
     #And of course thrust
-    mass_endtons = 2.8
-    mass_end = mass_endtons*2000/2.2
-    if mass < mass_end:
+    stage_1_time = -1
+    if t > stage_1_time:
         thrustx = 0.0
         thrustz = 0.0
     else:
         thrustx = 167.97*1000.0
         thrustz = 0.0
     thrust = np.sqrt(thrustx**2 + thrustz**2)
+    #print('thrust',thrust)
     
     #But when thrust is fired we lose mass
     Isp = 250.
@@ -106,20 +106,38 @@ def Derivatives(state,t):
 
 ##############END OF FUNCTION SEPARATED BY TABS#######
     
-#Read in Atmospher model
+#Read in Atmospher modelabs
 atm_model = np.loadtxt('kerbin_atmosphere.txt')
 altx = atm_model[:,0]
 deny = atm_model[:,3]
 
-tout = np.linspace(0,300,100000)  #linspace(start,end,number of data points)
-
 sidereal_rotational_velocity,mu,surface_gravity,R = planet_parameters()
+
+###Let's make an orbit
+desired_orbit_altitude_km = 70. #kilometer
+r = R + desired_orbit_altitude_km*1000.
+vorbit = np.sqrt(mu/r)
+
+##Initial Conditions for hop Orbit
 x0 = R
 z0 = 0.
 velx0 = 0.0
 velz0 = 0.0
 masstons = 5.3
 mass0 = masstons*2000/2.2
+
+##Initial conditions in orbit
+x0 = r
+z0 = 0.
+velx0 = 0.0
+velz0 = vorbit
+mass0 = 5.3*2000/2.2
+
+##Orbit Time
+semi_major = r
+period = 2*np.pi/np.sqrt(mu)*semi_major**(3.0/2.0)
+tout = np.linspace(0,period,100000)  #linspace(start,end,number of data points)
+
 stateinitial = np.asarray([x0,z0,velx0,velz0,mass0])
 stateout = I.odeint(Derivatives,stateinitial,tout) ##This is the ode toolbox from scipy (Scientific Python)
 
