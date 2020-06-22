@@ -45,6 +45,11 @@ duration_str = str(hours_duration) + ':' + str(minutes_duration) + ':' + str(sec
 
 print(duration_str)
 
+###Make a backup
+backup_command = 'cp ' + sys.argv[1] + ' ' + sys.argv[1] + '.backup'
+print(backup_command)
+os.system(backup_command)
+
 trim_command = 'ffmpeg -ss ' + sys.argv[2] + ' -i ' + sys.argv[1] + ' -to ' + duration_str + ' -c copy trimmed_file.MP4'
 
 print(trim_command)
