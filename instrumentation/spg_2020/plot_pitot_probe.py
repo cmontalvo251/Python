@@ -1,34 +1,32 @@
 import numpy as np
 import matplotlib.pyplot as plt
  
-data = np.loadtxt('Base data pitot probe.txt')
-time = data[:,0]
-Do = data[:,1] ##number between 0 and 65536 - 
+data = np.loadtxt('Pitot.txt')
+time = data[:,1]
+Do = data[:,0]*65536/3.3 ##number between 0 and 65536 - 
 
 ##Plot raw digital output
 plt.figure()
 plt.plot(time,Do)
+plt.grid()
+plt.xlabel('Time (sec)')
+plt.ylabel('Digital Output of ADC')
 
 ##Convert to voltage
 voltage = Do*3.3/65536
-
-plt.figure()
-plt.plot(time,voltage)
-
-
 ##Bias the voltage
-Vbias = 2.601
-
+Vbias = 49720.*3.3/65536.
 ##DeltaV
 deltaV = voltage - Vbias
-
-plt.figure()
-plt.plot(time,deltaV)
-
 #Convert to Atmospheres
 deltaP_kPa = deltaV
 deltaP_Pa = deltaP_kPa * 1000.
 deltaP_atm = deltaP_kPa/101.325
+
+plt.figure()
+plt.plot(time,voltage)
+plt.figure()
+plt.plot(time,deltaV)
 
 ###What is the equation to get to windspeed?
 
