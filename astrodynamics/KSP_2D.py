@@ -159,7 +159,7 @@ stage_1_time = 38.0
 stage_2_start = -99
 stage_2_end = -99
 period = 100.0
-GNC = 1
+GNC = 0
 apogee = 10000.
 """
 
@@ -209,7 +209,7 @@ period = 2*np.pi/np.sqrt(mu)*semi_major**(3.0/2.0)
 GNC = 0
 """
 
-"""
+
 ###Two Stage Rocket
 x0 = R
 z0 = 0.0
@@ -227,7 +227,7 @@ stage_2_end = stage_2_start + 35.0
 period = 3000.0
 GNC = 1
 apogee = 70000.
-"""
+
 
 ###################################################################
 mass0 = masstons*2000/2.2
