@@ -3,7 +3,7 @@ import random as rdm
 
 ###Alright let's do this whole thing in python
 weeks = 15
-num_of_students = 30
+num_of_students = 26
 max_capacity = 15
 
 ###Red, White and Blue schedule (Red = attend on odd weeks (1,3, 5), White = attend on even weeks (2,4,6), Blue = random selection of students per week will stay home)
