@@ -3,7 +3,7 @@ import random as rdm
 
 ###Alright let's do this whole thing in python
 weeks = 15
-num_of_students = 26
+num_of_students = 23
 max_capacity = 15
 
 ###Red, White and Blue schedule (Red = attend on odd weeks (1,3, 5), White = attend on even weeks (2,4,6), Blue = random selection of students per week will stay home)
@@ -29,13 +29,13 @@ for w in range(0,weeks):
     num_yeses = 0
     for a in active_group:
         while ctr < a:
-            yesnoweek.append('no')
+            yesnoweek.append('NO')
             ctr+=1
-        yesnoweek.append('yes')
+        yesnoweek.append('YES')
         num_yeses+=1
         ctr+=1
     while len(yesnoweek) < num_of_students:
-        yesnoweek.append('no')
+        yesnoweek.append('NO')
     if num_yeses > max_capacity:
         print('Overflow')
     print(yesnoweek)

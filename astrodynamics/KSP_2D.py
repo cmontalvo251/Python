@@ -163,8 +163,9 @@ GNC = 0
 apogee = 10000.
 """
 
-###Conditions for Sub orbital flight
 """
+###Conditions for Sub orbital flight
+
 x0 = R
 z0 = 0.
 velx0 = 0.0
@@ -182,6 +183,7 @@ period = 200.0
 GNC = 1
 apogee = 80000.
 """
+
 
 """
 ###Let's make an orbit
