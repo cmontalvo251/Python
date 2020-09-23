@@ -2,12 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-##Kerbin Parameters
+##Mun Parameters
 
 ##True Anamoly
 nu = np.linspace(0,2*np.pi,100)
+nu0 = 1.7
 ##Semi Major Axis
-a = 13599840256 #meters
+a = 12000000 #meters
 ##Eccentricity
 e = 0.0
 ##inclination
@@ -21,11 +22,14 @@ w = 0.
 ###Phat and Qhat
 p = a*(1-e**2)
 r = p/(1+e*np.cos(nu))
+r0 = p/(1+e*np.cos(nu0))
 xp = r*np.cos(nu)
 yq = r*np.sin(nu)
+x0 = r0*np.cos(nu0)
+y0 = r0*np.sin(nu0)
 
 plt.plot(xp,yq)
-plt.plot(xp[0],yq[0],'b*',markerSize=20)
+plt.plot(x0,y0,'b*',markerSize=20)
 plt.plot(0,0,'ys',markerSize=20)
 plt.axis('equal')
 plt.title('Orbital Plane')
