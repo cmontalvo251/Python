@@ -16,7 +16,8 @@ nu = np.linspace(0,2*np.pi,100)
 ##Semi Major Axis of an 80 km parking orbit
 alt_AGL = 80000
 rp = Rkerbin + alt_AGL
-ra = 12000000
+#ra = 12000000
+ra = rp
 a = (ra+rp)/2.
 #alt_AGL = 6000
 #a = RMun + alt_AGL
@@ -37,7 +38,7 @@ xp = r*np.cos(nu)
 yq = r*np.sin(nu)
 
 plt.plot(xp,yq,'r-')
-plt.plot(xp[0],yq[0],'r*',markerSize=20)
+plt.plot(xp[0],yq[0],'r*',markersize=20)
 theta = np.linspace(0,2*np.pi,100)
 xkerbin = Rkerbin*np.cos(theta)
 ykerbin = Rkerbin*np.sin(theta)
@@ -45,7 +46,7 @@ plt.plot(xkerbin,ykerbin,'b-')
 #xMun = RMun*np.cos(theta)
 #yMun = RMun*np.sin(theta)
 #plt.plot(xMun,yMun,'b-')
-plt.axis('equal')
+#plt.axis('equal')
 plt.title('Orbital Plane')
 
 ###Rotate to Kerbin Centered Inertial Frame (KCI)
@@ -67,15 +68,16 @@ for x in range(0,len(xp)):
   
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.plot(xi,yj,zk,'r-')
-ax.scatter(xi[0],yj[0],zk[0],'r*',s=20)
+
 u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
 xsph = np.cos(u)*np.sin(v)
 ysph = np.sin(u)*np.sin(v)
 zsph = np.cos(v)
-ax.plot_wireframe(Rkerbin*xsph,Rkerbin*ysph,Rkerbin*zsph,color='blue')
+ax.plot_surface(Rkerbin*xsph,Rkerbin*ysph,Rkerbin*zsph,color='blue')
+ax.plot(xi,yj,zk,'r-')
+ax.scatter(xi[0],yj[0],zk[0],'r*',s=20)
 #ax.plot_wireframe(RMun*xsph,RMun*ysph,RMun*zsph,color='grey')
-ax.axis('square')
+#ax.axis('square')
 
 ###Now let's plot velocity
 vx = np.sqrt(muKerbin/p)*(-np.sin(nu))
