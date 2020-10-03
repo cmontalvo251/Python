@@ -42,7 +42,7 @@ class JPL():
                 numbers = line.split(',')
                 #This means that the current row is the '0' numbers
                 if ctr == 0:
-                    #print self.names[planet_number]
+                    #print(self.names[planet_number])
                     a0 = np.float(numbers[0])
                     e0 = np.float(numbers[1])
                     i0 = np.float(numbers[2])
@@ -70,7 +70,7 @@ class JPL():
                     this_planet.initial_OMEGA = OMEGA0 + T*OMEGAdot
                     #Compute the rest of the orbital elements using aprx_pos_planets.pdf
                     if planet_number > 4:
-                        print 'Applying correction factors'
+                        print('Applying correction factors')
                         b = correction_parameters[planet_number-5,0]
                         c = correction_parameters[planet_number-5,1]
                         s = correction_parameters[planet_number-5,2]
@@ -80,7 +80,7 @@ class JPL():
                         c = 0
                         s = 0
                         f = 0
-                    #print b,c,s,f
+                    #print(b,c,s,f)
                     self.ComputeCoordinates(this_planet,T,b,c,s,f)
                     satellites.append(this_planet)
                     ctr = 0
@@ -90,23 +90,23 @@ class JPL():
         self.MilkyWay = SolarSystem(satellites,'The Solar System')
 
     def ComputeCoordinates(self,planet,T,b,c,s,f):
-        print 'Computing Planet Coordinates'
-        print 'i = ',planet.initial_i
-        print 'e = ',planet.initial_enorm
+        print('Computing Planet Coordinates')
+        print('i = ',planet.initial_i)
+        print('e = ',planet.initial_enorm)
         #Compute estar
         planet.initial_enormstar = planet.initial_enorm*180./np.pi
-        print 'estar = ',planet.initial_enormstar
+        print('estar = ',planet.initial_enormstar)
         #Argument of the perihelion
         planet.initial_w = planet.wbar - planet.initial_OMEGA
         #Mean Anomaly
         planet.initial_M = planet.initial_L - planet.wbar + b*T**2 + c*np.cos(f*T) + s*np.sin(f*T)
-        print 'M = ',planet.initial_M
+        print('M = ',planet.initial_M)
         #Need to modulus M
         while planet.initial_M > 180:
             planet.initial_M -= 360
         while planet.initial_M < -180:
             planet.initial_M += 360
-        print 'M(modulus) = ',planet.initial_M
+        print('M(modulus) = ',planet.initial_M)
         #Solve for Eccentric Anomaly
         #M = E - estar*sin(E)
         M = planet.initial_M
@@ -116,10 +116,10 @@ class JPL():
         dM = 1
         while abs(dM) > 1e-6:
             dM = M - (E - estar*np.sin(E*np.pi/180.0))
-            #print 'dM = ',dM
+            #print('dM = ',dM)
             dE = dM/(1.0-e*np.cos(E*np.pi/180.0))
             E += dE
-        print 'E = ',E#,'E-estar*sin(E)',E-estar*np.sin(E*np.pi/180.0)
+        print('E = ',E)#,'E-estar*sin(E)',E-estar*np.sin(E*np.pi/180.0)
         
         #Compute coordinate of planet in ecliptic plane of the planet
         xprime = planet.a*(np.cos(E*np.pi/180.0)-planet.initial_enorm)
@@ -128,7 +128,7 @@ class JPL():
 
         #Compute the semi latus rectum
         planet.initial_semilatus = planet.a*(1-planet.initial_enorm**2)
-        print 'p = ',planet.initial_semilatus
+        print('p = ',planet.initial_semilatus)
 
         #Convert certain parameters to radians
         planet.initial_w *= np.pi/180.0
@@ -146,11 +146,11 @@ class JPL():
         ##Convert to numpy array
         planet.initial_pos = np.asarray([planet.x0,planet.y0,planet.z0])
 
-        print 'Current Position of Planet = ',planet.x0,planet.y0,planet.z0
+        print('Current Position of Planet = ',planet.x0,planet.y0,planet.z0)
 
         #Compute Period of Planet
         T = planet.a**(3./2.)*2*np.pi/(np.sqrt(self.G*self.Sun.M))
-        print 'Period (days) = ',T/86400.
+        print('Period (days) = ',T/86400.)
 
 class UniverseParameters():
     def __init__(self):
@@ -448,10 +448,10 @@ class SolarSystem():
         ax = fig.add_subplot(111,projection='3d')
         amax = 0
         for i in range(0,self.numsatellites):
-            print self.satellites[i].name
+            print(self.satellites[i].name)
             #Plot Entire Trajectory
             x = self.satellites[i].x/self.AU
-            #print x
+            #print(x)
             y = self.satellites[i].y/self.AU
             z = self.satellites[i].z/self.AU
             if np.max(x) > amax:
@@ -467,7 +467,7 @@ class SolarSystem():
             #ax.scatter(x[0],y[0],z[0],c=self.satellites[i].color,marker='o',facecolor=self.satellites[i].color,edgecolor=self.satellites[i].color)
             this_color = self.satellites[i].color
             ax.scatter(self.satellites[i].x0/self.AU,self.satellites[i].y0/self.AU,self.satellites[i].z0/self.AU,c=this_color,marker='o',facecolor=this_color,edgecolor=this_color)
-            #ax.scatter(0,0,0,c='r',marker='o',facecolor='r',edgecolor='r')
+            
         plt.title(self.name)
         ax.set_xlabel('X (AU)')
         ax.set_ylabel('Y (AU)')
@@ -497,12 +497,71 @@ class SolarSystem():
         #plt.ylim([-20,20])
         pp.savefig()
 
+    def PlotMayavi(self):
+        from mayavi import mlab
+        import webcolors as WC
+        #create a sphere
+        u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
+        xsph = np.cos(u)*np.sin(v)
+        ysph = np.sin(u)*np.sin(v)
+        zsph = np.cos(v)
+
+        #fig = plt.figure(self.name)
+        #ax = fig.add_subplot(111,projection='3d')
+
+        f = self.AU
+        
+        amax = 0
+        print('-----------MAYAVI--------------')
+        for i in range(0,self.numsatellites):
+        #for i in range(0,2):
+            print(self.satellites[i].name)
+            #Plot Entire Trajectory
+            x = self.satellites[i].x/f
+            #print(x)
+            y = self.satellites[i].y/f
+            z = self.satellites[i].z/f
+            if np.max(x) > amax:
+                amax = np.max(x)
+            if np.max(y) > amax:
+                amax = np.max(y)
+            if np.max(z) > amax:
+                amax = np.max(z)
+
+            #Plot orbit in Mayavi
+            print(self.satellites[i].color)
+            colRGB = WC.name_to_rgb(self.satellites[i].color)
+            print(colRGB)
+            col_tuple = (colRGB.red/255,colRGB.green/255,colRGB.blue/255)
+            print(col_tuple)
+            s=mlab.plot3d(x,y,z,color=col_tuple)
+            #ax.plot(x,y,z, color = self.satellites[i].color, linestyle = 'solid',label=self.satellites[i].name)
+            
+            print(self.satellites[i].x0,self.satellites[i].y0,self.satellites[i].z0)
+
+            ##Plot the current location of the planet
+            r = self.satellites[i].r/self.AU*100
+            xx = (r*xsph)+self.satellites[i].x0/f
+            yy = (r*ysph)+self.satellites[i].y0/f
+            zz = (r*zsph)+self.satellites[i].z0/f
+            s=mlab.mesh(xx,yy,zz,color=col_tuple)
+            print(np.max(np.max(xx)))
+            #ax.plot_wireframe(xx,yy,zz,color=self.satellites[i].color)            
+
+            dist = np.sqrt(self.satellites[i].x0**2 + self.satellites[i].y0**2 + self.satellites[i].z0**2)/f
+            print(dist)
+
+        #plt.show()
+        mlab.view(azimuth=-0, elevation=45, distance=2*dist)
+        mlab.orientation_axes()
+        mlab.show()
+
     def Orbit(self):
-        print 'Computing Orbit based on Orbital Elements'
+        print('Computing Orbit based on Orbital Elements')
         #Alright so here we're going to make a vector for the true anomaly
         nu = np.linspace(0,2*np.pi,1000)
         for i in range(0,self.numsatellites):
-            print self.satellites[i].name
+            print(self.satellites[i].name)
             if i == 0:
                 self.satellites[i].xecl = 0*nu
                 self.satellites[i].yecl = 0*nu
@@ -575,46 +634,46 @@ class SolarSystem():
         central_satellite = self.satellites[0] #It's assume your solar system is set up this way                
         for i in range(1,self.numsatellites):
             if np.linalg.norm(self.satellites[i].initial_pos) > 1e-2 and np.linalg.norm(self.satellites[i].initial_vel) > 1e-2:               
-                print 'Computing Orbital Elements....'
-                print self.satellites[i].name
+                print('Computing Orbital Elements....')
+                print(self.satellites[i].name)
                 #R is already known from the setup
-                print 'r = ',self.satellites[i].initial_pos
+                print('r = ',self.satellites[i].initial_pos)
                 #Thus the x0,y0,z0 coordinates are already known
                 self.satellites[i].x0 = self.satellites[i].initial_pos[0]
                 self.satellites[i].y0 = self.satellites[i].initial_pos[1]
                 self.satellites[i].z0 = self.satellites[i].initial_pos[2]
                 ##Compute rnorm
                 self.satellites[i].initial_rnorm = np.linalg.norm(self.satellites[i].initial_pos)
-                print 'rnorm = ',self.satellites[i].initial_rnorm
+                print('rnorm = ',self.satellites[i].initial_rnorm)
                 #v is also already known
-                print 'v = ',self.satellites[i].initial_vel
+                print('v = ',self.satellites[i].initial_vel)
                 #Compute norm of v
                 self.satellites[i].initial_vnorm = np.linalg.norm(self.satellites[i].initial_vel)
-                print 'vnorm = ',self.satellites[i].initial_vnorm
+                print('vnorm = ',self.satellites[i].initial_vnorm)
                 #Compute angular momentum
                 self.satellites[i].initial_h = np.cross(self.satellites[i].initial_pos,self.satellites[i].initial_vel)
-                print 'h = ',self.satellites[i].initial_h
+                print('h = ',self.satellites[i].initial_h)
                 #Compute norm of angular momentum
                 self.satellites[i].initial_hnorm = np.linalg.norm(self.satellites[i].initial_h)
-                print 'hnorm = ',self.satellites[i].initial_hnorm
+                print('hnorm = ',self.satellites[i].initial_hnorm)
                 #Compute Eccentricity vector
                 self.satellites[i].initial_e = (1.0/(central_satellite.mu))*((self.satellites[i].initial_vnorm**2-central_satellite.mu/self.satellites[i].initial_rnorm)*self.satellites[i].initial_pos-np.dot(self.satellites[i].initial_pos,self.satellites[i].initial_vel)*self.satellites[i].initial_vel)
-                print 'e = ',self.satellites[i].initial_e
+                print('e = ',self.satellites[i].initial_e)
                 #Compute Eccentricity itself
                 self.satellites[i].initial_enorm = np.linalg.norm(self.satellites[i].initial_e)
-                print 'enorm = ',self.satellites[i].initial_enorm
+                print('enorm = ',self.satellites[i].initial_enorm)
                 #Compute the semi-latus rectum
                 self.satellites[i].initial_semilatus = self.satellites[i].initial_hnorm**2/central_satellite.mu
-                print 'p = ',self.satellites[i].initial_semilatus
+                print('p = ',self.satellites[i].initial_semilatus)
                 #Compute the inclination
                 self.satellites[i].initial_i = np.arccos(self.satellites[i].initial_h[2]/self.satellites[i].initial_hnorm)
-                print 'i = ',self.satellites[i].initial_i
+                print('i = ',self.satellites[i].initial_i)
                 #Compute the line of nodes
                 self.satellites[i].initial_n = np.asarray([-self.satellites[i].initial_h[1],self.satellites[i].initial_h[0],0])
-                print 'n = ',self.satellites[i].initial_n
+                print('n = ',self.satellites[i].initial_n)
                 #Compute norm of lines of nodes
                 self.satellites[i].initial_nnorm = np.linalg.norm(self.satellites[i].initial_n)
-                print 'nnorm = ',self.satellites[i].initial_nnorm
+                print('nnorm = ',self.satellites[i].initial_nnorm)
                 #Compute the longitude of the ascending node OMEGA
                 #Compute the argument of the periapsis
                 if abs(self.satellites[i].initial_nnorm) < 1e-2:
@@ -623,11 +682,11 @@ class SolarSystem():
                 else:
                     self.satellites[i].initial_OMEGA = np.arccos(self.satellites[i].initial_n[0]/self.satellites[i].initial_nnorm)
                     self.satellites[i].initial_w = np.arccos(np.dot(self.satellites[i].initial_n,self.satellites[i].initial_e)/(self.satellites[i].initial_nnorm*self.satellites[i].initial_enorm))
-                print 'OMEGA = ',self.satellites[i].initial_OMEGA    
-                print 'w = ',self.satellites[i].initial_w
+                print('OMEGA = ',self.satellites[i].initial_OMEGA)
+                print('w = ',self.satellites[i].initial_w)
                 #Compute the true anomaly
                 if abs(self.satellites[i].initial_enorm) < 1e-2:
                     self.satellites[i].initial_v0 = 0.0
                 else:
                     self.satellites[i].initial_v0 = np.arccos(np.dot(self.satellites[i].initial_e,self.satellites[i].initial_pos)/(self.satellites[i].initial_enorm*self.satellites[i].initial_rnorm))
-                print 'v0 = ',self.satellites[i].initial_v0
+                print('v0 = ',self.satellites[i].initial_v0)
