@@ -17,26 +17,30 @@ m = 1350.0 #kg
 CD = 1.5 #unitless - non dimensional coefficient
 S = 2.8 #m^2 - planform area of entry vehicle
 
-gamma = -40*np.pi/180.0
-V = Ve*np.exp((1.0/(2*beta))*(rhos/(np.sin(gamma)))*(S*CD/m)*np.exp(-beta*h))
+fig1, ax1 = plt.subplots()
+fig2, ax2 = plt.subplots()
 
-###Compute Acceleration
-drdt = V*np.sin(gamma)
-dhdt = drdt
-dVdh = (V[0:-2]-V[1:-1])/(h[0:-2]-h[1:-1])
-accel = dVdh*dhdt[0:-2]
+gamma = np.linspace(-4,-2,10)*np.pi/180.0
+for gam in gamma:
+    V = Ve*np.exp((1.0/(2*beta))*(rhos/(np.sin(gam)))*(S*CD/m)*np.exp(-beta*h))
 
-plt.figure()
-plt.plot(h,V)
-plt.xlabel('Altitude (m)')
-plt.ylabel('Velocity (m/s)')
-plt.grid()
+    ###Compute Acceleration
+    drdt = V*np.sin(gam)
+    dhdt = drdt
+    dVdh = (V[0:-2]-V[1:-1])/(h[0:-2]-h[1:-1])
+    accel = dVdh*dhdt[0:-2]
+
+    #plt.figure()
+    ax1.plot(h,V)
+    #plt.xlabel('Altitude (m)')
+    #plt.ylabel('Velocity (m/s)')
+    #plt.grid()
 
 
-plt.figure()
-plt.plot(h[0:-2],accel/9.81)
-plt.xlabel('Time (sec)')
-plt.ylabel('Gs')
-plt.grid()
+    #plt.figure()
+    ax2.plot(h[0:-2],accel/9.81)
+    #plt.xlabel('Time (sec)')
+    #plt.ylabel('Gs')
+    #plt.grid()
 
 plt.show()
