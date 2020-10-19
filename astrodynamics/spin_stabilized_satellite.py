@@ -63,13 +63,12 @@ def Derivatives(state,t,Torque):
     
     return np.hstack([dwdt,drpydt])
     
-    
 ####So now we integrate in odeint
 tout = np.linspace(0,10,10000)
 dt = tout[2]-tout[1]
 stateout = np.zeros((6,len(tout)))
 
-stateout[:,0] = np.asarray([0,0,2000./500.,0,0,0])
+stateout[:,0] = np.asarray([0,0,500./500.,0,0,0])
 
 pulses = 0*tout
 
