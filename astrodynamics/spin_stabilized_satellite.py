@@ -97,7 +97,7 @@ def Derivatives(state,t,Torque):
     
 ####So now we integrate in odeint
 dt = 1.0/1000.0
-tout = np.arange(0,1000.0,dt)
+tout = np.arange(0,700.0,dt)
 stateout = np.zeros((6,len(tout)))
 
 stateout[:,0] = np.asarray([0,0,2000./500.,0,0,0])

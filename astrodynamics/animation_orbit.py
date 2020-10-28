@@ -21,7 +21,7 @@ a = Rkerbin + alt_AGL
 ##Eccentricity
 e = 0.0
 ##inclination
-i = 0*98.0*np.pi/180.0 ##Drew's random satellite he wants a just slightly over polar retrograde orbit
+i = 98.0*np.pi/180.0 ##Drew's random satellite he wants a just slightly over polar retrograde orbit
 ###Longitude of the Ascending Node
 W = 0*45*np.pi/180.0
 #Argument of the periaps
@@ -34,17 +34,9 @@ r = p/(1+e*np.cos(nu))
 xp = r*np.cos(nu)
 yq = r*np.sin(nu)
 
-plt.plot(xp,yq,'r-')
-plt.plot(xp[0],yq[0],'r*',markerSize=20)
 theta = np.linspace(0,2*np.pi,100)
 xkerbin = Rkerbin*np.cos(theta)
 ykerbin = Rkerbin*np.sin(theta)
-plt.plot(xkerbin,ykerbin,'b-')
-#xMun = RMun*np.cos(theta)
-#yMun = RMun*np.sin(theta)
-#plt.plot(xMun,yMun,'b-')
-plt.axis('equal')
-plt.title('Orbital Plane')
 
 ###Rotate to Kerbin Centered Inertial Frame (KCI)
 zr = 0*xp
@@ -63,32 +55,30 @@ for x in range(0,len(xp)):
   yj[x] = xyzi[1]
   zk[x] = xyzi[2]
   
+##Convert xyz to lat/lon/alt
+rho = np.sqrt((pow(xi, 2) + pow(yj, 2) + pow(zk, 2)));
+phi = np.arccos(zk/rho)
+the = np.arctan2(yj , xi)
+lat = 90 - phi*(180.0/ np.pi);
+lon = the*(180.0/np.pi);
+h = rho-Rkerbin;
+
+fig = plt.figure()
+plt.plot(nu,lat)
+plt.plot(nu,lon)
+plt.show()
+
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.plot(xi,yj,zk,'r-')
-ax.scatter(xi[0],yj[0],zk[0],'r*',s=20)
 u, v = np.mgrid[0:2*np.pi:20j, 0:np.pi:10j]
 xsph = np.cos(u)*np.sin(v)
 ysph = np.sin(u)*np.sin(v)
 zsph = np.cos(v)
-ax.plot_wireframe(Rkerbin*xsph,Rkerbin*ysph,Rkerbin*zsph,color='blue')
-#ax.plot_wireframe(RMun*xsph,RMun*ysph,RMun*zsph,color='grey')
-#ax.axis('square')
-
-###Now let's plot velocity
-vx = np.sqrt(muKerbin/p)*(-np.sin(nu))
-vy = np.sqrt(muKerbin/p)*(e+np.cos(nu))
-#vx = np.sqrt(muMun/p)*(-np.sin(nu))
-#vy = np.sqrt(muMun/p)*(e+np.cos(nu))
-v = np.sqrt(vx**2 + vy**2)
-
-plt.figure()
-plt.plot(nu,vx,label='Vx')
-plt.plot(nu,vy,label='Vy')
-plt.plot(nu,v,label='V')
-plt.grid()
-plt.xlabel('True Anomaly (rad)')
-plt.ylabel('Velocity (m/s)')
-plt.legend()
+for i in range(0,len(xi)):
+    ax.plot_wireframe(Rkerbin*xsph,Rkerbin*ysph,Rkerbin*zsph,color='blue')
+    ax.text(9, 0, 0, "red", color='red')
+    ax.plot(xi,yj,zk,'r-')
+    ax.scatter(xi[i],yj[i],zk[i],'r',marker='s')
+    plt.pause(0.01)
+    plt.cla()
     
-plt.show()
