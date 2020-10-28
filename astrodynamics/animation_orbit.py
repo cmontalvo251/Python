@@ -63,10 +63,10 @@ lat = 90 - phi*(180.0/ np.pi);
 lon = the*(180.0/np.pi);
 h = rho-Rkerbin;
 
-fig = plt.figure()
-plt.plot(nu,lat)
-plt.plot(nu,lon)
-plt.show()
+#fig = plt.figure()
+#plt.plot(nu,lat)
+#plt.plot(nu,lon)
+#plt.show()
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -76,7 +76,8 @@ ysph = np.sin(u)*np.sin(v)
 zsph = np.cos(v)
 for i in range(0,len(xi)):
     ax.plot_wireframe(Rkerbin*xsph,Rkerbin*ysph,Rkerbin*zsph,color='blue')
-    ax.text(9, 0, 0, "red", color='red')
+    ax.text(9, 0, 0, str(lat[i]), color='red')
+    ax.text(100,0,0,str(lon[i]),color='green')
     ax.plot(xi,yj,zk,'r-')
     ax.scatter(xi[i],yj[i],zk[i],'r',marker='s')
     plt.pause(0.01)
