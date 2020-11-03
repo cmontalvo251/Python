@@ -1,4 +1,64 @@
 import control as ctl
+import numpy as np
+import json
+
+##Pulled from this source
+#https://github.com/python-control/python-control/blob/master/control/timeresp.py
+def step_info(sys,T=None,T_step=None,SettlingTimeThreshold=0.02,RiseTimeLimits=(0.1, 0.9)):
+    if T == None:
+        ##Need to figure out slowest pole
+        poles = ctl.pole(sys)
+        real_component = np.real(poles)
+        if np.sum(real_component > 0):
+            print('System Unstable',poles,real_component,any(real_component))
+            return 0
+        ##This assumes all poles are negative
+        slowest_pole = np.max(real_component)
+        ##Settling time is then 4/(zeta*wn) = 4/(sigma)
+        tfinal = -10.0*(4.0/slowest_pole) ##add 10 for a safety factor
+        #minus sign because slowest pole is negative
+        ##Now we make time
+        if T_step == None:
+            T_step = 0.01
+        T = np.arange(0,tfinal,T_step)
+
+    #Now we simulate the system
+    tout,yout = ctl.step_response(sys,T)
+
+    # Steady state value
+    InfValue = yout[-1]
+
+    # RiseTime
+    tr_lower_index = (np.where(yout >= RiseTimeLimits[0] * InfValue)[0])[0]
+    tr_upper_index = (np.where(yout >= RiseTimeLimits[1] * InfValue)[0])[0]
+    RiseTime = T[tr_upper_index] - T[tr_lower_index]
+
+    # SettlingTime
+    sup_margin = (1. + SettlingTimeThreshold) * InfValue
+    inf_margin = (1. - SettlingTimeThreshold) * InfValue
+    # find Steady State looking for the first point out of specified limits
+    for i in reversed(range(T.size)):
+        if((yout[i] <= inf_margin) | (yout[i] >= sup_margin)):
+            SettlingTime = T[i + 1]
+            break
+
+    PeakIndex = np.abs(yout).argmax()
+
+    info = {
+        'RiseTime': RiseTime,
+        'SettlingTime': SettlingTime,
+        'SettlingMin': yout[tr_upper_index:].min(),
+        'SettlingMax': yout.max(),
+        'Overshoot': 100. * (yout.max() - InfValue) / (InfValue - yout[0]),
+        'Undershoot': yout.min(), # not very confident about this
+        'Peak': yout[PeakIndex],
+        'PeakTime':  T[PeakIndex],
+        'SteadyStateValue': InfValue
+        }
+
+    print(json.dumps(info,indent=4))
+
+    return info
 
 def plot_margins(sys,omegaIN=None):
     if omegaIN is not None:
