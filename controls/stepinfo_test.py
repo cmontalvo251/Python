@@ -17,4 +17,6 @@ plt.plot(tout,yout)
 
 info = cctl.step_info(G)
 
+print(ctl.step_info(G))
+
 plt.show()
