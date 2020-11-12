@@ -32,6 +32,9 @@ NM2FT=6076.115485560000
 FT2M=0.3048
 GPSVAL = 60.0*NM2FT*FT2M
 EarthRadius_ae = 6378140. ##meters mean eq radius
+#23 hours 56 minutes 4 seconds
+solar_day_sec = 23*3600.0 + 56*60.0 + 4.0
+wEarth = 2*np.pi/solar_day_sec
 
 def combineGPSArduinoTime(time_arduino,time_gps,pp,debugmode):
 
@@ -137,11 +140,11 @@ def NMEA_TIME(time_raw,units):
     return time
 
 ###Functions
-def computeGeocentricLATLON(x,y,z):
+def computeGeocentricLATLON(x,y,z,t):
     xprime = np.sqrt(x**2 + y**2)
     zprime = z
     latitude = np.arctan2(zprime,xprime)*180/np.pi
-    longitude = np.asarray(np.arctan2(y,x)*180.0/np.pi)
+    longitude = np.asarray(np.arctan2(y,x)*180.0/np.pi)-180.0/np.pi*wEarth*t
     #longitude[longitude<0]+=360.0
     #norm = np.sqrt(x**2 + y**2 + z**2)
     #phi = np.arccos(self.zsat / rho)
@@ -155,7 +158,8 @@ def IFOV(swath,deltas,az_rad):
     dtprime = np.arccos(cosdtprime)
     dt = 90.0 - dtprime * 180.0/np.pi
     dt_rad = dt*np.pi/180.0
-    cosdL = (np.cos(swath)-np.sin(deltas)*np.sin(dt_rad))/(np.cos(deltas)*np.cos(dt_rad))
+    cosdL = np.asarray((np.cos(swath)-np.sin(deltas)*np.sin(dt_rad))/(np.cos(deltas)*np.cos(dt_rad)))
+    cosdL[abs(cosdL)>1.0] = 1.0
     dL = np.arccos(cosdL)*180/np.pi
     return dt,dL
 
