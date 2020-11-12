@@ -31,6 +31,7 @@ import os
 NM2FT=6076.115485560000
 FT2M=0.3048
 GPSVAL = 60.0*NM2FT*FT2M
+EarthRadius_ae = 6378140. ##meters mean eq radius
 
 def combineGPSArduinoTime(time_arduino,time_gps,pp,debugmode):
 
@@ -134,6 +135,36 @@ def NMEA_TIME(time_raw,units):
         print('Invalid Unit in NMEA_TIME. Returning 0')
     #print time
     return time
+
+###Functions
+def computeGeocentricLATLON(x,y,z):
+    xprime = np.sqrt(x**2 + y**2)
+    zprime = z
+    latitude = np.arctan2(zprime,xprime)*180/np.pi
+    longitude = np.asarray(np.arctan2(y,x)*180.0/np.pi)
+    #longitude[longitude<0]+=360.0
+    #norm = np.sqrt(x**2 + y**2 + z**2)
+    #phi = np.arccos(self.zsat / rho)
+    #the = np.arctan2(self.ysat,self.xsat);
+    #self.latitude = 90 - phi*(180 /np.pi);
+    #self.longitude = the*(180/np.pi);
+    return latitude,longitude
+
+def IFOV(swath,deltas,az_rad):
+    cosdtprime = np.cos(swath)*np.sin(deltas)+np.sin(swath)*np.cos(deltas)*np.cos(az_rad)
+    dtprime = np.arccos(cosdtprime)
+    dt = 90.0 - dtprime * 180.0/np.pi
+    dt_rad = dt*np.pi/180.0
+    cosdL = (np.cos(swath)-np.sin(deltas)*np.sin(dt_rad))/(np.cos(deltas)*np.cos(dt_rad))
+    dL = np.arccos(cosdL)*180/np.pi
+    return dt,dL
+
+def LATLON2Cartesian(lat,lon,alt):
+    z = alt*np.sin(lat*np.pi/180.0)
+    xyprime = alt*np.cos(lat*np.pi/180.0)
+    x = xyprime*np.cos(lon*np.pi/180.0)
+    y = xyprime*np.sin(lon*np.pi/180.0)
+    return x,y,z
 
 def convertXY2LATLON(xy,origin):
     global GPSVAL
