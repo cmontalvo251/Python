@@ -9,19 +9,25 @@ import matplotlib.pyplot as plt
 #Here is the Julian Day
 #julian_day = 2444240 ##this is jan 1 1980 #this was a leap year
 #julian_day = 2445701 #this is jan 1 1984 #1984 was a leap year
-julian_day = 2446796 ##this is jan 1 1987
+#julian_day = 2446796 ##this is jan 1 1987 -- really?
+julian_day = 2446797
+#julian_day = 2446813 #Maybe this is jan 1 1987
 #julian_day = 2447162 ##this is jan 1 1988 #1988 was a leap year
 #julian_day = 2451545. ##this is jan 1 2000
+#julian_day = 2458120.-365 ##this is jan 1 2017
 #julian_day = 2458120. ##this is jan 1 2018
 #julian_day = 2458485 ##this is jan 1 2019
 #julian_day = 2458850 ##this is jan 1 2020
-# + 275 October 2
+#julian_day -= 15
+#julian_day += 275 #October 2
 # - 10 to get to the winter solstice
 # + 79 to get to the spring equinox
 # + 172 to get to the summer solstice
 # + 245 to get to Sep 2nd
 # + 265 to get to the fall equinox
 julian_day += 245 #Sep 2nd
+#julian_day += 365 - 30
+#julian_day -= 10
 
 ##Then compute all the planets using the JPL class
 planets = JPL(julian_day)
@@ -41,5 +47,5 @@ planets.MilkyWay.PlotOrbit(pp,-1)
 pp.close()
 
 ##Use Mayavi if you're using Python3
-planets.MilkyWay.numsatellites = 10
-planets.MilkyWay.PlotMayavi()
+#planets.MilkyWay.numsatellites = 10
+#planets.MilkyWay.PlotMayavi()

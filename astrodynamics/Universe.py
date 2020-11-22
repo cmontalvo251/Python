@@ -493,8 +493,10 @@ class SolarSystem():
             plti.plot(self.satellites[i].x0/self.AU,self.satellites[i].y0/self.AU,marker='o',color=self.satellites[i].color)
         plt.legend()
         #plt.axis('equal')
-        #plt.xlim([-20,20])
-        #plt.ylim([-20,20])
+        if self.numsatellites < 7:
+            plt.axis('square')
+            #plt.xlim([-2.4,2.4])
+            #plt.ylim([-2,2])
         pp.savefig()
 
     def PlotMayavi(self):
