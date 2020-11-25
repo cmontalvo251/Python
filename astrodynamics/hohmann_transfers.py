@@ -16,13 +16,14 @@ nu = np.linspace(0,2*np.pi,100)
 ##Semi Major Axis of an 80 km parking orbit
 alt_AGL = 80000
 rp = Rkerbin + alt_AGL
-#ra = 12000000
-ra = rp
+ra = 12000000.
+#ra = rp
 a = (ra+rp)/2.
 #alt_AGL = 6000
 #a = RMun + alt_AGL
 ##Eccentricity
 e = (ra - rp)/(ra+rp)
+print(e)
 ##inclination
 i = 0*98.0*np.pi/180.0 ##Drew's random satellite he wants a just slightly over polar retrograde orbit
 ###Longitude of the Ascending Node
