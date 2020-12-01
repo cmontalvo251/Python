@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 ##True Anamoly
 nu = np.linspace(0,2*np.pi,100)
 ##Semi Major Axis
-a = 13599840256 #meters
+a = 13599840256. #meters
 ##Eccentricity
 e = 0.0
 ##inclination

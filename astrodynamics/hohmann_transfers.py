@@ -8,13 +8,13 @@ Mkerbin = 5.2915158*10**22 #
 #MMun = 9.7599066*10**20 #
 muKerbin = G*Mkerbin
 #muMun = G*MMun
-Rkerbin = 600000 #meters
+Rkerbin = 600000. #meters
 #RMun = 200000 #meters
 
 ##True Anamoly
 nu = np.linspace(0,2*np.pi,100)
 ##Semi Major Axis of an 80 km parking orbit
-alt_AGL = 80000
+alt_AGL = 80000.
 rp = Rkerbin + alt_AGL
 ra = 12000000.
 #ra = rp

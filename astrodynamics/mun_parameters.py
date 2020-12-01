@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 nu = np.linspace(0,2*np.pi,100)
 nu0 = 1.7
 ##Semi Major Axis
-a = 12000000 #meters
+a = 12000000. #meters
 ##Eccentricity
 e = 0.0
 ##inclination
