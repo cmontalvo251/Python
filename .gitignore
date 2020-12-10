@@ -5,6 +5,7 @@ South/*.txt
 *.ods
 python_games
 apps
+*.xlsx
 test_scripts
 *.zip
 *.dll
