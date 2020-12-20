@@ -3,6 +3,7 @@ import copy as C
 import matplotlib.pyplot as plt
 import plotting as P
 import mio as fileIO
+import sys
 
 ##This code will eventually simulate the entire solar system but for now I'd 
 ##like to go through all the chapters in Fundamentals of Astrodynamics and
@@ -23,10 +24,43 @@ import mio as fileIO
 
 class JPL():
     def __init__(self,julian_day):
+        #run the coordinate transformation
+        satellites = self.computePlanetLocations(julian_day)
+        ##Now that we've looped through the satellites it's time to create a solar system Class
+        self.MilkyWay = SolarSystem(satellites,'The Solar System')
+
+    def AnimateOrbits(self,pp,julian_day,day_skip,num_skips,pause_time):
+        ##Let's just try and plot today
+        plt.close("all")
+
+        plti = P.plottool(12,'X (AU)','Y (AU)','Skip = '+str(0))
+        for j in range(0,num_skips):
+            #Recompute orbits? But how?
+            #Ok moved some things around here we go
+            self.MilkyWay.satellites = self.computePlanetLocations(julian_day+j*day_skip)
+            self.MilkyWay.Orbit()
+
+            plt.cla()
+            #Plot system in a top down view -- REally it'd be nice if we could plot the orbital plane somehow
+            plt.title('Skip = '+str(j))            
+            for i in range(0,self.MilkyWay.numsatellites):
+                plti.plot(self.MilkyWay.satellites[i].x/self.MilkyWay.AU,self.MilkyWay.satellites[i].y/self.MilkyWay.AU,label=self.MilkyWay.satellites[i].name,color=self.MilkyWay.satellites[i].color)
+                plti.plot(self.MilkyWay.satellites[i].x0/self.MilkyWay.AU,self.MilkyWay.satellites[i].y0/self.MilkyWay.AU,marker='o',color=self.MilkyWay.satellites[i].color)
+            plt.legend()
+            plt.grid()
+            #plt.axis('equal')
+            #if self.numsatellites < 7:
+            plt.axis('square')
+            #plt.xlim([-2.4,2.4])
+            #plt.ylim([-2,2])
+            if j == 0:
+                plt.pause(3.0)
+            plt.pause(pause_time)
+
+    def computePlanetLocations(self,julian_day):
         #First we need to open the correction parameters
         correction_parameters = fileIO.dlmread('Outer_Planets_Corrections.txt',' ')
         #print correction_parameters
-
         #This will import the text file Solar_System_Orbital_Elements and save the orbital elements
         file = open('Solar_System_Orbital_Elements.txt')
         self.names = ['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto']
@@ -85,9 +119,7 @@ class JPL():
                     satellites.append(this_planet)
                     ctr = 0
                     planet_number += 1
-
-        ##Now that we've looped through the satellites it's time to create a solar system Class
-        self.MilkyWay = SolarSystem(satellites,'The Solar System')
+        return satellites
 
     def ComputeCoordinates(self,planet,T,b,c,s,f):
         print('Computing Planet Coordinates')
