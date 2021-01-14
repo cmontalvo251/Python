@@ -1,4 +1,5 @@
 *.gif
+Python.OUT
 xfoiltools/*.txt
 *.jpeg
 South/*.txt

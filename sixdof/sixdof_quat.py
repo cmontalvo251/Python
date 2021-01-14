@@ -30,11 +30,11 @@ class Vehicle():
         theta0 = 0.0
         psi0 = 0.0
         ptp0 = np.asarray([phi0,theta0,psi0])
-        qaut0 = euler2quat(ptp0)
+        quat0 = euler2quat(ptp0)
         u0 = 0.0
         v0 = 0.0
         w0 = 0.0
-        p0 = 0.0
+        p0 = 10.0
         q0 = 0.0
         r0 = 0.0
         self.stateinitial = np.asarray([x0,y0,z0,quat0[0],quat0[1],quat0[2],quat0[3],u0,v0,w0,p0,q0,r0])
@@ -59,8 +59,8 @@ class Vehicle():
         p = state[10]
         q = state[11]
         r = state[12]
-        kp = 10.0
-        kd = 5.0
+        kp = -10.0
+        kd = -5.0
         phicommand = 0.0
         thetacommand = 0.0
         psicommand = 0.0
@@ -74,6 +74,11 @@ class Vehicle():
         Moment[0] = L
         Moment[1] = M
         Moment[2] = N
+        ##Saturation Block
+        MAXTORQUE = 100.0
+        for idx in range(0,3):
+            if abs(Moment[idx]) > MAXTORQUE:
+                Moment[idx] = MAXTORQUE*np.sign(Moment[idx])
         return Force,Moment
         
     def Derivatives(self,t,state):
@@ -101,10 +106,10 @@ class Vehicle():
         pqr = np.asarray([p,q,r])
         
         #Kinematics
-        TIB = RQUAT(q0123)
+        TIB = RQUAT(quat)
         xyzdot = np.matmul(TIB,uvw)
-        PQRMAT = np.asarray([[0 -p -q -r],[p 0 r -q],[q -r 0 p],[r q -p 0]])
-        quatdot = 0.5*np.matmul(PQRMAT,q0123)
+        PQRMAT = np.asarray([[0,-p,-q,-r],[p,0,r,-q],[q,-r,0,p],[r,q,-p,0]])
+        quatdot = 0.5*np.matmul(PQRMAT,quat)
         
         #Force and Moment Model 
         F,M = self.ForceMoment(t,state) ##THESE ARE IN THE Body Frame
@@ -302,13 +307,13 @@ if __name__ == '__main__':
     size = np.shape(data_np)
     NOSTATES = size[1]
 
-    quats = data[:,4:8]
+    quats = data_np[:,4:8]
     ptps = np.zeros((len(time),3))
     print('Converting to Euler Angles')
-    for x in range(0,len(time)):
-        quat = quats[x,:]
+    for idx in range(0,len(time)):
+        quat = quats[idx,:]
         ptp = quat2euler(quat)
-        ptps[x,:] = ptp
+        ptps[idx,:] = ptp
 
     #sys.exit()
 
@@ -329,9 +334,9 @@ if __name__ == '__main__':
         print(ylabels[idx])
 
     ptplabels = ['Phi (rad)','Theta (rad)','Psi (rad)']
-    for x in range(0,4):
+    for idx in range(0,3):
         plt.figure()
-        plt.plot(time,ptps[:,x])
+        plt.plot(time,ptps[:,idx])
         plt.grid()
         plt.xlabel('Time (sec)')
         plt.ylabel(ptplabels[idx])
