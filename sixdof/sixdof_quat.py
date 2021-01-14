@@ -16,11 +16,20 @@ class Vehicle():
         TIMESTEP = 0.01
         self.simdata = np.asarray([T0,TFINAL,TIMESTEP])
         ##Set up the massdata
+        
+
+        ###############USER PARAMETERS################3
         self.mass = 5.6
         Ixx = 1.0
         Iyy = 2.0
         Izz = 3.0
-        self.I = np.asarray([[Ixx,0,0],[0,Iyy,0],[0,0,Izz]])
+        Ixz = 0.0
+        Ixy = 0.0
+        Iyz = 0.0
+        self.MAXTORQUE = 100.0
+        #########################################
+
+        self.I = np.asarray([[Ixx,Ixy,Ixz],[Ixy,Iyy,Iyz],[Ixz,Iyz,Izz]]) ##DOUBLE CHECK THIS
         self.Iinv = np.linalg.inv(self.I)
         ##Set up initial conditions
         x0 = 0.0
@@ -59,6 +68,10 @@ class Vehicle():
         p = state[10]
         q = state[11]
         r = state[12]
+
+        #################################################################
+        ####################CONTROL SYSTEM################################
+
         kp = -10.0
         kd = -5.0
         phicommand = 0.0
@@ -74,11 +87,13 @@ class Vehicle():
         Moment[0] = L
         Moment[1] = M
         Moment[2] = N
-        ##Saturation Block
-        MAXTORQUE = 100.0
+
+        ###############################################################
+
+        ##Saturation Block        
         for idx in range(0,3):
-            if abs(Moment[idx]) > MAXTORQUE:
-                Moment[idx] = MAXTORQUE*np.sign(Moment[idx])
+            if abs(Moment[idx]) > self.MAXTORQUE:
+                Moment[idx] = self.MAXTORQUE*np.sign(Moment[idx])
         return Force,Moment
         
     def Derivatives(self,t,state):
