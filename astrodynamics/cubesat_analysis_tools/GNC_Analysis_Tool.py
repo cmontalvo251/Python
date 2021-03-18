@@ -63,7 +63,7 @@ class CubeSat():
 ####Example script
 
 ## Example Inputs
-
+example_inputs = np.loadtxt('ABEX_Data_File.txt')
 
 ## Run the function above
 
