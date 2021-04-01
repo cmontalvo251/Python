@@ -27,7 +27,7 @@ julian_day = 2446796 ##this is jan 1 1987 -- really? yes really. You can
 # + 245 to get to Sep 2nd
 # + 265 to get to the fall equinox
 # + 355 to get to the winter solstice
-#julian_day += 245 #Sep 2nd
+julian_day += 245 #Sep 2nd
 #julian_day += 365 - 30
 #julian_day -= 10
 #julian_day += 245
@@ -54,9 +54,9 @@ planets.MilkyWay.PlotOrbit(pp,-1)
 pp.close()
 
 ##Animation??
-planets.MilkyWay.numsatellites = 9 + 1 #The plus one is because of loops in Python. I know I probably need to fix the loop but whatever
-pa = PDF(1,plt)
-planets.AnimateOrbits(pa,julian_day,365,100,0.1)
+#planets.MilkyWay.numsatellites = 9 + 1 #The plus one is because of loops in Python. I know I probably need to fix the loop but whatever
+#pa = PDF(1,plt)
+#planets.AnimateOrbits(pa,julian_day,365,100,0.1)
 
 ##Use Mayavi if you're using Python3
 #planets.MilkyWay.numsatellites = 10
