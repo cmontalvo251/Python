@@ -6,67 +6,148 @@
 #   LIST OF OUTPUTS
 #   DIRECTIONS ON HOW TO RUN
 #   DESCRIPTION OF SOFTWARE
-#   
 #########################################################
 
 ###Modules
 import numpy as np
+import wmm2020 as wmm
+import Orbit as O
 
+###Classes
 class CubeSat():
-	def __init__(input):
-		self.input = input
-		self.Analysis()
+    def __init__(input):
+        self.input = input
+        self.Analysis()
 
-	def Analysis(self):
-		self.mag_report = self.Magnetorquer_Analysis()
-		self.desat_report = self.Desaturization_Analysis()
-		self.rw_report = self.Reaction_Wheel_Analysis()
+    def Analysis(self):
+        self.mag_report = self.Magnetorquer_Analysis()
+        self.rw_report = self.Reaction_Wheel_Analysis()
+        
+    def Orbit_Analysis(self):
+        orbit = O.Earth_Orbit(ra,rp)
+        orbit.Numerical_Orbit(1000)
+        orbit.make_plots()
 
-	def Magnetic_Field_Model_Comparison(self):
-		##do we need this?
-		## IGRF vs WMM2015
+    def Disturbance_Torques(self):
+        ##Compute the disturbance torques based on orbit
+        ##solar radiation pressure
+        rad_pressure = 4.5e-6 # Pa
+        ##use this to compute torque on body
+        Surface_Area = height*width
+        solar_rad_force = Surface_Area*rad_pressure
+        solar_rad_torque = solar_rad_force*np.max([height/2.0,width/2.0])
+        ##print('Solar Rad Torque = ',solar_rad_torque)
+        ##aerodynamic torques
+        
+        ##gravity gradient torque
+        
+        ##magnetic resonance dipole
+        
+        ##disturbance torques per axis
+        Disturbance_Torques = aero_torque+solar_rad_torque+grav_torque+mag_res_dipole
+        Disturbance_Torques_per_axis = Disturbance_Torques/np.sqrt(3)
+        d_torques = np.asarray([Disturbance_Torques_per_axis,Disturbance_Torques_per_axis,Disturbance_Torques_per_axis])
+        return d_torques
+        
+    def Reaction_Wheel_Analysis(self):
+        ##Given inertia
+        ##Compute reaction wheels that will provide the necessary momentum storage
+        wx = wmax*np.pi/180.0
+        wy = wmax*np.pi/180.0
+        wz = wmax*np.pi/180.0
+        
+        I = np.asarray([Ixx,Iyy,Izz])
+        w = np.asarray([wx,wy,wz])
+        H = I*w
+        Hreq = H*FS
+        #print('Momentum Required (Nms) = ',Hreq)
+        ##Based on disturbance torques
+        ##Can compute number of times during mission to desaturate?
+        Hreq_X = Hreq[0]
+        Hreq_Y = Hreq[1]
+        Hreq_Z = Hreq[2]
+        
+        #X-axis
+        Disturbance_Torques_X = d_torques[0]
+        Angular_Accel_X = Disturbance_Torques_X/Ixx #rad/s
+        Max_Angular_Velocity_X = Hreq_X/Ixx #rad/s
+        Time_to_Sat_sec_X = Max_Angular_Velocity_X/Angular_Accel_X #sec
+        Time_to_Sat_Months_X = ((Time_to_Sat_sec_X/3600.0)/24.0)/30.0 #months
+        Number_of_Desat_Man_X = Mission_Duration/Time_to_Sat_Months_X
+        Number_of_Desat_Man_Estimation_X = np.ceil(Number_of_Desat_Man_X)
+        
+        #Y-axis
+        Disturbance_Torques_Y = d_torques[1]
+        Angular_Accel_Y = Disturbance_Torques_Y/Iyy #rad/s
+        Max_Angular_Velocity_Y = Hreq_Y/Iyy #rad/s
+        Time_to_Sat_sec_Y = Max_Angular_Velocity_Y/Angular_Accel_Y #sec
+        Time_to_Sat_Months_Y = ((Time_to_Sat_sec_Y/3600.0)/24.0)/30.0 #months
+        Number_of_Desat_Man_Y = Mission_Duration/Time_to_Sat_Months_Y
+        Number_of_Desat_Man_Estimation_Y = np.ceil(Number_of_Desat_Man_Y)
+        
+        #Z-axis
+        Disturbance_Torques_Z = d_torques[2]
+        Angular_Accel_Z = Disturbance_Torques_Z/Izz #rad/s
+        Max_Angular_Velocity_Z = Hreq_Z/Izz #rad/s
+        Time_to_Sat_sec_Z = Max_Angular_Velocity_Z/Angular_Accel_Z #sec
+        Time_to_Sat_Months_Z = ((Time_to_Sat_sec_Z/3600.0)/24.0)/30.0 #months
+        Number_of_Desat_Man_Z = Mission_Duration/Time_to_Sat_Months_Z
+        Number_of_Desat_Man_Estimation_Z = np.ceil(Number_of_Desat_Man_Z)
+        
+        Desat_Mans = np.asarray([Number_of_Desat_Man_Estimation_X,Number_of_Desat_Man_Estimation_Y,Number_of_Desat_Man_Estimation_Z])
+        #print('Number of Desaturation Maneuvers = ',Desat_Mans)
+        return Hreq,Desat_Mans
 
-	def Magnetorquer_Analysis(self):
-		###Given inertia and orbit compute mag effectivness over 
-		###1 orbit
+    def Magnetic_Field_Model_Comparison(self):
+        ##do we need this?
+        ## IGRF vs WMM2015
+        ##After doing some research, it seems the WMM is the best option.
+        ##This is because the WMM is produced for the US and UK defense agencies with guaranteed support and updates.
+        ##https://www.ngdc.noaa.gov/geomag/faqgeom.shtml#:~:text=What%20is%20the%20difference%20between%20IGRF%20and%20WMM%20models%3F,-The%20World%20Magnetic&text=The%20WMM%20is%20a%20predictive,for%20the%20years%201900.0%20%2D%202020.0.
 
-		##First compute reaction wheel size
+    def Magnetorquer_Analysis(self):
+        ###Given inertia and orbit compute mag effectivness over 
+        ###1 orbit
 
-		##Then figure out how much momentum is in the wheels when saturated
+        ##First compute reaction wheel size
 
-		##Then compute the minimum size magTorquers that will remove momentum from the RWs in 1 orbit
+        ##Then figure out how much momentum is in the wheels when saturated
 
-		##Then add a safety factor so they actually detumble in a reasonable amount of time.
+        ##Then compute the minimum size magTorquers that will remove momentum from the RWs in 1 orbit
 
-		##This is the range where the magTs are effective
+        ##Then add a safety factor so they actually detumble in a reasonable amount of time.
 
-		#return output
-		return output
+        ##This is the range where the magTs are effective
 
-	def Desaturization_Analysis(self):
-		return output
-
-	def Orbit_Analysis(self):
-		##Maybe?
-
-	def Disturbance_Torques(self):
-		##Compute the disturbance torques based on orbit
-		self.d_torques = np.asarray([0,0,0])
-
-	def Reaction_Wheel_Analysis(self):
-		##Given inertia
-		##Compute reaction wheels that will provide the necessary momentum storage
-		##Based on disturbance torques
-		##Can compute number of times during mission to desaturate?
-		return output
+        #return output
+        return effectiveness
 
 ####Example script
 
 ## Example Inputs
 example_inputs = np.loadtxt('ABEX_Data_File.txt')
 
+FS = example_inputs[0] #factor of safety
+
+Ixx = example_inputs[1] #kg-m^2
+Iyy = example_inputs[2]
+Izz = example_inputs[3]
+
+wmax = example_inputs[4] #deg/s - Not sure where this comes from
+
+length = example_inputs[5]/100.0 #meters
+width = example_inputs[6]/100.0
+height = example_inputs[7]/100.0
+
+Mission_Duration = example_inputs[8] #months
+
+CD = example_inputs[9] #Drag
+rp = example_inputs[10]
+ra = example_inputs[11]
+
 ## Run the function above
 
 
-
 ### print the output
+print('Momentum Required (Nms) = ',Hreq)
+print('Number of Desaturation Maneuvers = ',Desat_Mans)
