@@ -11,10 +11,29 @@
 ###Modules
 import numpy as np
 import Orbit as O
+import matplotlib.pyplot as plt
 
-###Classes
+def RiemannSum(x,t):
+    out = 0.0
+    for i in range(1,len(t)):
+        out += x[i]*(t[i]-t[i-1])
+    return out
+
+###Class
 class CubeSat():
     def __init__(self,FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra):
+        self.FS = FS
+        self.Ixx = Ixx
+        self.Iyy = Iyy
+        self.Izz = Izz
+        self.wmax = wmax
+        self.length = length
+        self.width = width
+        self.height = height
+        self.Mission_Duration = Mission_Duration
+        self.CD = CD
+        self.rp = rp
+        self.ra = ra
         self.Orbit_Analysis()
         #self.Magnetic_Field_Model_Comparison()
         self.Disturbance_Torques()
@@ -22,9 +41,14 @@ class CubeSat():
         #self.Magnetorquer_Analysis()
         
     def Orbit_Analysis(self):
-        orbit = O.Earth_Orbit(ra,rp)
+        #Make sure this is working properly
+        orbit = O.Earth_Orbit(self.ra,self.rp)
         orbit.Numerical_Orbit(1000)
-        orbit.make_plots()
+        #Get time as a vector to use later on
+        self.time = orbit.t #sec
+        #Print plots of orbit
+        #orbit.make_plots()
+        return self.time
         
     #def Magnetic_Field_Model_Comparison(self):
         ##do we need this?
@@ -35,13 +59,22 @@ class CubeSat():
 
     def Disturbance_Torques(self):
         ##Compute the disturbance torques based on orbit
+        
         ##solar radiation pressure
         rad_pressure = 4.5e-6 # Pa
-        ##use this to compute torque on body
-        Surface_Area = height*width
-        solar_rad_force = Surface_Area*rad_pressure
-        solar_rad_torque = solar_rad_force*np.max([height/2.0,width/2.0])
-        #print('Solar Rad Torque = ',solar_rad_torque)
+        Surface_Area = self.height*self.width #m^2
+        solar_rad_force = Surface_Area*rad_pressure #N
+        solar_rad_torque = solar_rad_force*np.max([self.height/2.0,self.width/2.0]) #Nm
+        ang_accel_solar = solar_rad_torque/self.Ixx #rad/s^2
+        gamma = ang_accel_solar*self.time
+        ang_vel_solar = RiemannSum(gamma,self.time)
+        print(ang_vel_solar)
+        plt.figure()
+        plt.plot(self.time,gamma)
+        plt.grid()
+        plt.xlabel('Time (sec)')
+        plt.ylabel('Angular Velocity (rad/s)')
+        plt.show()        
         ##aerodynamic torques
         
         ##gravity gradient torque
@@ -55,49 +88,44 @@ class CubeSat():
         return self.d_torques
         
     def Reaction_Wheel_Analysis(self):
-        ##Given inertia
         ##Compute reaction wheels that will provide the necessary momentum storage
-        wx = wmax*np.pi/180.0
-        wy = wmax*np.pi/180.0
-        wz = wmax*np.pi/180.0
-        
-        I = np.asarray([Ixx,Iyy,Izz])
+        wx = self.wmax*np.pi/180.0
+        wy = self.wmax*np.pi/180.0
+        wz = self.wmax*np.pi/180.0      
+        I = np.asarray([self.Ixx,self.Iyy,self.Izz])
         w = np.asarray([wx,wy,wz])
         H = I*w
-        self.Hreq = H*FS
+        self.Hreq = H*self.FS
         ##Based on disturbance torques
         ##Can compute number of times during mission to desaturate?
         Hreq_X = self.Hreq[0]
         Hreq_Y = self.Hreq[1]
-        Hreq_Z = self.Hreq[2]
-        
+        Hreq_Z = self.Hreq[2]    
         #X-axis
         Disturbance_Torques_X = self.d_torques[0]
-        Angular_Accel_X = Disturbance_Torques_X/Ixx #rad/s
-        Max_Angular_Velocity_X = Hreq_X/Ixx #rad/s
+        Angular_Accel_X = Disturbance_Torques_X/self.Ixx #rad/s
+        Max_Angular_Velocity_X = Hreq_X/self.Ixx #rad/s
         Time_to_Sat_sec_X = Max_Angular_Velocity_X/Angular_Accel_X #sec
         Time_to_Sat_Months_X = ((Time_to_Sat_sec_X/3600.0)/24.0)/30.0 #months
-        Number_of_Desat_Man_X = Mission_Duration/Time_to_Sat_Months_X
-        Number_of_Desat_Man_Estimation_X = np.ceil(Number_of_Desat_Man_X)
-        
+        Number_of_Desat_Man_X = self.Mission_Duration/Time_to_Sat_Months_X
+        Number_of_Desat_Man_Estimation_X = np.ceil(Number_of_Desat_Man_X)   
         #Y-axis
         Disturbance_Torques_Y = self.d_torques[1]
-        Angular_Accel_Y = Disturbance_Torques_Y/Iyy #rad/s
-        Max_Angular_Velocity_Y = Hreq_Y/Iyy #rad/s
+        Angular_Accel_Y = Disturbance_Torques_Y/self.Iyy #rad/s
+        Max_Angular_Velocity_Y = Hreq_Y/self.Iyy #rad/s
         Time_to_Sat_sec_Y = Max_Angular_Velocity_Y/Angular_Accel_Y #sec
         Time_to_Sat_Months_Y = ((Time_to_Sat_sec_Y/3600.0)/24.0)/30.0 #months
-        Number_of_Desat_Man_Y = Mission_Duration/Time_to_Sat_Months_Y
+        Number_of_Desat_Man_Y = self.Mission_Duration/Time_to_Sat_Months_Y
         Number_of_Desat_Man_Estimation_Y = np.ceil(Number_of_Desat_Man_Y)
-        
         #Z-axis
         Disturbance_Torques_Z = self.d_torques[2]
-        Angular_Accel_Z = Disturbance_Torques_Z/Izz #rad/s
-        Max_Angular_Velocity_Z = Hreq_Z/Izz #rad/s
+        Angular_Accel_Z = Disturbance_Torques_Z/self.Izz #rad/s
+        Max_Angular_Velocity_Z = Hreq_Z/self.Izz #rad/s
         Time_to_Sat_sec_Z = Max_Angular_Velocity_Z/Angular_Accel_Z #sec
         Time_to_Sat_Months_Z = ((Time_to_Sat_sec_Z/3600.0)/24.0)/30.0 #months
-        Number_of_Desat_Man_Z = Mission_Duration/Time_to_Sat_Months_Z
+        Number_of_Desat_Man_Z = self.Mission_Duration/Time_to_Sat_Months_Z
         Number_of_Desat_Man_Estimation_Z = np.ceil(Number_of_Desat_Man_Z)
-        
+        #Print Momentum Storage of RW
         self.Desat_Mans = np.asarray([Number_of_Desat_Man_Estimation_X,Number_of_Desat_Man_Estimation_Y,Number_of_Desat_Man_Estimation_Z])
         print('Momentum Required (Nms) = ',self.Hreq)
         print('Number of Desaturation Maneuvers = ',self.Desat_Mans)
