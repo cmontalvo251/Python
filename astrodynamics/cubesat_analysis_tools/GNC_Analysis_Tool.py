@@ -12,16 +12,25 @@
 import numpy as np
 import Orbit as O
 import matplotlib.pyplot as plt
+import igrf
 
+###Functions
 def RiemannSum(x,t):
     out = 0.0
     for i in range(1,len(t)):
         out += x[i]*(t[i]-t[i-1])
     return out
 
+def Grav(x,Mass,Grav_Coeff,Mass_Earth,Rad_Earth): 
+    Grav_Accel = Grav_Coeff*Mass_Earth/(Rad_Earth + x*1000.0)**2 #Is altitude in m or km???
+    #print(Grav_Accel)
+    Grav_Force = Grav_Accel*Mass
+    #print(Grav_Force)
+    return Grav_Force
+
 ###Class
 class CubeSat():
-    def __init__(self,FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra):
+    def __init__(self,FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra,Mass_Sat):
         self.FS = FS
         self.Ixx = Ixx
         self.Iyy = Iyy
@@ -34,6 +43,7 @@ class CubeSat():
         self.CD = CD
         self.rp = rp
         self.ra = ra
+        self.Mass_Sat = Mass_Sat
         self.Orbit_Analysis()
         #self.Magnetic_Field_Model_Comparison()
         self.Disturbance_Torques()
@@ -46,9 +56,13 @@ class CubeSat():
         orbit.Numerical_Orbit(1000)
         #Get time as a vector to use later on
         self.time = orbit.t #sec
+        self.altitude = orbit.alt
+        self.Grav_Coeff = orbit.G
+        self.Mass_Earth = orbit.MEarth
+        self.Rad_Earth = orbit.REarth
         #Print plots of orbit
         #orbit.make_plots()
-        return self.time
+        return self.time,self.altitude
         
     #def Magnetic_Field_Model_Comparison(self):
         ##do we need this?
@@ -58,8 +72,7 @@ class CubeSat():
         ##https://www.ngdc.noaa.gov/geomag/faqgeom.shtml#:~:text=What%20is%20the%20difference%20between%20IGRF%20and%20WMM%20models%3F,-The%20World%20Magnetic&text=The%20WMM%20is%20a%20predictive,for%20the%20years%201900.0%20%2D%202020.0.
 
     def Disturbance_Torques(self):
-        ##Compute the disturbance torques based on orbit
-        
+        ##Compute the disturbance torques based on orbit        
         ##solar radiation pressure
         rad_pressure = 4.5e-6 # Pa
         Surface_Area = self.height*self.width #m^2
@@ -69,15 +82,23 @@ class CubeSat():
         gamma = ang_accel_solar*self.time
         ang_vel_solar = RiemannSum(gamma,self.time)
         print(ang_vel_solar)
-        plt.figure()
-        plt.plot(self.time,gamma)
-        plt.grid()
-        plt.xlabel('Time (sec)')
-        plt.ylabel('Angular Velocity (rad/s)')
-        plt.show()        
+        #plt.figure()
+        #plt.plot(self.time,gamma)
+        #plt.grid()
+        #plt.xlabel('Time (sec)')
+        #plt.ylabel('Angular Velocity (rad/s)')
+        #plt.show()        
         ##aerodynamic torques
         
         ##gravity gradient torque
+        Grav_Force = Grav(self.altitude,self.Mass_Sat,self.Grav_Coeff,self.Mass_Earth,self.Rad_Earth)
+        print(Grav_Force)
+        plt.figure()
+        plt.plot(self.altitude/1000.0,Grav_Force)
+        plt.grid()
+        plt.xlabel('Altitude (km)')
+        plt.ylabel('Gravitational Force (N)')
+        plt.show()
         
         ##magnetic resonance dipole
         
@@ -169,5 +190,7 @@ CD = example_inputs[9] #Drag
 rp = example_inputs[10] #perigee
 ra = example_inputs[11] #apogee
 
+Mass_Sat = example_inputs[12]
+
 ##Run the function above
-GNC = CubeSat(FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra)
+GNC = CubeSat(FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra,Mass_Sat)

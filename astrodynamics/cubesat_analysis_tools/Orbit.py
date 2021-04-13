@@ -13,11 +13,11 @@ def EOMs(state,t):
     z = state[1]
     velx = state[2]
     velz = state[3]
-
+    
     ###Kinematics
     xdot = velx
     zdot = velz
-
+    
     ##Dynamics
     ##Gravitational Acceleration
     rSat = np.sqrt((x**2) +(z**2))
@@ -27,7 +27,7 @@ def EOMs(state,t):
     else:
         xdbldot = -mu*x/(rSat**3)
         zdbldot = -mu*z/(rSat**3)
-
+        
     statedot = np.asarray([xdot,zdot,xdbldot,zdbldot])
     return statedot
 
@@ -46,11 +46,11 @@ class Earth_Orbit():
         self.Orbital_Elements()
         #Then compute the Analytic Orbit
         self.Analytic_Orbit()
-        #Let's make a circle for Earth just cuz
+        #Let's make a circle for Earth for plotting
         nuE = np.linspace(0,2*np.pi,100)
         self.xE = self.REarth*np.cos(nuE)
         self.yE = self.REarth*np.sin(nuE)
-
+    
     def constants(self):
         global REarth,mu
         self.G = 6.6742*10**-11; #%%Gravitational constant
@@ -60,8 +60,10 @@ class Earth_Orbit():
         ##Get rid of self to set global variable for numerical simulation
         mu = self.G*self.MEarth #gravitational parameters
         self.mu = mu #but also set one for self.
-
+        
     def Orbital_Elements(self):
+        print('Apogee = ',self.ra)
+        print('Perigee = ',self.rp)
         #Semi-Major Axis
         self.a = (self.ra+self.rp)/2.0
         #Eccentricity
@@ -74,7 +76,7 @@ class Earth_Orbit():
         print('Period of Orbit (hrs) = ',self.T/3600.0)
         #Angular Momentum
         self.h = np.sqrt(self.p*self.mu)
-
+    
     def Analytic_Orbit(self):
         ##True Anamoly
         self.nu = np.linspace(0,2*np.pi,1000)
@@ -83,7 +85,11 @@ class Earth_Orbit():
         #Components in Cartesian Coordinates
         self.xp = -self.r*np.cos(self.nu)
         self.yq = self.r*np.sin(self.nu)
-
+        #Compute Radius
+        self.r = np.sqrt(self.xp**2+self.yq**2)
+        #And Altitude of Earth
+        self.alt = self.r - self.REarth
+    
     def Numerical_Orbit(self,N):
         #Set Numerical to True for plotting
         self.Numerical = True
@@ -93,7 +99,7 @@ class Earth_Orbit():
         ##Start Simulating assuming we are at perigee
         stateinitial = np.asarray([self.rp,0.0,0.0,self.h/self.rp])
         ##Run the integrator
-        stateout = I.odeint(EOMs,stateinitial,self.t) 
+        stateout = I.odeint(EOMs,stateinitial,self.t)
         #Extract States
         self.xpN = -stateout[:,0]
         self.yqN = stateout[:,1]
@@ -101,7 +107,7 @@ class Earth_Orbit():
         self.rN = np.sqrt(self.xpN**2+self.yqN**2)
         #And Altitude of Earth
         self.altN = self.rN - self.REarth
-
+    
     def make_plots(self):
         ##First let's plot the 2D Orbit
         plt.figure()
@@ -113,7 +119,7 @@ class Earth_Orbit():
         plt.xlabel('X axis (km)')
         plt.ylabel('Y axis (km)')
         plt.legend()
-
+        
         if self.Numerical == True:
             plt.figure()
             plt.plot(self.t/3600.0,self.altN/1000.0,'b-')
@@ -121,23 +127,22 @@ class Earth_Orbit():
             plt.xlabel('Time (hrs)')
             plt.ylabel('Altitude of Earth (km)')
 
-        ##Show everything
-        plt.show()
-
-
 ##You can import this module or just run this script and it will plot some defaults
 if __name__ == '__main__':
-    ##Set the perigee (lowest point) 
+    ##Set the perigee (lowest point) in km
     rp = 400.0
-    ##and Apogee (highest point)
+    ##and Apogee (highest point) in km
     ra = 160000.0
     ##The default here is to just make the analytic orbit which runs very quickly.
     orbit = Earth_Orbit(ra,rp)
-    ##If you want the numerical simulation which essentially solves Keplers Time of 
+    ##If you want the numerical simulation which essentially solves Keplers Time of
     ##Flight problem you can run self.numerical(ndatapts)
     #Increasing the number of data points increases accuracy but slows down computation
     orbit.Numerical_Orbit(1000)
-
-    ##Then you can run make plots. If you don't run the numerical orbit you'll just 
+    
+    ##Then you can run make plots. If you don't run the numerical orbit you'll just
     #get a plot of the analytic orbit
     orbit.make_plots()
+    
+    #Show everything otherwise you won't see the plots
+    plt.show()
