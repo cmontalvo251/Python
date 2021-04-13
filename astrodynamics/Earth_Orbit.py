@@ -46,7 +46,7 @@ class Earth_Orbit():
 		self.Orbital_Elements()
 		#Then compute the Analytic Orbit
 		self.Analytic_Orbit()
-		#Let's make a circle for Earth just cuz
+		#Let's make a circle for Earth for plotting
 		nuE = np.linspace(0,2*np.pi,100)
 		self.xE = self.REarth*np.cos(nuE)
 		self.yE = self.REarth*np.sin(nuE)
@@ -62,6 +62,8 @@ class Earth_Orbit():
 		self.mu = mu #but also set one for self.
 
 	def Orbital_Elements(self):
+		print('Apogee = ',self.ra)
+		print('Perigee = ',self.rp)
 		#Semi-Major Axis
 		self.a = (self.ra+self.rp)/2.0
 		#Eccentricity
@@ -83,6 +85,10 @@ class Earth_Orbit():
 		#Components in Cartesian Coordinates
 		self.xp = -self.r*np.cos(self.nu)
 		self.yq = self.r*np.sin(self.nu)
+		#Compute Radius
+		self.r = np.sqrt(self.xp**2+self.yq**2)
+		#And Altitude of Earth
+		self.alt = self.r - self.REarth
 
 	def Numerical_Orbit(self,N):
 		#Set Numerical to True for plotting
@@ -121,15 +127,11 @@ class Earth_Orbit():
 			plt.xlabel('Time (hrs)')
 			plt.ylabel('Altitude of Earth (km)')
 
-		##Show everything
-		plt.show()
-
-
 ##You can import this module or just run this script and it will plot some defaults
 if __name__ == '__main__':
-	##Set the perigee (lowest point) 
+	##Set the perigee (lowest point) in km
 	rp = 400.0
-	##and Apogee (highest point)
+	##and Apogee (highest point) in km
 	ra = 160000.0
 	##The default here is to just make the analytic orbit which runs very quickly.
 	orbit = Earth_Orbit(ra,rp)
@@ -141,3 +143,7 @@ if __name__ == '__main__':
 	##Then you can run make plots. If you don't run the numerical orbit you'll just 
 	#get a plot of the analytic orbit
 	orbit.make_plots()
+
+	#Show everything otherwise you won't see the plots
+	plt.show()
+
