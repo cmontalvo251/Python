@@ -13,7 +13,7 @@ import numpy as np
 import Orbit as O
 import os
 import matplotlib.pyplot as plt
-import igrf
+import mag_field as igrf
 from matplotlib.backends.backend_pdf import PdfPages
 
 ###Functions
