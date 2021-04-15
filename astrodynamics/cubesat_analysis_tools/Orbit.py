@@ -103,6 +103,10 @@ class Earth_Orbit():
         #Extract States
         self.xpN = -stateout[:,0]
         self.yqN = stateout[:,1]
+        self.xdotN = stateout[:,2]
+        self.ydotN = stateout[:,3]
+        #Compute Total Velocity
+        self.Velocity = np.sqrt(self.xdotN**2+self.ydotN**2)
         #Compute Radius
         self.rN = np.sqrt(self.xpN**2+self.yqN**2)
         #And Altitude of Earth
