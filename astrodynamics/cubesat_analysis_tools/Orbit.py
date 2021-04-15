@@ -112,7 +112,7 @@ class Earth_Orbit():
         #And Altitude of Earth
         self.altN = self.rN - self.REarth
     
-    def make_plots(self):
+    def make_plots(self,pp=None):
         ##First let's plot the 2D Orbit
         plt.figure()
         plt.plot(self.xE/1000.0,self.yE/1000.0,'b-',label='Earth')
@@ -123,13 +123,17 @@ class Earth_Orbit():
         plt.xlabel('X axis (km)')
         plt.ylabel('Y axis (km)')
         plt.legend()
+        if pp != None:
+            pp.savefig()
         
         if self.Numerical == True:
             plt.figure()
-            plt.plot(self.t/3600.0,self.altN/1000.0,'b-')
+            plt.plot(self.t,self.altN/1000.0,'b-')
             plt.grid()
-            plt.xlabel('Time (hrs)')
+            plt.xlabel('Time (sec)')
             plt.ylabel('Altitude of Earth (km)')
+            if pp != None:
+                pp.savefig()
 
 ##You can import this module or just run this script and it will plot some defaults
 if __name__ == '__main__':
