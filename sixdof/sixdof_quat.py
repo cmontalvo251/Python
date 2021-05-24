@@ -34,7 +34,7 @@ class Vehicle():
         ##Set up initial conditions
         x0 = 0.0
         y0 = 0.0
-        z0 = -100
+        z0 = 0.0
         phi0 = 0.0
         theta0 = 0.0
         psi0 = 0.0
@@ -43,19 +43,24 @@ class Vehicle():
         u0 = 0.0
         v0 = 0.0
         w0 = 0.0
-        p0 = 10.0
-        q0 = 0.0
-        r0 = 0.0
+        p0 = 2.0
+        q0 = -2.0
+        r0 = -1.0
         self.stateinitial = np.asarray([x0,y0,z0,quat0[0],quat0[1],quat0[2],quat0[3],u0,v0,w0,p0,q0,r0])
         
     def ForceMoment(self,t,state):
-        #Force model is just 9.81 m/s^2 for now.
-        Fgrav = self.mass*np.asarray([0,0,0])
-        Faero = np.asarray([0,0,0])
-        Force = Fgrav + Faero
+        #Force model is nothing for now
+        Fgrav = self.mass*np.asarray([0.,0.,0.])
+        Faero = np.asarray([0.,0.,0.]) #also notihng
+        Force = Fgrav + Faero  #so basically no forces
+        
+
         #Moment is zero for now
-        Moment = np.asarray([0,0,0])
+        Moment = np.asarray([0.,0.,0.])
         #This is where you need to put the controller
+        ##################################################3
+
+        ##EXTRACT RELEVANT STATES
         q0 = state[3]
         q1 = state[4]
         q2 = state[5]
@@ -72,6 +77,7 @@ class Vehicle():
         #################################################################
         ####################CONTROL SYSTEM################################
 
+        ###SIMPLE PD CONTROL LAW
         kp = -10.0
         kd = -5.0
         phicommand = 0.0
@@ -86,14 +92,17 @@ class Vehicle():
         N = kp*(psi - psicommand) + kd*(r - rcommand)
         Moment[0] = L
         Moment[1] = M
-        Moment[2] = N
+        Moment[2] = N*0.0
 
         ###############################################################
 
         ##Saturation Block        
-        for idx in range(0,3):
-            if abs(Moment[idx]) > self.MAXTORQUE:
-                Moment[idx] = self.MAXTORQUE*np.sign(Moment[idx])
+        #for idx in range(0,3):
+        #    if abs(Moment[idx]) > self.MAXTORQUE:
+        #        Moment[idx] = self.MAXTORQUE*np.sign(Moment[idx])
+
+
+        ###THEN RETURN THE FORCE AND MOMENT
         return Force,Moment
         
     def Derivatives(self,t,state):
@@ -152,12 +161,18 @@ class Vehicle():
 
         #Run the integrator
         print('Begin RK4 Integrator')
+        tnext = 0.0
         state = self.stateinitial
         while t <= tfinal:
             #Output Contents to File
             list = state.tolist()
+            F,M = self.ForceMoment(t,state)
+            flist = F.tolist()
+            mlist = M.tolist()
             s = ", ".join(map(str,list))
-            outfile.write(str(t)+','+s+'\n')
+            f = ", ".join(map(str,flist))
+            m = ", ".join(map(str,mlist))
+            outfile.write(str(t)+','+s+','+f+','+m+'\n')
             #RK4 Call
             k1 = self.Derivatives(t,state)
             k2 = self.Derivatives(t+timestep/2.0,state+k1*timestep/2.0)
@@ -167,7 +182,9 @@ class Vehicle():
             #Step State
             state += phi*timestep
             t+=timestep
-            print('Time =',t)
+            if t> tnext:
+                print('Time =',t)
+                tnext+=1.0
         outfile.close()
         print('RK4 Integration Complete')
 
@@ -336,7 +353,7 @@ if __name__ == '__main__':
     print('Generating Plots')
 
     pdfhandle = PdfPages('python_plots.pdf')
-    ylabels = ['Time (sec)','X (m)','Y (m)','Z (m)','Q0 ','Q1 ','Q2 ','Q3 ','U (m/s)','V (m/s)','W (m/s)','P (rad/s)','Q (rad/s)','R (rad/s)']
+    ylabels = ['Time (sec)','X (m)','Y (m)','Z (m)','Q0 ','Q1 ','Q2 ','Q3 ','U (m/s)','V (m/s)','W (m/s)','P (rad/s)','Q (rad/s)','R (rad/s)','X (N)','Y (N)','Z (N)','L (N-m)','M (N-m)','N (N-m)']
     for idx in range(0,NOSTATES):
         plt.figure()
         #print(time)
