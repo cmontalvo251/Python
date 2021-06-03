@@ -94,7 +94,7 @@ def Dipole(Solar_Torque,btotal_dipole,btotal_arr):
 
 ###Class
 class CubeSat():
-    def __init__(self,FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra,Mass_Sat,Mag_Moment,pdfhandle):
+    def __init__(self,FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra,Mass_Sat,Mag_Moment,Mag_Moment_np,Mag_Mass_np,pdfhandle):
         self.FS = FS
         self.Ixx = Ixx
         self.Iyy = Iyy
@@ -110,6 +110,8 @@ class CubeSat():
         self.ra = ra
         self.Mass_Sat = Mass_Sat
         self.Mag_Moment = Mag_Moment
+        self.Mag_Moment_np = Mag_Moment_np
+        self.Mag_Mass_np = Mag_Mass_np
         self.Orbit_Analysis(pdfhandle)
         self.Magnetic_Field_Model() #Using IGRF
         self.Disturbance_Torques()
@@ -174,12 +176,12 @@ class CubeSat():
         self.Solar_Torque,self.Ang_Vel_Solar = Solar(self.height,self.width,self.Surface_Area,self.Ixx,self.time,self.Tor)
         Solar_Momentum = RiemannSum(self.Ang_Vel_Solar,self.time)
         #print(Ang_Vel_Solar)
-        plt.figure()
-        plt.plot(self.time,self.Ang_Vel_Solar)
-        plt.grid()
-        plt.xlabel('Time (sec)')
-        plt.ylabel('Solar Angular Velocity (rad/s)')
-        pdfhandle.savefig()
+        #plt.figure()
+        #plt.plot(self.time,self.Ang_Vel_Solar)
+        #plt.grid()
+        #plt.xlabel('Time (sec)')
+        #plt.ylabel('Solar Angular Velocity (rad/s)')
+        #pdfhandle.savefig()
         
         plt.figure()
         plt.plot(self.time,self.Solar_Torque)
@@ -215,13 +217,13 @@ class CubeSat():
         plt.plot(self.time,self.Mag_Res_Dipole)
         plt.grid()
         plt.xlabel('Time (sec)')
-        plt.ylabel('Magnetic Resonance Dipole (Nm)')
+        plt.ylabel('Magnetic Resonance Dipole Torque (Nm)')
         pdfhandle.savefig()
         
         #Total Disturbances
         self.Tot_Dis_Tor = self.Solar_Torque + self.Aero_Torque + self.Gravity_Torque + self.Mag_Res_Dipole
         self.Total_Momentum = RiemannSum(self.Tot_Dis_Tor,self.time)
-        print('Total Momentum Change from Disturbances (Nms): ',self.Total_Momentum)
+        print('Total Momentum Change from Disturbances (Nms) = ',self.Total_Momentum)
         
         plt.figure()
         plt.plot(self.time,self.Solar_Torque,'b-',label='Solar Radiation Pressure')
@@ -230,6 +232,44 @@ class CubeSat():
         plt.plot(self.time,self.Mag_Res_Dipole,'y-',label='Magnetic Resonance Dipole')
         plt.plot(self.time,self.Tot_Dis_Tor,'k-',label='Total Disturbance Torque')
         plt.xlabel('Time (sec)')
+        plt.ylabel('Disturbance Torques (Nm)')
+        plt.grid()
+        plt.legend()
+        pdfhandle.savefig()
+        
+        plt.figure()
+        plt.plot(self.altitude/1000.0,self.Solar_Torque,'b-',label='Solar Radiation Pressure')
+        plt.plot(self.altitude/1000.0,self.Aero_Torque,'r-',label='Aerodynamics')
+        plt.plot(self.altitude/1000.0,self.Gravity_Torque,'g-',label='Gravity Gradient')
+        plt.plot(self.altitude/1000.0,self.Mag_Res_Dipole,'y-',label='Magnetic Resonance Dipole')
+        plt.plot(self.altitude/1000.0,self.Tot_Dis_Tor,'k-',label='Total Disturbance Torque')
+        plt.xlabel('Altitude (km)')
+        plt.ylabel('Disturbance Torques (Nm)')
+        plt.grid()
+        plt.legend()
+        pdfhandle.savefig()
+        
+        plt.figure()
+        plt.plot(self.time,self.Solar_Torque,'b-',label='Solar Radiation Pressure')
+        plt.plot(self.time,self.Aero_Torque,'r-',label='Aerodynamics')
+        plt.plot(self.time,self.Gravity_Torque,'g-',label='Gravity Gradient')
+        plt.plot(self.time,self.Mag_Res_Dipole,'y-',label='Magnetic Resonance Dipole')
+        plt.plot(self.time,self.Tot_Dis_Tor,'k-',label='Total Disturbance Torque')
+        plt.yscale('log')
+        plt.xlabel('Time (sec)')
+        plt.ylabel('Disturbance Torques (Nm)')
+        plt.grid()
+        plt.legend()
+        pdfhandle.savefig()
+        
+        plt.figure()
+        plt.plot(self.altitude/1000.0,self.Solar_Torque,'b-',label='Solar Radiation Pressure')
+        plt.plot(self.altitude/1000.0,self.Aero_Torque,'r-',label='Aerodynamics')
+        plt.plot(self.altitude/1000.0,self.Gravity_Torque,'g-',label='Gravity Gradient')
+        plt.plot(self.altitude/1000.0,self.Mag_Res_Dipole,'y-',label='Magnetic Resonance Dipole')
+        plt.plot(self.altitude/1000.0,self.Tot_Dis_Tor,'k-',label='Total Disturbance Torque')
+        plt.yscale('log')
+        plt.xlabel('Altitude (km)')
         plt.ylabel('Disturbance Torques (Nm)')
         plt.grid()
         plt.legend()
@@ -253,7 +293,7 @@ class CubeSat():
         ##Based on disturbance torques
         ##Can compute number of times during mission to desaturate?
         Total_Orbits = (self.Mission_Duration*30*24*60*60)/self.time[-1]
-        print('Total Number of Orbits per Mission: ',Total_Orbits)
+        print('Total Number of Orbits per Mission =  ',Total_Orbits)
         #Compute number of orbits before we need to desaturate
         number_of_orbits_before_desat_required = np.max(self.Hreq) / self.Total_Momentum
         print('Number of Orbits before Desat Required = ',number_of_orbits_before_desat_required)
@@ -292,7 +332,7 @@ class CubeSat():
         self.Del_Tor = Mag_Tor - self.Tot_Dis_Tor
 
         plt.figure()
-        plt.plot(self.time,self.Del_Tor,'b-')
+        plt.plot(self.time,self.Del_Tor)
         plt.xlabel('Time (sec)')
         plt.ylabel('Delta Torque (Magnetorquer - Disturbance Torques) (Nm)')
         plt.grid()
@@ -300,14 +340,41 @@ class CubeSat():
 
         ##Compute total momentum dump capability of mag Torquers
         Momentum_Diff = RiemannSum(self.Del_Tor,self.time)
-        print('Total Momeuntum Absorbed Per Orbit with Magnetorquers (N-m-s) = ',Momentum_Diff)
+        print('Total Momentum Absorbed Per Orbit with Magnetorquers (N-m-s) = ',Momentum_Diff)
 
         #Determine number of orbits required to desaturate rws
         num_orbits_desat_magTs = np.max(self.Hreq)/Momentum_Diff
         print('Number of Orbits Required to Desaturate RWs = ',num_orbits_desat_magTs)
+        
+        Norbits = []
+        Tot_Mom = []
+        for x in range(0,10):
+            Mag_Tor_np = self.btotal_arr*(1e-09)*self.Mag_Moment_np[x]
+            self.Del_Tor_np = Mag_Tor_np - self.Tot_Dis_Tor
+            Momentum_Diff_np = RiemannSum(self.Del_Tor_np,self.time)
+            #print('Total Momeuntum Absorbed Per Orbit with Magnetorquers (N-m-s) = ',Momentum_Diff_np)
+            Tot_Mom.append(Momentum_Diff_np)
+            num_orbits_desat_magTs_np = np.max(self.Hreq)/Momentum_Diff_np
+            #print('Number of Orbits Required to Desaturate RWs = ',num_orbits_desat_magTs_np)
+            Norbits.append(num_orbits_desat_magTs_np)
+            
+        Norbits_np = np.asarray(Norbits)
+        Tot_Mom_np = np.asarray(Tot_Mom)
+        threshold = 0.0
+        Norbits_clip = Norbits_np[Norbits_np>threshold]
+        Tot_Mom_clip = Tot_Mom_np[Norbits_np>threshold]
+        Mag_Mass_clip = self.Mag_Mass_np[Norbits_np>threshold]
+        print('Number of Orbits to Desat RWs = ',Norbits_clip)
+        print('Total Momentum Absorbed Per Orbit with Magnetorquers (N-m-s) = ',Tot_Mom_clip)
+        plt.figure()
+        plt.plot(Mag_Mass_clip,Norbits_clip,'.')
+        plt.xlabel('Mass of Magnetorquers (g)')
+        plt.ylabel('Number of Orbits to Desaturate RWs')
+        plt.grid()
+        pdfhandle.savefig()
 
 ##Inputs
-example_inputs = np.loadtxt('ABEX_Data_File.txt')
+example_inputs = np.loadtxt('ABEX_GNC_Data_File.txt')
 
 FS = example_inputs[0] #factor of safety
 
@@ -326,16 +393,34 @@ Mission_Duration = example_inputs[8] #months
 CD = example_inputs[9] #Drag
 
 rp = example_inputs[10] #perigee
+print('Perigee (km) = ',rp)
 ra = example_inputs[11] #apogee
 
 Mass_Sat = example_inputs[12]
 
 Mag_Moment = example_inputs[13]
+print('Magnetic Moment (Amp-m^2) = ',Mag_Moment)
+
+mag = []
+for x in range(14,24):
+    rows = example_inputs[x]
+    mag.append(rows)
+    
+Mag_Moment_np = np.asarray(mag)
+#print('Mag Moment = ',Mag_Moment_np)
+
+mag_mass = []
+for x in range(24,34):
+    row = example_inputs[x]
+    mag_mass.append(row)
+    
+Mag_Mass_np = np.asarray(mag_mass)
+#print('Mag Mass = ',Mag_Mass_np)
 
 ##Run the function above
 pdfhandle = PdfPages('GNC_Analysis_Tool.pdf')
-GNC = CubeSat(FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra,Mass_Sat,Mag_Moment,pdfhandle)
+GNC = CubeSat(FS,Ixx,Iyy,Izz,wmax,length,width,height,Mission_Duration,CD,rp,ra,Mass_Sat,Mag_Moment,Mag_Moment_np,Mag_Mass_np,pdfhandle)
 pdfhandle.close()
 print('Plotting Routine Complete for Python')
-os.system('evince GNC_Analysis_Tool.pdf &')
+#os.system('evince GNC_Analysis_Tool.pdf &')
 #plt.show()
