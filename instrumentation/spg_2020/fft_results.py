@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def waveform(t):
-    return 1.3*np.sin(2*np.pi*10*t) + 0.8*np.sin(2*np.pi*15*t) + -1.2*np.sin(2*np.pi*4*t)
+    return 5.0*np.sin(500.0*np.pi*t)
 
 ## sin(2*pi*f*t)
 ## 2*pi*f*t needs to be in radians
@@ -17,7 +17,7 @@ f = waveform(t)
 ###Sampling Period
 ###Nyquist Frequency
 ###
-fs = 35.
+fs = 400.0
 Ts = 1.0/fs
 ts = np.arange(0.,1.,Ts)
 
@@ -31,7 +31,7 @@ plt.plot(t,f)
 
 #a0 = 0.
 plt.figure()
-for n in range(1,20):
+for n in range(1,500):
     b = 0.
     w0 = 2*np.pi
     #n = 4

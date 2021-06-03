@@ -23,7 +23,7 @@ for TsC in np.linspace(1,1000,100):
     plt.cla()
     
     #TsC = 720-t0
-    tauC = 4./TsC
+    tauC = TsC/4.0
 
     ##Plot raw data
     plt.plot(time_cool_clipped,temp_cool,'b*',label='Measured Data')
@@ -33,9 +33,9 @@ for TsC in np.linspace(1,1000,100):
     plt.xlabel('Time (sec)')
     plt.ylabel('Temperature (C)')
     
-    temp_cool_sim = (Ta-T0)*(1-np.exp(-tauC*time_cool_sim)) + T0
+    temp_cool_sim = (Ta-T0)*(1-np.exp(-(1/tauC)*time_cool_sim)) + T0
     
-    temp_cool_interpolate = (Ta-T0)*(1-np.exp(-tauC*time_cool_clipped)) + T0
+    temp_cool_interpolate = (Ta-T0)*(1-np.exp(-(1/tauC)*time_cool_clipped)) + T0
     
     residuals = (temp_cool_interpolate - temp_cool)**2
     
@@ -45,7 +45,7 @@ for TsC in np.linspace(1,1000,100):
         residual_optimal = np.sum(residuals)
         print('New Optimum found')
         tauOpt = tauC
-        temp_cool_opt = (Ta-T0)*(1-np.exp(-tauOpt*time_cool_sim)) + T0
+        temp_cool_opt = (Ta-T0)*(1-np.exp(-(1/tauOpt)*time_cool_sim)) + T0
     
     plt.plot(time_cool_sim,temp_cool_sim,'r-',label='Fitted Data')
     plt.plot(time_cool_sim,temp_cool_sim,'rs',label='Interpolated Data')

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 a = np.linspace(-20,20,1000)
 
-y = -(180000*a - 2500*a - 15000*a**2)
+y = -(18*a - 25*a - 15*a**2)
 
 plt.plot(a,y)
 plt.grid()
