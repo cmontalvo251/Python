@@ -130,9 +130,9 @@ class Earth_Orbit():
 ##You can import this module or just run this script and it will plot some defaults
 if __name__ == '__main__':
 	##Set the perigee (lowest point) in km
-	rp = 400.0
+	rp = 422.0
 	##and Apogee (highest point) in km
-	ra = 160000.0
+	ra = 30000.0
 	##The default here is to just make the analytic orbit which runs very quickly.
 	orbit = Earth_Orbit(ra,rp)
 	##If you want the numerical simulation which essentially solves Keplers Time of 
