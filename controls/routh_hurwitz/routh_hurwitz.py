@@ -15,7 +15,8 @@ import sympy as sp
 #varin = '(3-4*kd) (24-28*kd-4*kp) (48+8*kd-28*kp) (8*kp+168*kd) (168*kp)'
 #varin = '1 4*kd 4*kp'
 #varin = '1 4 (4+40*kd) (40*kp+40*kd) 40*kp'
-varin = '4 3 2 5'
+#varin = '4 3 2 5'
+varin = '1 6 11 7 200'
 #print(np.roots([1,0,5,0,4]))
 
 #kp = 0.01
