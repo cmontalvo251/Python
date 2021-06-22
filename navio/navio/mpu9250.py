@@ -30,6 +30,7 @@ import spidev
 import time
 import struct
 import array
+import numpy as np
 
 class MPU9250:
 
@@ -558,6 +559,25 @@ class MPU9250:
 # usage: call this functions to read and get values
 # returns accel, gyro and mag values
 # -----------------------------------------------------------------------------------------------
+
+    def getALL(self):
+        a,g,m = self.getMotion9()
+        ax = a[0]
+        ay = a[1]
+        az = a[2]
+        phi = np.arctan(ay/az)
+        theta = np.arctan(-ax/(ay*np.sin(phi)+az*np.cos(phi)))
+        bx = m[0]
+        by = m[1]
+        bz = m[2]
+        psi = np.arctan((bz*np.sin(phi)-by*np.cos(phi))/(bx*np.cos(theta)+by*np.sin(theta)*np.sin(phi)+bz*np.sin(theta)*np.cos(phi)))
+        temp = self.temperature
+        roll = phi * 180.0/np.pi
+        pitch = theta * 180.0/np.pi
+        yaw = psi * 180.0/np.pi
+        rpy = [roll,pitch,yaw]
+
+        return a,g,rpy,temp
 
     def getMotion9(self):
         self.read_all()

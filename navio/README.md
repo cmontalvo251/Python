@@ -1,3 +1,6 @@
-# Navio python drivers
+This folder has a bunch of Navio2 examples in Python
 
-Drivers for devices on Navio 2 board
+there is a folder inside here called navio that holds all the
+navio classes. I realize there are two folders with the same name.
+
+Ain't that a bitch.
