@@ -562,8 +562,8 @@ class MPU9250:
 
     def getALL(self):
         a,g,m = self.getMotion9()
-        ax = a[0]
-        ay = a[1]
+        ay = a[0]
+        ax = a[1]
         az = a[2]
         phi = np.arctan(ay/az)
         theta = np.arctan(-ax/(ay*np.sin(phi)+az*np.cos(phi)))
