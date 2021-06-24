@@ -76,33 +76,33 @@ class MS5611:
 	__MS5611_ADDRESS_CSB_HIGH = 0x77
 	__MS5611_DEFAULT_ADDRESS  = 0x77
 
-	__MS5611_RA_ADC           = 0x00
-	__MS5611_RA_RESET         = 0x1E
+	__MS5611_RA_ADC		  = 0x00
+	__MS5611_RA_RESET	  = 0x1E
 
-	__MS5611_RA_C0            = 0xA0
-	__MS5611_RA_C1            = 0xA2
-	__MS5611_RA_C2            = 0xA4
-	__MS5611_RA_C3            = 0xA6
-	__MS5611_RA_C4            = 0xA8
-	__MS5611_RA_C5            = 0xAA
-	__MS5611_RA_C6            = 0xAC
-	__MS5611_RA_C7            = 0xAE
+	__MS5611_RA_C0		  = 0xA0
+	__MS5611_RA_C1		  = 0xA2
+	__MS5611_RA_C2		  = 0xA4
+	__MS5611_RA_C3		  = 0xA6
+	__MS5611_RA_C4		  = 0xA8
+	__MS5611_RA_C5		  = 0xAA
+	__MS5611_RA_C6		  = 0xAC
+	__MS5611_RA_C7		  = 0xAE
 
-	__MS5611_RA_D1_OSR_256    = 0x40
-	__MS5611_RA_D1_OSR_512    = 0x42
-	__MS5611_RA_D1_OSR_1024   = 0x44
-	__MS5611_RA_D1_OSR_2048   = 0x46
-	__MS5611_RA_D1_OSR_4096   = 0x48
+	__MS5611_RA_D1_OSR_256	  = 0x40
+	__MS5611_RA_D1_OSR_512	  = 0x42
+	__MS5611_RA_D1_OSR_1024	  = 0x44
+	__MS5611_RA_D1_OSR_2048	  = 0x46
+	__MS5611_RA_D1_OSR_4096	  = 0x48
 
-	__MS5611_RA_D2_OSR_256    = 0x50
-	__MS5611_RA_D2_OSR_512    = 0x52
-	__MS5611_RA_D2_OSR_1024   = 0x54
-	__MS5611_RA_D2_OSR_2048   = 0x56
-	__MS5611_RA_D2_OSR_4096   = 0x58
+	__MS5611_RA_D2_OSR_256	  = 0x50
+	__MS5611_RA_D2_OSR_512	  = 0x52
+	__MS5611_RA_D2_OSR_1024	  = 0x54
+	__MS5611_RA_D2_OSR_2048	  = 0x56
+	__MS5611_RA_D2_OSR_4096	  = 0x58
 
 	def __init__(self, I2C_bus_number = 1, address = 0x77, SPI_bus_number = 0, SPI_dev_number = 0, bus = "I2C"):
 		self.bus = self.I2CBus(I2C_bus_number, address) if bus == "I2C" else  \
-                                 self.SPIBus(SPI_bus_number, SPI_dev_number)
+				 self.SPIBus(SPI_bus_number, SPI_dev_number)
 		self.C1 = 0
 		self.C2 = 0
 		self.C3 = 0
@@ -117,7 +117,7 @@ class MS5611:
 	def initialize(self):
 		## The MS6511 Sensor stores 6 values in the EPROM memory that we need in order to calculate the actual temperature and pressure
 		## These values are calculated/stored at the factory when the sensor is calibrated.
-		##      I probably could have used the read word function instead of the whole block, but I wanted to keep things consistent.
+		##	I probably could have used the read word function instead of the whole block, but I wanted to keep things consistent.
 		C1 = self.bus.read_registers(self.__MS5611_RA_C1) #Pressure Sensitivity
 		#time.sleep(0.05)
 		C2 = self.bus.read_registers(self.__MS5611_RA_C2) #Pressure Offset
@@ -198,6 +198,12 @@ class MS5611:
 		self.readTemperature()
 
 		self.calculatePressureAndTemperature()
+		self.convertPressure2Altitude()
+
+	def convertPressure2Altitude(self):
+		pascals = self.PRES/0.01;
+		#pascals = 1010.0/0.01
+		self.ALT = (1.0-(pascals/101325.0)**(1.0/5.25588))/(2.2557*10**-5.0)
 
 	def test(self):
 		self.initialize()
