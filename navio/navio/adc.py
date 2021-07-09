@@ -15,4 +15,9 @@ class ADC():
         value = self.channels[ch].read()
         position = self.channels[ch].seek(0, 0)
         return float(value[:-1])
+
+    def update(self,results):
+        for i in range (0, self.channel_count):
+            results[i] = self.read(i)
+        return(results)
         
