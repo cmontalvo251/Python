@@ -15,15 +15,15 @@ Width = 226.0/1000.0 #meters
 Depth = 226.0/1000.0 #meters
 
 ##Size of Solar Panels
-Length_sp = 25.0/1000.0
-Width_sp = 226.0/1000.0
-Depth_sp = 3.0*226.0/1000.0
+Length_sp = 3.0/1000.0
+Width_sp = 296.90/1000.0
+Depth_sp = 543.90/1000.0
 
 ###Distance to Solar Panel Centroid from Satellite Centroid
 #Center of mass of the solar panel = lx = 100 mm, 113 mm
 lx = 0.0
-ly = 100.0/1000.0 #meters
-lz = -113.0/1000.0 #meters
+ly = 261.45/1000.0 #meters
+lz = -183.0/1000.0 #meters
 
 ##Inertias about centroid
 Inertia_cuboid = mass_cuboid/12.0 * np.array([[Length**2 + Width**2,0,0],[0,Length**2+Depth**2,0],[0,0,Width**2+Depth**2]])
