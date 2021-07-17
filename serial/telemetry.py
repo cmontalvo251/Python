@@ -1,8 +1,9 @@
-import serial as S
+import serial as S ##python3 -m pip install pyserial
 import struct
+import random
 
 class Telemetry():
-  def __init__(self,BaudRate=115200,port="/dev/ttyUSB0"):
+  def __init__(self,BaudRate=57600,port="/dev/ttyAMA0"):
     self.SerialInit(port,BaudRate);
     #//Call this for higher level control
   def SerialInit(self,ComPortName,BaudRate):
@@ -15,24 +16,27 @@ class Telemetry():
     return rxchar;
   def SerialPutc(self,txchar):
     if self.hComm is not None:
-      self.hComm.write(txchar)
+      print("Sending ASCII Code = " + str(ord(txchar)))
+      self.hComm.write(txchar.encode("ascii"))
   def SerialPutString(self,string):
     for s in string:
       self.SerialPutc(s)
   def SerialSendArray(self,number_array,echo=1):
     #union inparser inputvar; ##Need to look up how to do union inparser
     #in python and then convert the number to 8digit hex
+    i = 0
     for n in number_array:
       #inputvar.floatversion = number_array[i];
       int_var = int(self.binary(n),2)
       print("Sending = " + str(n) + " " + str(int_var))
-      #sprintf(outline,"H:%08x ",int_var);
+      #sprintf(outline,"n:%08x ",int_var);
       hexval=hex(int_var)
       hexval = hexval.replace('0x','')
-      outline='H:'+hexval+' '
+      outline=str(i)+':'+hexval
       print("Hex = " + outline)
       self.SerialPutString(outline);
       self.SerialPutc('\r');
+      i+=1
   def binary(self,num):
     return ''.join('{:0>8b}'.format(c) for c in struct.pack('!f', num))
   def SerialPutHello(self,echo=1):
@@ -40,6 +44,8 @@ class Telemetry():
     self.SerialPutc('\r');
   
 if __name__ == '__main__':
-  ser = Telemetry(115200,"/dev/ttyACM0") 
-  number_array = [3.4,-2.3,0.4,-0.1,5.8,300.0,-300.0]
+  ser = Telemetry(57600,"/dev/ttyAMA0")
+  number_array = [0,0]
+  for n in range(0,2):
+    number_array[n] = random.randint(1,100)
   ser.SerialSendArray(number_array)
