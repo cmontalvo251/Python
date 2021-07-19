@@ -2,8 +2,10 @@ import serial as S ##python3 -m pip install pyserial
 import struct
 import random
 
-class Telemetry():
-  def __init__(self,BaudRate=57600,port="/dev/ttyAMA0"):
+class telemetry():
+  def __init__(self,BaudRate=57600,port="/dev/ttyAMA0",period=1.0):
+    self.lastTime = 0.0
+    self.period = period #in seconds
     self.SerialInit(port,BaudRate);
     #//Call this for higher level control
   def SerialInit(self,ComPortName,BaudRate):
@@ -44,7 +46,7 @@ class Telemetry():
     self.SerialPutc('\r');
   
 if __name__ == '__main__':
-  ser = Telemetry(57600,"/dev/ttyAMA0")
+  ser = telemetry(57600,"/dev/ttyAMA0")
   number_array = [0,0]
   for n in range(0,2):
     number_array[n] = random.randint(1,100)
