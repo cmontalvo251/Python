@@ -18,6 +18,6 @@ class ADC():
 
     def update(self,results):
         for i in range (0, self.channel_count):
-            results[i] = self.read(i)
+            results[i] = self.read(i)/1000.0
         return(results)
         
