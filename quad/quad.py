@@ -536,7 +536,7 @@ class rc(object):
         #print self.channels_np[0,:] #- this is the entire first data point of all channels
         #print raw_np[:,0] #- this is the first channel
 
-    def plot_rc(self,x0,xf):
+    def plot_rc(self,x0,xf,pp):
         plt.figure()
         plt.plot(self.timeSecIN,self.RollChannel)
         #plt.plot(self.timeSecOUT,self.RollChannelOut,label='Roll SERVO')
@@ -660,7 +660,7 @@ class ATTITUDE(object):
         self.ATT_OFFSET = 0
         
 
-    def plot_ATTITUDE(self,x0,xf):
+    def plot_ATTITUDE(self,x0,xf,pp):
         plt.figure()
         print("Roll and Roll Desired = ",self.ROLL[0],self.ROLL_DES[0])
         plt.plot(self.timeMS_AHR2,self.ROLL2,label='AHRS2')
@@ -885,7 +885,7 @@ class barometer(object):
         if gpsRead.GPSINIT == 1:
             self.altitude_MSL_np += gpsRead.altitude[0]
             
-    def plot_barometer(self, figObj,x0,xf):
+    def plot_barometer(self, figObj,x0,xf,pp):
         axis1 = figObj.add_subplot(1, 1, 1)
         axis1.plot(self.timeSec, self.pressureMB, color = "blue")
         # axis1.set_ylim([1010.0, 1020.0])
@@ -920,7 +920,7 @@ class battery(object):
         self.Current = []
         self.OFFSET = 0
 
-    def plot_battery(self):
+    def plot_battery(self,pp):
         plt.figure()
         plt.plot(self.timeSec,self.Voltage)
         plt.xlabel('Time (ms)')
@@ -1103,7 +1103,7 @@ class gps(object):
         
 #Cross Class Plotting///////////////////////////////////////////////
 
-def plot_altitude(quad_data,x0,xf):
+def plot_altitude(quad_data,x0,xf,pp):
     baroRead = quad_data[0]
     gpsRead = quad_data[1]
     rcinoutRead = quad_data[2]
