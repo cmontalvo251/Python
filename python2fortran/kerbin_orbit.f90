@@ -2,11 +2,12 @@
 
 PROGRAM kerbin_orbit
 IMPLICIT NONE
-real*8 G,Mkerbin,muKerbin,Rkerbin,nu(100)
+real*8 Rkerbin,nu(100)
 real*8 alt_AGL,rp,ra,axis,ecc,W,wp,inc,PI,zrf(100)
 real*8 xpf(100),yqf(100),xif(100),yjf(100),zkf(100)
 real*8 TPI(3,3),xyzi(3),xyz0(3),velf(100),p,r(100)
-real*8 vxf(100),vyf(100)
+real*8 vxf(100),vyf(100),vel_circular
+real*16 G,Mkerbin,muKerbin
 integer i,openflag
 
 PI = 3.141592654
@@ -16,7 +17,9 @@ write(*,*) 'Running Fortran Code'
 !##Kerbin Parameters
 G = 6.6742*(10**(-11)) !#%%Gravitational constant
 Mkerbin = 5.2915158*(10**22) !#
-muKerbin = G*Mkerbin
+!Unfortunately this does not work so we have to compute it 
+!A different way
+muKerbin = 6.6742*5.2915158*(10**11)
 Rkerbin = 600000. !#meters
 
 !##True Anamoly
@@ -70,8 +73,12 @@ do i=1,100
 end do
 
 !###Now let's Compute Velocity
-vxf = sqrt(muKerbin/p)*(-sin(nu))
-vyf = sqrt(muKerbin/p)*(ecc+cos(nu))
+vel_circular = sqrt(muKerbin/p)
+write(*,*) 'muKerbin:',muKerbin
+write(*,*) 'parameter:',p
+write(*,*) 'Velocity Circuilar:',vel_circular
+vxf = vel_circular*(-sin(nu))
+vyf = vel_circular*(ecc+cos(nu))
 velf = sqrt(vxf**2 + vyf**2)
 
 !!Output contents to file
