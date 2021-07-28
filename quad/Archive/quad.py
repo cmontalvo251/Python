@@ -198,14 +198,13 @@ def get_quad_data(fileName):
                     apmVersion = '2.0.21'
                     rad2deg = 1.0 #angles are already in degrees - But according to just my basic understanding and an experiment I did
                     #at the Irvington Airfield it looks as though the angles here are already in degrees. Odd.
-                apmVersion = '2.0.26'
+                apmVersion = '2.0.26' ###HARD CODED!!!!!
                 print("APM VERSION = ",apmVersion,formatGPS[0])
                 print("Resetting GPSINIT")
                 gpsRead.GPSINIT = 0
                 
             if (splitLine[0] == "BARO"):
-                timeMS = int(splitLine[1])
-                # print('timeMSBARO = ',timeMS)
+                timeMS = long(splitLine[1])
                 if gpsRead.GPSON_Sec == -99:
                     gpsRead.GPSON_Sec = timeMS/1000.0
                     print('GPS Time = ',gpsRead.GPSON_Sec)
@@ -222,8 +221,7 @@ def get_quad_data(fileName):
                 baroRead.pressure.append(float(splitLine[3]))
                 baroRead.temperature.append(float(splitLine[4]))
             elif (splitLine[0] == "CTUN"):
-                timeMS = int(splitLine[1])/1000.0
-                # print('timeMSCTUN = ',timeMS)
+                timeMS = long(splitLine[1])/1000.0
                 if len(gpsRead.timeMS_CTUN) > 0:
                     if timeMS + gpsRead.CTUN_OFFSET < gpsRead.timeMS_CTUN[-1]:
                         gpsRead.CTUN_OFFSET = gpsRead.timeMS_CTUN[-1]
@@ -246,9 +244,9 @@ def get_quad_data(fileName):
                 #GPS,TimeUS,Status,GMS,GWk,NSats,HDop,Lat,Lng,Alt,Spd,GCrs,VZ,U
                 # 0,  1      2       3 4    5     6    7  8   9   10  11   12
                 if apmVersion == '2.0.18':
-                    timeMS_internal = int(splitLine[1])
-                    timeMS = int(splitLine[2])
-                    week = int(splitLine[3])
+                    timeMS_internal = long(splitLine[1])
+                    timeMS = long(splitLine[2])
+                    week = long(splitLine[3])
                     numSats = int(splitLine[4])
                     #dummy = int(splitLine[5])
                     lat = float(splitLine[6])
@@ -258,9 +256,9 @@ def get_quad_data(fileName):
                     speed = float(splitLine[10])
                     VZ = -np.float(splitLine[12])
                 elif apmVersion == '2.0.21':
-                    timeMS_internal = int(splitLine[1])
-                    timeMS = int(splitLine[3]) #GPSTimeMS is shifted here. ugh.
-                    week = int(splitLine[4])
+                    timeMS_internal = long(splitLine[1])
+                    timeMS = long(splitLine[3]) #GPSTimeMS is shifted here. ugh.
+                    week = long(splitLine[4])
                     numSats = int(splitLine[5])
                     #dummy = int(splitLine[6])
                     lat = float(splitLine[7])
@@ -272,8 +270,8 @@ def get_quad_data(fileName):
                 elif apmVersion == '2.0.26':
                     timeMS_internal = float(splitLine[1])
                     status = splitLine[2]
-                    timeMS = int(float(splitLine[3])) #GPSTimeUS is shifted here. ugh.
-                    week = int(splitLine[4])
+                    timeMS = long(float(splitLine[3])) #GPSTimeUS is shifted here. ugh.
+                    week = long(splitLine[4])
                     numSats = int(splitLine[5])
                     #dummy = int(splitLine[6])
                     lat = float(splitLine[7])
@@ -339,39 +337,31 @@ def get_quad_data(fileName):
                 # Channel 2 - Pitch
                 # Channel 3 - Throttle
                 # Chanlle 4 - Yaw
-                timeMS = int(splitLine[1])
-                # print('timeMSRCIN = ',timeMS)
+                timeMS = long(splitLine[1])
                 if len(rcinoutRead.timeMSIN) > 0:
                     if timeMS + rcinoutRead.IN_OFFSET < rcinoutRead.timeMSIN[-1]:
                         rcinoutRead.IN_OFFSET = rcinoutRead.timeMSIN[-1]
-                val1 = int(splitLine[1])+rcinoutRead.IN_OFFSET
-                rcinoutRead.timeMSIN.append(val1)
-                val2 = int(splitLine[2])
-                rcinoutRead.RollChannel.append(val2)
-                val3 = int(splitLine[3])
-                rcinoutRead.PitchChannel.append(val3)
-                val4 = int(splitLine[4])
-                rcinoutRead.ThrottleChannel.append(val4)
-                val5 = int(splitLine[5])
-                rcinoutRead.YawChannel.append(val5)
+                rcinoutRead.timeMSIN.append(long(splitLine[1])+rcinoutRead.IN_OFFSET)
+                rcinoutRead.RollChannel.append(long(splitLine[2]))
+                rcinoutRead.PitchChannel.append(long(splitLine[3]))
+                rcinoutRead.ThrottleChannel.append(long(splitLine[4]))
+                rcinoutRead.YawChannel.append(long(splitLine[5]))
             elif (splitLine[0] == "RCOU"):
-                timeMS = int(splitLine[1])
+                timeMS = long(splitLine[1])
                 if len(rcinoutRead.timeMSOUT) > 0:
                     if timeMS + rcinoutRead.OUT_OFFSET < rcinoutRead.timeMSOUT[-1]:
                         rcinoutRead.OUT_OFFSET = rcinoutRead.timeMSOUT[-1]
-                rcinoutRead.timeMSOUT.append(int(splitLine[1])+rcinoutRead.OUT_OFFSET)
-                rcinoutRead.TopRight.append(int(splitLine[2])) #Motor 1 - Top Right - This configuration comes from 
-                rcinoutRead.BottomLeft.append(int(splitLine[3])) #Motor 2 - Bottom Left - the pixhawk Quad-X profile
-                rcinoutRead.TopLeft.append(int(splitLine[4])) #Motor 3 - Top Left - But This could be wrong
-                rcinoutRead.BottomRight.append(int(splitLine[5])) #Motor 4 - Bottom Right
+                rcinoutRead.timeMSOUT.append(long(splitLine[1])+rcinoutRead.OUT_OFFSET)
+                rcinoutRead.TopRight.append(long(splitLine[2])) #Motor 1 - Top Right - This configuration comes from 
+                rcinoutRead.BottomLeft.append(long(splitLine[3])) #Motor 2 - Bottom Left - the pixhawk Quad-X profile
+                rcinoutRead.TopLeft.append(long(splitLine[4])) #Motor 3 - Top Left - But This could be wrong
+                rcinoutRead.BottomRight.append(long(splitLine[5])) #Motor 4 - Bottom Right
             elif (splitLine[0] == "IMU"):
                 timeMS = np.float(splitLine[1])/1000.0
                 if len(IMURead.timeMS_IMU) > 0:
                     if timeMS + IMURead.IMU_OFFSET < IMURead.timeMS_IMU[-1]:
                         IMURead.IMU_OFFSET = IMURead.timeMS_IMU[-1]
-                timeMS_IMU = int(splitLine[1])/1000.0+IMURead.IMU_OFFSET
-                # print('timeMS_IMU = ',timeMS_IMU)
-                IMURead.timeMS_IMU.append(timeMS_IMU)
+                IMURead.timeMS_IMU.append(long(splitLine[1])/1000.0+IMURead.IMU_OFFSET)
                 ##http://ardupilot.org/copter/docs/common-downloading-and-analyzing-data-logs-in-mission-planner.html
                 ##According to this website the values here are in deg/sec
                 IMURead.GyrX.append(np.float(splitLine[2]))
@@ -484,13 +474,13 @@ def get_quad_data(fileName):
 #-----------------------------------------------------
 def DateToMJD(year, month, day):
     Y = 367 * year
-    YM = int(year + (month + 9) / 12)
-    YM2 = int(year + (month - 9) / 7)
-    C  = int(YM2 / 100 + 1)
-    J = int(7 * YM / 4)
-    A = int(3 * C / 4)
-    B = int(275 * month / 9)
-    val = Y - J - A + B + day + 1721028 - 2400000
+    YM = year + (month + 9) / 12
+    YM2 = year + (month - 9) / 7
+    C  = YM2 / 100 + 1
+    J = 7 * YM / 4
+    A = 3 * C / 4
+    B = 275 * month / 9
+    val = Y - J - A + B + day + 1721028L - 2400000L
     # print('Y = ',Y)
     # print('YM = ',YM)
     # print('YM2 = ',YM2)
@@ -508,26 +498,25 @@ def DateToMJD(year, month, day):
 # * - Adapted from Fliegel/van Flandern ACM 11/#10 p 657 Oct 1968.
 #-----------------------------------------------------
 def MJDToDate(MJD):
-    J = int(MJD + 2400001 + 68569)
-    # print('J=',J)
-    C = int(4 * J / 146097)
-    # print('C=',C)
-    A = int((146097 * C + 3) / 4)
-    # print('A = ',A)
+    J = MJD + 2400001L + 68569L
+    #print('J=',J)
+    C = 4 * J / 146097L
+    #print('C=',C)
+    A = (146097L * C + 3) / 4
+    #print('A = ',A)
     J = J - A
-    # print('J2 = ',J)
-    Y = int(4000 * (J + 1) / 1461001)
-    # print('Y=',Y)
-    B = int(31 - 1461 * Y / 4)
-    # print('B = ',B)
+    #print('J2 = ',J)
+    Y = 4000 * (J + 1) / 1461001L
+    #print('Y=',Y)
+    B = 31 - 1461 * Y / 4
+    #print('B = ',B)
     J = J + B
-    # print('J3=',J)
-    M = int(80 * J / 2447)
-    # print('M=',M)
-    D = int(2447 * M / 80)
-    day = J - D
-    # print('Day=',day)
-    J = int(M / 11)
+    #print('J3=',J)
+    M = 80 * J / 2447
+    #print('M=',M)
+    day = J - 2447 * M / 80
+    #print('Day=',day)
+    J = M / 11
     month = M + 2 - (12 * J)
     year = 100 * (C - 49) + Y + J
     
@@ -887,7 +876,7 @@ class barometer(object):
             self.timeHr.append(i/1000.0 * (1.0/3600.0) + GPSON)
 
         for i in range(len(self.timeMS_GPS)):
-            MJD_DateSpace = np.floor(gpsRead.WEEK * 7 + self.timeMS_GPS[i] / 86400000)
+            MJD_DateSpace = gpsRead.WEEK * 7 + (self.timeMS_GPS[i] / 86400000L)
             # print('Week = ',gpsRead.WEEK)
             # print('timeMS_GPS = ',self.timeMS_GPS[i])
             # print('MJD_DateSpace = ',MJD_DateSpace)
@@ -903,8 +892,7 @@ class barometer(object):
                 val = GPSON
             else:
                 val = self.timeMS_GPS[i]
-            secondsLeft = (val / 1000) % 86400
-            # print('SecondsLeft = ',secondsLeft)
+            secondsLeft = (val / 1000) % 86400L
             hours = secondsLeft / 3600
             secondsLeft = secondsLeft - hours * 3600
             minutes = secondsLeft / 60
@@ -1053,20 +1041,18 @@ class gps(object):
         #print self.timeMS_GPS
 
         for i in range(len(self.timeMS_GPS)):
-            MJD_DateSpace = self.week_GPS[i] * 7 + (self.timeMS_GPS[i] / 86400000)
-            # print('MJD_DateSpace2 = ',MJD_DateSpace)
+            MJD_DateSpace = self.week_GPS[i] * 7 + (self.timeMS_GPS[i] / 86400000L)
             MJD_Start = DateToMJD(1980, 1, 6) + MJD_DateSpace
             year, month, day = MJDToDate(MJD_Start)
             self.month = month
             self.day = day
             self.year = year
 
-            secondsLeft = (self.timeMS_GPS[i] / 1000) % 86400
-            # print('SecondsLeft2 = ',secondsLeft)
-            hours = int(secondsLeft / 3600)
+            secondsLeft = (self.timeMS_GPS[i] / 1000) % 86400L
+            hours = secondsLeft / 3600
             secondsLeft = secondsLeft - hours * 3600
-            minutes = int(secondsLeft / 60)
-            seconds = int(secondsLeft - minutes * 60)
+            minutes = secondsLeft / 60
+            seconds = secondsLeft - minutes * 60
             milli = self.timeMS_GPS[i] % 1000
 
             #print('YMDHMSM = ',year,month,day,hours,minutes,seconds,milli)
