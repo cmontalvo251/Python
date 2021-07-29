@@ -19,7 +19,7 @@ import numpy as np
 # For Thonny make symbolic links here
 # ~/.thonny/BundledPython36/lib/python3.6/site-packages$
 
-def loadtxt(filename):
+def loadtxt(filename,delimiter=' '):
     try:
         file_ID = open(filename)
     except:
@@ -27,9 +27,27 @@ def loadtxt(filename):
         return None;
     file_ID.close()
     print("Successfully Opened File = ",filename)
-    data_np = np.loadtxt(filename)
-    print('(Rows,Cols) = ',np.shape(data_np))
-    return data_np
+    try:
+        data_np = np.loadtxt(filename)
+        print('(Rows,Cols) = ',np.shape(data_np))
+        return data_np
+    except ValueError:
+        print('Numpy Loadtxt returned a valueError. Trying with line in file loop')
+        file = open(filename)
+        mat = []
+        for line in file:
+            row = line.split(delimiter)
+            vec = []
+            for r in row:
+                try:
+                    vec.append(np.float(r))
+                except ValueError:
+                    if len(r) > 0:
+                        if ord(r) != 10:
+                            print('Value Cannot Be Converted to Float: ',ascii(r),' ASCII: ',ord(r))
+            mat.append(vec)
+        data = np.array(mat)
+        return data
 
 def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=False):
 
