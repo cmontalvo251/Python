@@ -32,7 +32,7 @@ def loadtxt(filename,delimiter=' '):
         print('(Rows,Cols) = ',np.shape(data_np))
         return data_np
     except ValueError:
-        print('Numpy Loadtxt returned a valueError. Trying with line in file loop')
+        print('Numpy Loadtxt returned a ValueError. Trying with line in file loop')
         file = open(filename)
         mat = []
         for line in file:
