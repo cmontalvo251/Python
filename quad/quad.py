@@ -460,7 +460,8 @@ def get_quad_data(fileName):
         gpsRead.fix_gps()
     baroRead.establish_units(gpsRead)
     rcinoutRead.establish_units()
-    IMURead.convert2np()    
+    IMURead.convert2np()
+    ATTRead.convert2np()   
 
     #Do a check on Yaw. If you encounter a yaw angle greater than 360 degrees something is wrong.
     yaw_max = np.max(ATTRead.YAW)
@@ -695,6 +696,11 @@ class ATTITUDE(object):
         self.YAW_DES = []
         self.ATT_OFFSET = 0
         
+    def convert2np(self):
+        self.timeMS_ATT = np.array(self.timeMS_ATT)
+        self.ROLL = np.array(self.ROLL)
+        self.PITCH = np.array(self.PITCH)
+        self.YAW = np.array(self.YAW)
 
     def plot_ATTITUDE(self,x0,xf,pp):
         plt.figure()
@@ -926,6 +932,8 @@ class barometer(object):
         self.altitude_MSL_np = self.altitude_np
         if gpsRead.GPSINIT == 1:
             self.altitude_MSL_np += gpsRead.altitude[0]
+
+        self.timeSec = np.array(self.timeSec)
             
     def plot_barometer(self, figObj,x0,xf,pp):
         axis1 = figObj.add_subplot(1, 1, 1)
