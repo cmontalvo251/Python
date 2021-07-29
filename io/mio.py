@@ -47,6 +47,8 @@ def loadtxt(filename,delimiter=' '):
                             print('Value Cannot Be Converted to Float: ',ascii(r),' ASCII: ',ord(r))
             mat.append(vec)
         data = np.array(mat)
+        print('Line in File FTW')
+        print('(Rows,Cols) = ',np.shape(data))
         return data
 
 def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=False):
