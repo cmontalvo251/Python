@@ -337,11 +337,51 @@ class CubeSat():
         
         ###Now let's compute the delta torque
         self.Del_Tor = Mag_Tor - self.Tot_Dis_Tor
+        #print(self.Del_Tor)
+        Needed_Alt = []
+        for x in range(len(self.Del_Tor)):
+            if(self.Del_Tor[x] <= 0):
+                #print(self.altitude[x])
+                Needed_Alt.append(self.altitude[x])
+        print('Altitude MagTs Turn Off (m from center of Earth):',Needed_Alt[0])
+        Needed_Alt_AGL = Needed_Alt[0] - self.Rad_Earth
+        print('Altitude MagTs Turn Off (m-AGL):',Needed_Alt_AGL)
+        print('Altitude MagTs Turn Off (km-AGL):',Needed_Alt_AGL/1000.0)
+
+        MagT_Alt = []
+        for x in range(len(self.Tot_Dis_Tor)):
+            #Check for Magnetorquer Effectiveness
+            Delta_Tor = Mag_Tor[x] - self.Tot_Dis_Tor[x]
+            ##If our magnetorquers are inneffective
+            if(Delta_Tor <= 0):  ##Either disturbance torques go negative
+            #if (self.altitude[x]/1000.0 > 20000): ##or I just turn off at aspecific altitude
+                ##We need to turn the magnetorquers off
+                Mag_Tor[x] = 0.0
+                ##And then recompute delta_torque
+                Delta_Tor = Mag_Tor[x] - self.Tot_Dis_Tor[x]
+            ###Then here we append the DeltaTorque without magnetorquers on
+            MagT_Alt.append(Delta_Tor)
+        #print(MagT_Alt)
+        Momentum_Needed = RiemannSum(MagT_Alt,self.time)
+        print('Total Momentum Absorbed Per Orbit with Magnetorquers turning off (N-m-s) = ',Momentum_Needed)
+        #self.Chosen_Momentum = np.max(self.Hreq)
+        num_orbits_desat_magTs_off = self.Chosen_Momentum/Momentum_Needed
+        print('Momentum Needed from RW Datasheet (Nms) = ',self.Chosen_Momentum)
+        print('Number of Orbits Required to Desaturate RWs while turning off = ',num_orbits_desat_magTs_off)
+        
+        plt.figure()
+        plt.plot(self.time,MagT_Alt)
+        plt.xlabel('Time (sec)')
+        plt.ylabel('Delta Torque (Magnetorquer - Disturbance Torques) (Nm)')
+        plt.title('Magnetorquers Off at Alt (km) = '+str(Needed_Alt_AGL/1000.0))
+        plt.grid()
+        pdfhandle.savefig()
 
         plt.figure()
         plt.plot(self.time,self.Del_Tor)
         plt.xlabel('Time (sec)')
         plt.ylabel('Delta Torque (Magnetorquer - Disturbance Torques) (Nm)')
+        plt.title('Magnetorquers Always ON')
         plt.grid()
         pdfhandle.savefig()
 
@@ -358,6 +398,7 @@ class CubeSat():
         for x in range(0,10):
             Mag_Tor_np = self.btotal_arr*(1e-09)*self.Mag_Moment_np[x]
             self.Del_Tor_np = Mag_Tor_np - self.Tot_Dis_Tor
+            #print(self.Del_Tor_np[214],self.altitude[214],self.Del_Tor_np[215],self.altitude[215])
             Momentum_Diff_np = RiemannSum(self.Del_Tor_np,self.time)
             #print('Total Momeuntum Absorbed Per Orbit with Magnetorquers (N-m-s) = ',Momentum_Diff_np)
             Tot_Mom.append(Momentum_Diff_np)

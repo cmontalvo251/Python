@@ -120,6 +120,7 @@ class Earth_Orbit():
         if self.Numerical == True:
             plt.plot(self.xpN/1000.0,self.yqN/1000.0,'g-',label='Numerical Orbit (Newton)')
         plt.grid()
+        #plt.title('2D Orbit')
         plt.xlabel('X axis (km)')
         plt.ylabel('Y axis (km)')
         plt.legend()
@@ -130,6 +131,7 @@ class Earth_Orbit():
             plt.figure()
             plt.plot(self.t,self.altN/1000.0,'b-')
             plt.grid()
+            #plt.title('Altitude vs Time')
             plt.xlabel('Time (sec)')
             plt.ylabel('Altitude of Earth (km)')
             if pp != None:
