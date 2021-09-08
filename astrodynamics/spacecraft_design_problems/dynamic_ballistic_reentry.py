@@ -8,7 +8,7 @@ he = 122000.0 #entry altitude
 ha = np.linspace(0,he,100000) #100 km
 R = 6378000 #Radius of Earth in meters
 Ve = 7500.0 #m/s
-beta = 0.1354/1000.0 ##density constant
+beta = 0.1354/1000.0 ##density constant  (1/km) = (1/m)*(1/1000)
 rhos = 1.225 #kg/m^3
 m = 1350.0 #kg
 CD = 1.5 #unitless - non dimensional coefficient
