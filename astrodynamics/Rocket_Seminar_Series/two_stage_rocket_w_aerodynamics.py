@@ -45,7 +45,7 @@ tsep1 = 2.0 #length of time to remove 1st stage
 mass1tons = 0.2
 mass1 = mass1tons*2000/2.2
 t2start = 261.0
-t2end = t2start + 17.5
+t2end = t2start + 20.0
 D = 0.85
 CD = 0.1
 
