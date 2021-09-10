@@ -19,13 +19,13 @@ G = 6.6742*10**-11; #%%Gravitational constant (SI Unit)
 
 ###PLANET
 ###EARTH
-#Rplanet = 6357000.0 #meters
-#mplanet = 5.972e24 #kg
-#name = 'Earth'
+Rplanet = 6357000.0 #meters
+mplanet = 5.972e24 #kg
+name = 'Earth'
 ###KERBIN
-Rplanet = 600000 #meters
-mplanet = 5.2915158*10**22
-name = 'Kerbin'
+#Rplanet = 600000 #meters
+#mplanet = 5.2915158*10**22
+#name = 'Kerbin'
 
 ##PARAMETERS OF ROCKET
 ###Initial Conditions for single stage rocket
@@ -33,21 +33,19 @@ x0 = Rplanet
 z0 = 0.0
 velz0 = 0.0
 velx0 = 0.0
-r0 = 200000 + Rplanet
-period = 12000 #2*np.pi/np.sqrt(G*mplanet)*r0**(3.0/2.0)*1.5
-weighttons = 5.3
-mass0 = weighttons*2000/2.2 #kg
-max_thrust = 167970.0
-Isp1 = 250.0 #seconds
+period = 300 #2*np.pi/np.sqrt(G*mplanet)*r0**(3.0/2.0)*1.5
+mass0 = 13.47 #kg
+average_thrust = 1348.0 #N
+Isp1 = 265.61 #seconds
 Isp2 = 400.0
-tMECO = 38.0 #main engine cutoff time
+tMECO = 3.84 #main engine cutoff time
 tsep1 = 2.0 #length of time to remove 1st stage
-mass1tons = 0.2
-mass1 = mass1tons*2000/2.2
-t2start = 261.0
-t2end = t2start + 20.0
-D = 0.85
-CD = 0.1
+mass1tons = 0.0
+mass1 = mass1tons*1000
+t2start = 100000.0
+t2end = t2start + 17.5
+D = (6.0/12.0)/3.28 #meters
+CD = 0.4839 #nd
 
 ###Create a Aerodynamics Class
 class Aerodynamics():
@@ -98,12 +96,12 @@ def gravity(x,z):
     return np.asarray([accelx,accelz]),r
 
 def propulsion(t):
-    global max_thrust,Isp,tMECO
+    global average_thrust,Isp,tMECO
     ##Timing for thrusters
     if t < tMECO:
         #We are firing the main thruster
         theta = 10*np.pi/180.0
-        thrustF = max_thrust
+        thrustF = average_thrust
         ve = Isp1*9.81 #m/s
         mdot = -thrustF/ve
     if t > tMECO and t < (tMECO + tsep1):
@@ -253,3 +251,5 @@ yplanet = Rplanet*np.cos(theta)
 plt.plot(xplanet,yplanet,'b-',label='Planet')
 plt.grid()
 plt.legend()
+
+plt.show()
