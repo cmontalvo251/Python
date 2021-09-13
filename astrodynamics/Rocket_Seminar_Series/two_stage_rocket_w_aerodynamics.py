@@ -100,7 +100,7 @@ def propulsion(t):
     ##Timing for thrusters
     if t < tMECO:
         #We are firing the main thruster
-        theta = 10*np.pi/180.0
+        theta = 0*np.pi/180.0
         thrustF = average_thrust
         ve = Isp1*9.81 #m/s
         mdot = -thrustF/ve
