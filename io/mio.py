@@ -111,14 +111,23 @@ def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=False):
         print('(Rows,Cols) = ',np.shape(data_np))
         return data_np
 
+##Added this routine to outut arrays to files
 def dlmwrite(outfilename,outarray):
     #Output Contents to File
-    [r,c] = np.shape(outarray)
+    try:
+        [r,c] = np.shape(outarray)
+    except:
+        r = np.shape(outarray)[0]
+        c = -1
     outfile = open(outfilename,'w')
     for x in range(0,r):
-        out = outarray[x,:]
-        list = out.tolist()
-        s = " ".join(map(str,list))
+        if c != -1:
+            out = outarray[x,:]
+            list = out.tolist()
+            s = " ".join(map(str,list))
+        else:
+            #1D array
+            s = str(outarray[x])
         outfile.write(s+'\n')
     outfile.close()
     
