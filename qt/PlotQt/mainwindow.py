@@ -7,9 +7,6 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-from matplotlib.figure import Figure
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -27,12 +24,8 @@ except AttributeError:
 
 class Ui_FancyRLTools(object):
     def setupUi(self, FancyRLTools):
-        
-        #Main Window
         FancyRLTools.setObjectName(_fromUtf8("FancyRLTools"))
         FancyRLTools.resize(335, 234)
-
-        ##Central Window
         self.centralwidget = QtGui.QWidget(FancyRLTools)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -40,12 +33,8 @@ class Ui_FancyRLTools(object):
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-
-        ##Grid Layout
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        
-        ##Add everything to grid
         self.inputEdit = QtGui.QLineEdit(self.centralwidget)
         self.inputEdit.setObjectName(_fromUtf8("inputEdit"))
         self.gridLayout.addWidget(self.inputEdit, 1, 1, 1, 1)
@@ -67,11 +56,6 @@ class Ui_FancyRLTools(object):
         self.plotButton = QtGui.QPushButton(self.centralwidget)
         self.plotButton.setObjectName(_fromUtf8("plotButton"))
         self.gridLayout.addWidget(self.plotButton, 5, 0, 1, 1)
-        self.figure = Figure()
-        self.canvas = FigureCanvas(self.figure)
-        self.gridLayout.addWidget(self.canvas,5,1,1,1)
-        
-        ##Setup menu and status bars
         FancyRLTools.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(FancyRLTools)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 335, 25))

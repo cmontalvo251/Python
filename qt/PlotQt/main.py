@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore
 import sys
-from mainwindow import Ui_FancyRLTools
+from mainwindowFigure import Ui_FancyRLTools
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
