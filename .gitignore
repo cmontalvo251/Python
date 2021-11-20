@@ -1,5 +1,6 @@
 *.zcos
 *.gif
+secrets_DO_NOT_PUSH.json
 ABEX_Data_File.txt
 Python.OUT
 xfoiltools/*.txt
