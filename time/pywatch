@@ -1,0 +1,61 @@
+#!/usr/bin/python3
+from datetime import datetime
+import os
+import sys
+#import keyboard  # using module keyboard
+
+##GET CURRENT DATE
+now = datetime.now()
+print('Current Time and Date',datetime.now())
+
+while True:
+    try:
+        then = datetime.now()
+        ##Get time elapsed
+        elapsed = then - now
+    
+        #Print to Stdout (\r to scroll)
+        command = str(elapsed) + '\r'
+        sys.stdout.write(command)
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        sys.stdout.write(command)
+        sys.stdout.flush()
+        print('')
+        print('DONE')
+        sys.exit()
+        
+    #Keyboard command to quit
+    # if keyboard.read_key() == ' ':
+    #     #Print to Stdout (\r to scroll)
+    #     command = str(elapsed) + '\n'
+    #     sys.stdout.write(command)
+    #     sys.stdout.flush()
+    #     break
+    
+#!/bin/bash
+
+#while true; do echo -ne "`date +%H:%M:%S:%N`\r"; done
+
+
+# HOUR0=$(date +%H)
+# MINUTE0=$(date +%M)
+# SECOND0=$(date +%S)
+# NS0=$(date +%N)
+# echo 'Current Time =' $HOUR0:$MINUTE0:$SECOND0:$NS0
+
+#while true; do
+#     #Get time now
+#     HOUR1=$(date +%H)
+#     MINUTE1=$(date +%M)
+#     SECOND1=$(date +%S)
+#     NS1=$(date +%N)
+#     ##Get time elapsed
+#     HOUR=$(($HOUR1-$HOUR0))
+#     MINUTE=$((10#$MINUTE1-10#$MINUTE0))
+#     SECOND=$((10#$SECOND1-10#$SECOND0))
+#     #NS=$((10#$NS1-10#$NS0))
+#    echo -ne $HOUR:$MINUTE:$SECOND:$NS1 "\r"
+#done
+
+
