@@ -1,0 +1,4 @@
+1.) Try making a threading script in C++ with boost since you've done this already
+2.) Do the same thing in Python and see if it works
+3.) For the GUI try and make a scoreboard for the GUI to read
+4.) Worst case try using the queue module in Python
