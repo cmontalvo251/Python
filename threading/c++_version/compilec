@@ -1,0 +1,5 @@
+#!/bin/bash
+echo ' ' > a.out
+rm a.out
+g++ -w -std=c++11 -Wno-psabi main.cpp -o a.out -lpthread -lboost_system -lboost_thread -lboost_date_time
+./a.out

@@ -1,3 +1,4 @@
+*.out
 *.zcos
 *.gif
 secrets_DO_NOT_PUSH.json
