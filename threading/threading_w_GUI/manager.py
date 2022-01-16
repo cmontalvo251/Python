@@ -2,23 +2,29 @@
 import time
 
 class manager():
-    def __init__(self):
+    def __init__(self,inputs):        
         print("Initializing Manager")
+        self.run = True
         ##Then run the manager
-        self.run()
+        self.loop(inputs)
 
-    def run(self):
+    def loop(self,inputs):
         tstart = time.monotonic()
         ##Kick off infinite while loop to manage data
-        while True:
+        while self.run == True:
             ##Get current time from computer
             t = time.monotonic()-tstart
 
-            ##A bunch more stuff is needed and you can check the SysML model
+            #Print to home
+            print('Manager Time = ',t)
+            
+            ##A bunch more stuff is needed 
             ##but for now just going to sleep
             time.sleep(1.0)
 
-            ##Check for Stopcommand
-            #if stopcommand == True:
-            #    print('Stopping Manager')
-            #   sys.exit()
+            ##Check queue
+            if inputs.qsize() > 0:
+                print('Command detected from main loop')
+                self.run = inputs.get()
+
+        print('Manager Program Ended')

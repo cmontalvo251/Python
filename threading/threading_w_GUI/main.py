@@ -5,9 +5,8 @@ import threading
 ##TIME
 import time
 ##QUEUE MANAGEMENT
-#import queue
-#inputs = queue.Queue()
-#inputs.put(True)
+import queue
+inputs = queue.Queue()
 #inputs.get()
 #inputs.qsize() to check and see how large the queue is
 ##SYSTEM
@@ -15,14 +14,14 @@ import sys
 #KEYBOARD
 import keyboard
 
-##GLOBAL VARIABLES
+#GLOBAL VARIABLES
 run = True
 
 #Manager
-#print('Starting Manager....')
-#from manager import manager
-#MANt = threading.Thread(target=manager)
-#MANt.start()
+print('Starting Manager....')
+from manager import manager
+MANt = threading.Thread(target=manager,args=(inputs,))
+MANt.start()
 
 ##GUI IN USERCONTROL
 #print('Starting GUI.....')
@@ -36,15 +35,11 @@ while run == True:
     if keyboard.is_pressed('q'):
         print('Quit Command Received')
         run = False
-    ##Check to see if the GUI is still running. If it's not we break the code
-    #if not UI_t.is_alive():
-    #    print('KILLING ALL THREADS!!!!!!')
-    #    print('Killing GUI')
-    #    UI_t.join()
-    #    print('Killing Aggregator')
-    #    MAN_t.terminate()
-    #    print('Ending Program')
-    #    sys.exit()
-
-
+        inputs.put(False)
+        
 print('Main Loop End')
+while MANt.is_alive():
+    print('Waiting for Manager to quit',time.time())
+    time.sleep(1.0)
+MANt.join()
+print('Program Quit')
