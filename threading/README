@@ -6,4 +6,26 @@
 
 1.) DONE
 2.) DONE
-3.) 
+3.) I can't get globals to work if they are classes
+4.) DONE
+
+Ok I got it to work. Check out the following
+
+a.) c++_version - An example of threading using the boost libraries
+and mutexes. This example uses global variables in order to pass vars
+back and forth and works just fine
+
+b.) threading_test.py - This is exactly the same as a.) only in
+Python. Again this uses global variables to pass variables back and
+forth.
+
+c.) threading_w_GUI - In this example everything was moved to
+classes. The reason being because I wanted the GUI in its own class so
+I could call it all at once rather than cluttering the main
+script. Unfortunately because of this having global variables didn't
+work and I couldn't figure out how to do that. Instead a colleague
+showed me how to use the queue module in Python to pass variables back
+and forth. If you look at main.py you'll see how the threads and
+queues are created. The manager.py routine is basically the integrator
+while the GUI is the scraper that reads from the "scoreboard". I hope
+this script will help you. 
