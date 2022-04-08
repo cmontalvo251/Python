@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=LISADEBUG
+Comment=Linear Time Invariant Systems Analysis
+Exec=/home/carlos/Git_Repos/Github/Python/controls/LISA/runlisa 
+Icon=/home/carlos/Git_Repos/Github/Python/controls/LISA/LISADEBUG.jpg
+Terminal=true
+Type=Application
+Encoding=UTF-8
+Categories=Application;
+Name[en_US]=LISADEBUG

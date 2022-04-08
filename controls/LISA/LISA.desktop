@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=LISA
+Comment=Linear Time Invariant Systems Analysis
+Exec=python /home/carlos/Git_Repos/Github/Python/controls/LISA/lisa.py 
+Icon=/home/carlos/Git_Repos/Github/Python/controls/LISA/LISA.png
+Terminal=true
+Type=Application
+Encoding=UTF-8
+Categories=Application;
+Name[en_US]=LISA
