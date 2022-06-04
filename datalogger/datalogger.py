@@ -17,6 +17,8 @@ class Datalogger():
 				print("File found for writing = " + self.filename)
 
 	def open(self):
+		#If you want the date in the filename use this
+		#datetime.datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
 		print("Attempting to open" + self.filename);
 		self.outfile = open(self.filename,"w");
 		if not self.outfile:
@@ -33,6 +35,7 @@ class Datalogger():
 			ctr+=1
 			self.outfile.write(s)
 		self.outfile.write("\n")
+		self.outfile.flush()
 
 	#Close function
 	def close(self):
