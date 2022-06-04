@@ -25,6 +25,13 @@ Device Name: moto g play (2021)
 Device MAC Address: C0:6B:55:71:52:7A
 Device Class: 5898764
 
+Creating a virtual object didn't work real well
+cannot add library /home/carlos/Android/Sdk/emulator/qemu/linux-x86_64/lib64/vulkan/libvulkan.so: failed 
+2022-05-18 22:58:43,145 [ 402644]  ERROR -       Emulator: Pixel 2 API 30 - Failed to create Vulkan instance.
+
+But a physical object via wireless worked but not with a hard line.
+
+
 
 
 
