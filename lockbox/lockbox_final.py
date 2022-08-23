@@ -1,3 +1,5 @@
+import numpy as np
+
 ###RECURSION FUNCTIOn
 def getCombos(possible_digits,max_length,pressed_digits):
     ##First we check to see what the maximum length is
@@ -22,7 +24,13 @@ def getCombos(possible_digits,max_length,pressed_digits):
         #Once the loop is over we return the combinations
         return combinations
 
-def printSpecificLength(possible_digits,max_length,numcombo):
+def inverse(possible_digits,combo):
+    icombo = possible_digits
+    for c in combo:
+        icombo = icombo.replace(c,'')
+    return icombo
+
+def printSpecificLength(possible_digits,max_length,numcombo,invert):
     ##Ok give me all the combinations of 'xyz' of length a
     print('Maximum Length = ',max_length)
     print('Getting Combinations....')
@@ -34,7 +42,12 @@ def printSpecificLength(possible_digits,max_length,numcombo):
     ##Then print result!
     icom = 1
     for combo in nonrepeat_combos:
-        print(numcombo,' ',combo,' ',icom)
+        ##If invert is true we need to invert each combination
+        if invert:
+            icombo = inverse(possible_digits,combo)
+            print(numcombo,' ',combo,' (',icombo,') ',icom)
+        else:
+            print(numcombo,' (',combo,') ',icom)
         icom+=1
         numcombo+=1
     return numcombo
@@ -46,4 +59,8 @@ length = len(possible_digits)
 print('Possible Digits',possible_digits)
 numcombo = 1
 for l in range(1,length+1):
-    numcombo = printSpecificLength(possible_digits,l,numcombo)
+    if length-l < np.floor(length/2):
+        print('Running Inverse')
+        numcombo = printSpecificLength(possible_digits,length-l,numcombo,1)
+    else:
+        numcombo = printSpecificLength(possible_digits,l,numcombo,0)

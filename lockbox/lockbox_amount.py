@@ -15,6 +15,6 @@ for k in range(1,n+1):
     total_amount+=amount
     print(k,amount)
     amount_vec.append(amount)
-plt.plot(k_vec,amount_vec)
+#plt.plot(k_vec,amount_vec)
 print('Total Amount = ',total_amount)
-plt.show()
+#plt.show()
