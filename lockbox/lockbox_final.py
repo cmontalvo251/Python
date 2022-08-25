@@ -40,21 +40,26 @@ def printSpecificLength(possible_digits,max_length,numcombo,invert):
     ####Need to remove repeats
     nonrepeat_combos = [*set(combinations)]
     ##Then print result!
+    fid = open(str(max_length)+str(invert)+'.csv','w')
     icom = 1
     for combo in nonrepeat_combos:
         ##If invert is true we need to invert each combination
         if invert:
             icombo = inverse(possible_digits,combo)
             print(numcombo,' ',combo,' (',icombo,') ',icom)
+            combo = icombo
         else:
             print(numcombo,' (',combo,') ',icom)
+        #input('Press Enter to continue...')
+        fid.write(combo+',\n')
         icom+=1
         numcombo+=1
+    fid.close()
     return numcombo
 
 ######################
-#possible_digits = '0123456789*'
-possible_digits = '134780*'
+possible_digits = '0123456789*'
+#possible_digits = '567890*'
 length = len(possible_digits)
 print('Possible Digits',possible_digits)
 numcombo = 1
