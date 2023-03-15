@@ -62,6 +62,6 @@ if PLAYBACK:
 
 ##Run the FFT
 if RUNFFT:
-    MYM.fft(audio,time,2000,1,pp) ##Change the 1 to a 2 if you want it to plot on the fly
+    MYM.fft(audio,time,5000,1,pp) ##Change the 1 to a 2 if you want it to plot on the fly
 
 pp.close()
