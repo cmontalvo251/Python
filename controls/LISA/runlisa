@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+gnome-terminal -- python /home/carlos/Git_Repos/Github/Python/controls/LISA/lisa.py

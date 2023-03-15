@@ -11,8 +11,8 @@ N = Fs*t # total points in signal
 print(N)
 
 # signal information
-period = 2 ## seconds
-freq =  1/period# in hertz, the desired natural frequency
+#period = 2 ## seconds
+freq =  1.0# in hertz, the desired natural frequency
 omega = 2*np.pi*freq # angular frequency for sine waves
 
 t_vec = np.arange(N)*T # time vector for plotting
