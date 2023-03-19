@@ -4,6 +4,7 @@
 ##FIRST GRAB ALL THE IMPORTS
 import speech_recognition as sr
 import pyttsx3
+import scipy.io.wavfile as S
 import sounddevice as sd
 import time
 import matplotlib.pyplot as plt
@@ -28,6 +29,15 @@ audio = audioclip[timeclip < duration - 0.5]
 t = np.linspace(0,duration-1.0,len(audio))
 ##Plot it
 plt.plot(t,audio)
+
+##Write data to a wavfile
+scaled = np.int16(audio/np.max(np.abs(audio)) * 32767)
+S.write('test.wav',fs,scaled)
+
+##Pull audio from wav file
+recordedaudio = sr.AudioFile('test.wav')
+with recordedaudio as source:
+    audio = r.record(source)
 
 # Using google to recognize audio
 MyText = r.recognize_google(audio)
