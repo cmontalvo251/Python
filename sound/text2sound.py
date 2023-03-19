@@ -35,7 +35,7 @@ elif len(sys.argv) == 3:
     name = sys.argv[1]
     start_c = np.float(sys.argv[2])
 else:
-    print 'Need Name and Start C'
+    print('Need Name and Start C')
     sys.exit()
 
 #%%%Note the sample frequency is 8192 Hz /sec. Which means if we want a note
@@ -43,7 +43,7 @@ else:
 FS = 8192
 note_length = 0.2 #%%seconds
 
-time = np.linspace(0,note_length,FS*note_length)
+time = np.linspace(0,note_length,int(FS*note_length))
 
 #%%%%Remember that natural frequency is 2*pi*f thus our sin wave is:
 y = []
@@ -72,7 +72,12 @@ y_np = np.asarray(y)
 #print np.shape(y_np)
 scaled = np.int16(y_np/np.max(np.abs(y_np)) * 32767)
 S.write('test.wav',FS,scaled)
-os.system('aplay test.wav')
+if os.name == 'nt':
+    ##Windows system
+    from playsound import playsound
+    playsound('test.wav')
+else:
+    os.system('aplay test.wav')
 
 plt.plot(y_np)
 plt.show()
