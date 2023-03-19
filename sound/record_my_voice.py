@@ -3,27 +3,29 @@
 import sys
 import numpy as np
 import scipy.io.wavfile as S
-import plotting as P
-from pdf import *
 import matplotlib.pyplot as plt
 import sounddevice as sd
 import time
-import mymath as MYM
-import mio as myIO
+import os
+sys.path.append('../')
+import plotting.plotting as P
+from pdf.pdf import PDF
+import mymath.mymath as MYM
+import mio.mio as myIO
 
 if len(sys.argv) == 1:
     print('Need length of time to record')
     sys.exit()
 elif len(sys.argv) == 2:
-    duration = np.float(sys.argv[1])
+    duration = np.double(sys.argv[1])
     PLAYBACK = 0
     RUNFFT = 0
 elif len(sys.argv) == 3:
-    duration = np.float(sys.argv[1])
+    duration = np.double(sys.argv[1])
     PLAYBACK = int(sys.argv[2])
     RUNFFT = 0
 elif len(sys.argv) == 4:
-    duration = np.float(sys.argv[1])
+    duration = np.double(sys.argv[1])
     PLAYBACK = int(sys.argv[2])
     RUNFFT = int(sys.argv[3])
 
@@ -58,7 +60,12 @@ pp.savefig()
 if PLAYBACK:
     scaled = np.int16(audio/np.max(np.abs(audio)) * 32767)
     S.write('test.wav',fs,scaled)
-    os.system('aplay test.wav')
+    if os.name == 'nt':
+        ##Windows System
+        from playsound import playsound
+        playsound('test.wav')
+    else:
+        os.system('aplay test.wav')
 
 ##Run the FFT
 if RUNFFT:
