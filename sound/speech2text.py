@@ -9,10 +9,10 @@ import pyttsx3
 r = sr.Recognizer()
 
 #listens for the user's input
-audio2 = r.listen(source2)
+audio = r.listen(sr.Microphone())
 			
 # Using google to recognize audio
-MyText = r.recognize_google(audio2)
+MyText = r.recognize_google(audio)
 MyText = MyText.lower()
 
-print("You said: ",MyText)
+print("Words: ",MyText)
