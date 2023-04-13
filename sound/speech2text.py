@@ -15,7 +15,7 @@ r = sr.Recognizer()
 
 ##Record audio
 fs = 8192
-duration = 2.0
+duration = 5.0
 print('Start Recording')
 audio_long = sd.rec(int(duration * fs), samplerate=fs, channels=1)[:,0]
 time.sleep(duration)

@@ -9,7 +9,7 @@ V = np.array([1.02,1.53,2.05,2.55,3.07,3.56,4.05])
 coeff = np.polyfit(V,T,2)
 print(coeff)
 
-plt.plot(V,T,'b*',markerSize=10)
+plt.plot(V,T,'b*',markersize=10)
 
 Vtrend = np.linspace(V[0],V[-1],100)
 
@@ -21,8 +21,8 @@ Ttrend = np.polyval(coeff,Vtrend)
 Tatdatapts = np.polyval(coeff,V)
 residuals = (Tatdatapts - T)**2
 
-plt.plot(Vtrend,Ttrend,'r-',LineWidth=2)
-plt.plot(V,Tatdatapts,'r*',MarkerSize=10)
+plt.plot(Vtrend,Ttrend,'r-',linewidth=2)
+plt.plot(V,Tatdatapts,'r*',markersize=10)
 
 plt.xlabel('V(mV)')
 plt.ylabel('T(C)')
