@@ -1,0 +1,12 @@
+50.     !Speed (mph)
+10       !Nominal Heading (deg)
+3       !Vx current (mph)
+-2       !Vy current (mph)
+3       !Number of waypoints
+0       !First waypoint x (m)
+0       !Second Waypoint y (m)
+10     ! x2 (m)
+0       ! y2 (m)
+15    !  X3 (m)
+2      !  Y3 (m)
+
