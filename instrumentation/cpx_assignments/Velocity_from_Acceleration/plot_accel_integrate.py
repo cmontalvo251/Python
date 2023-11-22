@@ -5,7 +5,7 @@ data = np.loadtxt('accel_car.txt')
 
 t = data[:,0]
 
-t -= t[0]  ##THIS MEAN TAKE t and substract t0 from the entire array
+t -= t[0]  ##THIS MEANS TAKE t and substract t0 from the entire array
 
 x = data[:,1]-1
 y = data[:,2]
