@@ -7,14 +7,15 @@ def ntakek(n,k):
     return np.math.factorial(n)/(np.math.factorial(k)*np.math.factorial(n-k))
 n_vec = []
 p_vec = []
-for n in range(100,200):
+for n in range(180,181):
     n_vec.append(n)
     print(n)# = 185
     p = 0.05
     Total_Prob = 0
     for i in range(0,n-175):
-        #print(i)
+        print(i)
         Prob = ntakek(n,i)*(p**i)*(1-p)**(n-i)
+        print(Prob)
         Total_Prob += Prob
     print(Total_Prob)
     p_vec.append(Total_Prob)
