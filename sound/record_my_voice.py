@@ -21,14 +21,17 @@ if len(sys.argv) == 1:
     PLAYBACK = 0
     RUNFFT = 0
 elif len(sys.argv) == 2:
+    print('Just going to plot and record for a certain duration')
     duration = np.double(sys.argv[1])
     PLAYBACK = 0
     RUNFFT = 0
 elif len(sys.argv) == 3:
+    print('Going to record, plot and play it back')
     duration = np.double(sys.argv[1])
     PLAYBACK = int(sys.argv[2])
     RUNFFT = 0
 elif len(sys.argv) == 4:
+    print('Going to run FFT as well')
     duration = np.double(sys.argv[1])
     PLAYBACK = int(sys.argv[2])
     RUNFFT = int(sys.argv[3])
@@ -86,6 +89,13 @@ if RUNFFT:
     #Thus you need to make the iterations below well over 1000 or you
     #won't actually capture that audio file
     #One issue might be that the microphone might be too soft.
+    #Ok so if you run the piano note through the phone software you get a peak at 1300 Hz
+    #if you run the same audio file through this software you get a massive peak at 1300 Hz
+    #as well. However, If you zoom way the hell into the plot you will see a tiny spike
+    #at 261 Hz. So more than likely the fundamental note is there but there's this high
+    #frequency 1300 hz signal that's drowning it out
+    #What would be cool to do is to grab the magnitudes of the frequencies from the FFT
+    #plot and then run it through makemusic.py and see if you can recreate the signal 
     MYM.fft(audio,time,2000,1,pp) ##Change the 1 to a 2 if you want it to plot on the fly
 
 pp.close()

@@ -17,16 +17,18 @@ pi = np.pi
 
 samplingFrequency = 8192;
 
-notelength = 0.5;
+notelength = 2.0;
 tnote = np.linspace(0,notelength,samplingFrequency*notelength); #%%seconds
 freq = 261.625; #%%Hz
+freq2 = 1300.0 #Hz
 amp = 1;
-ynote1 = amp*np.cos(2*pi*freq*tnote);
-ynote2 = amp*np.cos(2*pi*freq*tnote);
-ynote3 = amp*np.cos(2*pi*freq*tnote);
-ynote4 = amp*np.cos(2*pi*freq*tnote);
+amp2 = 0.2
+ynote_all = amp*np.cos(2*pi*freq*tnote) + amp2*np.cos(2*pi*freq2*tnote);
+#ynote2 = amp*np.cos(2*pi*freq*tnote);
+#ynote3 = amp*np.cos(2*pi*freq*tnote);
+#ynote4 = amp*np.cos(2*pi*freq*tnote);
 
-ynote_all = np.concatenate((ynote1,ynote2,ynote3,ynote4));
+#ynote_all = np.concatenate((ynote1,ynote2,ynote3,ynote4));
 
 #Convert to integers - aplay doesn't support 64 bit wav files
 scaled = np.int16(ynote_all/np.max(np.abs(ynote_all)) * 32767)
