@@ -10,7 +10,7 @@ def SerialPutString(hComm,string):
       SerialPutc(hComm,s)
 def SerialPutc(hComm,txchar):
     if hComm is not None:
-      print("Sending ASCII Code = " + str(ord(txchar)) + str(txchar))
+      #print("Sending ASCII Code = " + str(ord(txchar)) + str(txchar))
       hComm.write(txchar.encode("ascii"))
 
 def Serial_Init(ComPortName,BaudRate):
@@ -26,19 +26,20 @@ def Serial_Init(ComPortName,BaudRate):
 
 
 ##INITIALIZE SERIAL PORT
-port = "/dev/ttyACM0"
+#port = "/dev/ttyACM0"
+port = "COM22"
 BaudRate = 57600
 hComm = Serial_Init(port,BaudRate)
 
-df_vec = np.linspace(0,1,20)
+degree_vec = np.linspace(0,145,20)
 
-for df in df_vec:
+for deg in degree_vec:
     #df = 1.0
-    int_df = int(binary(df),2)
-    print("Sending = " + str(df) + " " + str(int_df))
-    hex_df = hex(int_df)
-    hex_df = hex_df.replace('0x','')
-    outline = str(0)+':'+hex_df
+    int_deg = int(binary(deg),2)
+    print("Sending = " + str(deg) + " " + str(int_deg))
+    hex_deg = hex(int_deg)
+    hex_deg = hex_deg.replace('0x','')
+    outline = str(0)+':'+hex_deg
     print("Hex = ",outline)
     SerialPutString(hComm,outline)
     SerialPutc(hComm,'\r')
