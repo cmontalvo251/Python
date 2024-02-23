@@ -44,3 +44,5 @@ for df in df_vec:
     SerialPutc(hComm,'\r')
     time.sleep(1.0)
 
+hComm.close()
+
