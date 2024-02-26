@@ -1,24 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-###CONTROL ROUTINE
-def Control(t,state):
-    #Extract State Vector
-    x = state[0]
-    y = state[1]
-    psi = state[2]
-    xdot = state[3]
-    ydot = state[4]
-    psidot = state[5]
-    
-    ##Defaults
-    delta_steer = 1500.0
-    delta_throttle = 1400.0
-    
-    return delta_steer,delta_throttle
-
 ##DERIVATIVES ROUTINE
-def Derivatives(t,state):
+def Derivatives(t,state,delta_steer,delta_throttle):
     ##EXTRACT OUR STATE VECTOR
     x = state[0]
     y = state[1]
@@ -44,9 +28,6 @@ def Derivatives(t,state):
     u = xdot * np.cos(psi) + ydot * np.sin(psi)
     v = -xdot * np.sin(psi) + ydot * np.cos(psi)
     
-    ##CONTROL ROUTINE
-    delta_steer,delta_throttle = Control(t,state)
-    
     ##Control Forces
     Steer_Moment = DS * (delta_steer - 1500)
     Throttle_Force = DT * (delta_throttle - 1000)
@@ -70,10 +51,76 @@ def Derivatives(t,state):
     dstatedt = np.array([xdot,ydot,psidot,xddot,yddot,psiddot])
     return dstatedt
     
+###CONTROL ROUTINE
+def Control(t,state):
+    global error_int,XWPs,YWPs,WPctr
+    #Extract State Vector
+    x = state[0]
+    y = state[1]
+    psi = state[2]
+    xdot = state[3]
+    ydot = state[4]
+    psidot = state[5]
+    
+    ##Kinematics
+    u = xdot * np.cos(psi) + ydot * np.sin(psi) ##Assuming that you are getting GPS data to obtain velocity.
+    
+    ##Create a waypoint
+    XWP = XWPs[WPctr]
+    YWP = YWPs[WPctr]
+    dx = XWP - x
+    dy = YWP - y
+    norm = np.sqrt(dx**2 + dy**2)
+    if norm < 3:
+        WPctr +=1
+        print('Arrive at WP: ',XWP,YWP,' T = ',t, 'WPctr = ',WPctr)
+    if WPctr >= len(XWPs):
+        WPctr = 0
+    psic = np.arctan2(dy,dx)
+    #print(psic)
+    
+    ##Compute Heading Error using Non Wrapping Function
+    #//%%%returns delta psi from a heading and a heading command without
+    #//%worrying about wrapping issues
+    #//%%%This computes delpsi = psi-psic
+    #psic = 45*np.pi/180.
+    spsi = np.sin(psi);
+    cpsi = np.cos(psi);
+    spsic = np.sin(psic);
+    cpsic = np.cos(psic);
+    delpsi = np.arctan2(spsi*cpsic-cpsi*spsic,cpsi*cpsic+spsi*spsic)
+    
+    ##Heading Angle Controller
+    kpp = -1000/np.pi
+    delta_steer = 1500.0 + kpp*delpsi
+    
+    #Throttle Controller
+    ucommand = 10.0
+    error_signal = u - ucommand
+    error_int += error_signal
+    kp = -120.0
+    ki = -2.0
+    delta_throttle = 1000 + kp*error_signal + ki*error_int
+    
+    ##Saturation Controller
+    if delta_throttle < 1000:
+        delta_throttle = 1000
+    if delta_throttle > 2000:
+        delta_throttle = 2000
+        
+    if delta_steer > 2000:
+        delta_steer = 2000
+    if delta_steer < 1000:
+        delta_steer = 1000
+    
+    #print(delta_throttle)
+    #sprint(delta_steer)
+    
+    return delta_steer,delta_throttle
     
 ##RUN SIMULATION
 dt = 0.1
-tout = np.arange(0,20,dt)
+tout = np.arange(0,100,dt)
 xout = 0*tout
 yout = 0*tout
 xdotout = 0*tout
@@ -86,9 +133,13 @@ x = 0.
 y = 0.
 xdot = 10.
 ydot = 0.
-psi = 0.
+psi = 0*45*np.pi/180.
 psidot = 0.
+error_int = 0.0
 state0 = np.array([x,y,psi,xdot,ydot,psidot])
+XWPs = np.array([0,100,100,0])
+YWPs = np.array([0,0,100,100])
+WPctr = 0
 for t in tout:
     ##Save States
     xout[ctr] = state0[0]
@@ -97,11 +148,13 @@ for t in tout:
     xdotout[ctr] = state0[3]
     ydotout[ctr] = state0[4]
     psidotout[ctr] = state0[5]
+    #Run Control loop once per timestep
+    delta_steer,delta_throttle = Control(t,state0)
     #RK4
-    k1 = Derivatives(t,state0)
-    k2 = Derivatives(t+dt/2,state0+k1*dt/2)
-    k3 = Derivatives(t+dt/2,state0+k2*dt/2)
-    k4 = Derivatives(t+dt,state0+k3*dt)
+    k1 = Derivatives(t,state0,delta_steer,delta_throttle)
+    k2 = Derivatives(t+dt/2,state0+k1*dt/2,delta_steer,delta_throttle)
+    k3 = Derivatives(t+dt/2,state0+k2*dt/2,delta_steer,delta_throttle)
+    k4 = Derivatives(t+dt,state0+k3*dt,delta_steer,delta_throttle)
     phi = (1./6.)*(k1 + 2*k2 + 2*k3 + k4)
     state0 += phi*dt
     ctr+=1
@@ -130,5 +183,11 @@ plt.plot(tout,psidotout)
 plt.grid()
 plt.xlabel('t')
 plt.ylabel('Yaw Rate (rad/s)')
+
+plt.figure()
+plt.plot(tout,psiout*180/np.pi)
+plt.grid()
+plt.xlabel('t')
+plt.ylabel('Heading (deg)')
 
 plt.show()
