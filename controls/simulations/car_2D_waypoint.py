@@ -19,6 +19,10 @@ def Derivatives(t,state,delta_steer,delta_throttle):
     CR = 1.0
     CD = 1.0
     CV = 25.0
+
+    ##Atmospheric Winds
+    Ad = 0 #Atmospheric direction (in radians) wind is applied
+    Af = 10 #Atmospheric force
     
     ##CONTROL TERMS
     DS = 1.0/500.0
@@ -36,8 +40,8 @@ def Derivatives(t,state,delta_steer,delta_throttle):
     Moments = Steer_Moment - CR*psidot
     ForceXbody = Throttle_Force - CD*u
     ForceYbody = -CV*v
-    ForceX = ForceXbody * np.cos(psi) - ForceYbody * np.sin(psi)
-    ForceY = ForceXbody * np.sin(psi) + ForceYbody * np.cos(psi)
+    ForceX = ForceXbody * np.cos(psi) - ForceYbody * np.sin(psi) + (np.cos(Ad) * Af)
+    ForceY = ForceXbody * np.sin(psi) + ForceYbody * np.cos(psi) + (np.sin(Ad) * Af)
     
     ##Dynamics
     ##Translation Dynamics
@@ -84,10 +88,10 @@ def Control(t,state):
     #//%worrying about wrapping issues
     #//%%%This computes delpsi = psi-psic
     #psic = 45*np.pi/180.
-    spsi = np.sin(psi);
-    cpsi = np.cos(psi);
-    spsic = np.sin(psic);
-    cpsic = np.cos(psic);
+    spsi = np.sin(psi)
+    cpsi = np.cos(psi)
+    spsic = np.sin(psic)
+    cpsic = np.cos(psic)
     delpsi = np.arctan2(spsi*cpsic-cpsi*spsic,cpsi*cpsic+spsi*spsic)
     
     ##Heading Angle Controller
