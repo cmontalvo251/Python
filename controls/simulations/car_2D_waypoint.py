@@ -21,9 +21,11 @@ def Derivatives(t,state,delta_steer,delta_throttle):
     CV = 25.0
 
     ##Atmospheric Winds
-    Ad = 0 #Atmospheric direction (in radians) wind is applied
-    Af = 10 #Atmospheric force
-    
+    Ad = 0  # True atmospheric wind direction (in radians). Not relative to car heading
+    As = 1  # wind speed, m/s
+    Md_air = 1.293  # mass desncity of air. kg/m^3
+    Af = 0.5 * Md_air * np.square(As) * CD  # drag equation kg/(m*s). Corss sectional area applied later.
+
     ##CONTROL TERMS
     DS = 1.0/500.0
     DT = 0.025
