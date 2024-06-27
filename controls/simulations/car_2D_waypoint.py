@@ -53,11 +53,12 @@ def Derivatives(t,state,delta_steer,delta_throttle):
     
 ###CONTROL ROUTINE
 def Control(t,state):
-    global error_int,XWPs,YWPs,WPctr
+    global error_int,XWPs,YWPs,WPctr, heading_bias
     #Extract State Vector
     x = state[0]
     y = state[1]
-    psi = state[2]
+    heading_noise = 0.2*np.random.normal()
+    psi = state[2] + 0*heading_bias + 0*heading_noise
     xdot = state[3]
     ydot = state[4]
     psidot = state[5]
@@ -66,16 +67,18 @@ def Control(t,state):
     u = xdot * np.cos(psi) + ydot * np.sin(psi) ##Assuming that you are getting GPS data to obtain velocity.
     
     ##Create a waypoint
+    if WPctr >= len(XWPs):
+        return 1500,1000
+        #WPctr = 0
     XWP = XWPs[WPctr]
     YWP = YWPs[WPctr]
     dx = XWP - x
     dy = YWP - y
     norm = np.sqrt(dx**2 + dy**2)
-    if norm < 3:
+    if norm < 1:
         WPctr +=1
         print('Arrive at WP: ',XWP,YWP,' T = ',t, 'WPctr = ',WPctr)
-    if WPctr >= len(XWPs):
-        WPctr = 0
+
     psic = np.arctan2(dy,dx)
     #print(psic)
     
@@ -120,13 +123,15 @@ def Control(t,state):
     
 ##RUN SIMULATION
 dt = 0.1
-tout = np.arange(0,100,dt)
+tout = np.arange(0,1000,dt)
 xout = 0*tout
 yout = 0*tout
 xdotout = 0*tout
 ydotout = 0*tout
 psiout = 0*tout
 psidotout = 0*tout
+delta_throttle_out = 0*tout
+delta_steer_out = 0*tout
 ctr = 0
 #Initial Conditions
 x = 0.
@@ -137,9 +142,14 @@ psi = 0*45*np.pi/180.
 psidot = 0.
 error_int = 0.0
 state0 = np.array([x,y,psi,xdot,ydot,psidot])
-XWPs = np.array([0,100,100,0])
-YWPs = np.array([0,0,100,100])
+XWPs = np.array([0,1000,1000,0])
+YWPs = np.array([0,0,1000,1000])
 WPctr = 0
+
+##Initialize Bias
+heading_bias = 0.5*np.random.normal()
+print('Heading Bias = ',heading_bias)
+
 for t in tout:
     ##Save States
     xout[ctr] = state0[0]
@@ -150,6 +160,8 @@ for t in tout:
     psidotout[ctr] = state0[5]
     #Run Control loop once per timestep
     delta_steer,delta_throttle = Control(t,state0)
+    delta_steer_out[ctr] = delta_steer
+    delta_throttle_out[ctr] = delta_throttle
     #RK4
     k1 = Derivatives(t,state0,delta_steer,delta_throttle)
     k2 = Derivatives(t+dt/2,state0+k1*dt/2,delta_steer,delta_throttle)
@@ -179,15 +191,18 @@ plt.xlabel('t')
 plt.ylabel('velocity')
 
 plt.figure()
-plt.plot(tout,psidotout)
+plt.plot(tout,psidotout*180/np.pi)
 plt.grid()
 plt.xlabel('t')
-plt.ylabel('Yaw Rate (rad/s)')
+plt.ylabel('Yaw Rate (deg/s)')
 
 plt.figure()
 plt.plot(tout,psiout*180/np.pi)
 plt.grid()
 plt.xlabel('t')
-plt.ylabel('Heading (deg)')
+plt.ylabel('Euler Yaw Angle (deg)')
+
+plt.figure()
+plt.plot(tout,delta_steer_out)
 
 plt.show()
