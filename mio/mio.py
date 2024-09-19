@@ -87,10 +87,11 @@ def dlmread(filename,delimiter=',',suppressWarnings=False,variableLength=False):
             #Ok so if the delimiter is a space sometimes fortran is wierd and has a ton of spaces
             #so we need something more robust -- so for FORTRAN we will add a try catch statement below
             row = line.split(delimiter)
+            #print(row)
             row_np = []
             for x in row:
                 try:
-                    val = np.float(x)
+                    val = np.float64(x)
                     row_np.append(val)
                 except:
                     val = []
