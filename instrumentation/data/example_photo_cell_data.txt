@@ -1,7 +1,0 @@
-# degrees   p1   p2    p3   p4 -- Outpt raw voltage from 4 photocells
-   0            1     0.5  0.5   0
-   90            0.5   1    0     0.5
-   180            0    0.5   1     0.5
-   270           0.5  0.5   0      1
-   
-   
