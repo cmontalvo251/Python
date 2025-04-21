@@ -133,7 +133,7 @@ def fft(f,t,nmax,iplot,pp=None):
         n = iters[i]
         #Frequency
         w = 2.0*n*np.pi/L
-        print('Frequency (Hz) = ' + str(i/(L))
+        print('Frequency (Hz) = ' + str(i/(L)))
         data_a = np.cos(w*tfft)
         data_b = np.sin(w*tfft)
         #Reimann Sum
