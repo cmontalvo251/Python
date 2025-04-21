@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 ##String line = time + "," + latitude + "," + longitude + "," + latitude_origin + "," + longitude_origin + "," + X + "," + Y + "," + D + "," + VX_display + "," + VY_display + "," + V_display + "," + gps_speed + "," + CalcBearing + "," + bearing + "," + elevation;
-
+pdfhandle = PdfPages('plots.pdf')
 data = np.loadtxt('log0.txt',delimiter=',')
 
 time = data[:,0]
@@ -32,6 +33,7 @@ plt.plot(longitude[0],latitude[0],'rs')
 plt.xlabel('Longitude (deg)')
 plt.ylabel('Latitude (deg)')
 plt.grid()
+pdfhandle.savefig()
 
 #Plot X and Y in miles
 plt.figure()
@@ -40,6 +42,7 @@ plt.plot(Y[0],X[0],'rs')
 plt.xlabel('Y (mi)')
 plt.ylabel('X (mi)')
 plt.grid()
+pdfhandle.savefig()
 
 ##Plot distance traveled in miles
 plt.figure()
@@ -47,6 +50,7 @@ plt.plot(time,D)
 plt.grid()
 plt.xlabel('Time (sec)')
 plt.ylabel('Distance Traveled (mi)')
+pdfhandle.savefig()
 
 ##Plot all the velocites
 plt.figure()
@@ -58,6 +62,7 @@ plt.grid()
 plt.xlabel('Time (sec)')
 plt.ylabel('Velocity (mph)')
 plt.legend()
+pdfhandle.savefig()
 
 ##Plot heading
 plt.figure()
@@ -67,6 +72,7 @@ plt.xlabel('Time (sec)')
 plt.ylabel('Heading (deg)')
 plt.legend()
 plt.grid()
+pdfhandle.savefig()
 
 ##Plot elevation
 try:
@@ -76,7 +82,8 @@ try:
     plt.xlabel('Time (sec)')
     plt.ylabel('Elevation (ft)')
     plt.grid()
+    pdfhandle.savefig()
 except:
     pass
-
+pdfhandle.close()
 plt.show()
