@@ -6,5 +6,5 @@ import sys
 
 ##GET CURRENT DATE
 while True:
-	rider_number = input('Rider number? = ')
-	print('Rider = ',rider_number,' crossed at = ',datetime.now())
+	rider_number = input('')
+	print('Time = ',datetime.now())
