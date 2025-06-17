@@ -6,6 +6,9 @@ import os
 import matplotlib.pyplot as plt
 import sounddevice as sd
 
+#%%%READ THIS 
+#%%https://learn.adafruit.com/circuit-playground-o-phonor/musical-note-basics
+
 #%%%Let's play the C major scale (CDEFGAB)
 #%%%To get the frequencies we start with middle c
 #%low_c = 65.406;
