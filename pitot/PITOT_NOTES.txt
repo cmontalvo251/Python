@@ -1,0 +1,101 @@
+Email to Jake and Nemo
+
+Looks like we can get the thing from Amazon as well.
+https://www.amazon.com/Hobbypower-Airspeed-MPXV7002DP-Differential-Pressure/dp/B00WSFWO36/ref=sr_1_1?ie=UTF8&qid=1468946081&sr=8-1&keywords=airspeed+sensor
+
+=====================================================================
+
+Hey Jake, 
+
+Due to the pitot sensors being really lame I'm this close to just purchasing our own breakout board shown here
+http://www.dx.com/p/breakout-board-mpxv7002dp-apm2-5-airspeed-sensor-274643#.V45NvnUrL8t
+
+and then getting tubes from here
+http://www.auav.co/product-p/pitot.htm
+
+or here
+https://www.hobbytown.com/eagle-tree-systems-prandtl-pitotstatic-tube-kit-etrpitot-kit-v3/p377400?gclid=Cj0KEQjwwry8BRDjsbjMpPSDvagBEiQA5oW0nDkvO3TxqExB1cNrg0lTEJgnS4bcBCWrkDNYScjKplwaAqKq8P8HAQ
+
+Thing is apparently the circuit is super easy. So it might even be possible to purchase the device itself from here
+http://www.digikey.com/product-detail/en/freescale-semiconductor-nxp/MPXV7002DPT1/MPXV7002DPT1CT-ND/3524215
+
+and solder the circuit ourselves. I just checked the data sheet and I've attached two figures. I have a few questions. 
+
+1.) In the first graphic it says that pins 5-8 are N/C (Not connected?) If that's the case why are they there? - Yes it means Not connected and it's probably there for show I guess.
+2.) In the second graphic it says to connect the device to some capacitors to filter the output. I'm guessing all the capacitors are hooked to a common ground? I'm not sure what those triangles are. The bottom triangles are indeed ground.
+
+====================================================================
+
+We can just get tubes here
+http://www.auav.co/product-p/pitot.htm
+
+and a breakout board from here
+http://www.aliexpress.com/item/Free-Shipping-1pc-CJMCU-36-APM2-5-airspeed-meter-Breakout-Board-MPXV7002DP/1324980199.html?spm=2114.40010308.4.27.q0OE1H
+
+This one is kind of similar
+https://moderndevice.com/product/pressure-sensor-mpxv/
+
+Nemo found this breakout board which is super stout
+http://www.dx.com/p/breakout-board-mpxv7002dp-apm2-5-airspeed-sensor-274643#.V45NvnUrL8t
+
+The sensor is the MPXV7002DP. We can get just the board here
+http://www.digikey.com/product-detail/en/freescale-semiconductor-nxp/MPXV7002DPT1/MPXV7002DPT1CT-ND/3524215
+
+The data sheet is here
+https://www.nxp.com/files/sensors/doc/data_sheet/MPXV7002.pdf
+
+The data sheet says we need the following capacitors
+470pF - http://www.digikey.com/product-detail/en/vishay-bc-components/S471K29Y5PP63K5R/1286PH-ND/2356822
+0.01 uF - http://www.digikey.com/product-detail/en/vishay-bc-components/S103M47Z5UN63J7R/1255PH-ND/412808
+1.0 uF - http://www.digikey.com/product-detail/en/nichicon/UMA1H010MCD2TP/493-10419-3-ND/4312418
+
+This is exactly what we want but it's currently sold out
+http://store.jdrones.com/AirSpeed_sensor_MPXV7002_p/senair01kit.htm
+
+We ordered two from Hobby King but the quality control is awful
+http://www.hobbyking.com/hobbyking/store/uh_viewItem.asp?idproduct=67371
+
+This airspeed sensor from FrSky is good but it uses S.port protocol
+https://alofthobbies.com/frsky-airspeed-sensor-spass-70-167mph-rated.html
+
+This is from ebay but it just seems sketchy
+http://www.ebay.com/itm/like/281675937325?lpid=82&chn=ps&ul_noapp=true
+
+Nemo says NO for ebay stuff. Plus they ship with FedEx, which sucks.
+
+So tubing. We initially bought the following tubing from McMasterCarr
+http://www.mcmaster.com/#catalog/122/136/=14cd9hb
+SKU = 50315K67
+
+The ID = 1.8mm and OD = 3 mm however the durometer was 95A. Super hard!
+
+According to this website however 
+https://www.hobbytown.com/prandtl-pitotstatic-tube-kit-by-eagle-tree-systems-etrpitot-kit-v3/p377400?gclid=Cj0KEQjwwry8BRDjsbjMpPSDvagBEiQA5oW0nDkvO3TxqExB1cNrg0lTEJgnS4bcBCWrkDNYScjKplwaAqKq8P8HAQ
+The ID is smaller. 
+Pitot Tube Hose: Silicon, clear, 3 feet (1 meter), 1.5mm ID, 2.5mm OD
+
+Thing is I'm not sure I believe this because if you look at this pitot tube
+https://www.hobbytown.com/prandtl-pitotstatic-tube-kit-by-eagle-tree-systems-etrpitot-kit-v3/p377400?gclid=Cj0KEQjwwry8BRDjsbjMpPSDvagBEiQA5oW0nDkvO3TxqExB1cNrg0lTEJgnS4bcBCWrkDNYScjKplwaAqKq8P8HAQ
+
+versus this pitot tube
+http://www.auav.co/product-p/pitot.htm
+
+You can see that the pitot probe itself has a larger tube.  Anyway so  I think 1.8 mm is fine.
+
+1.8 mm = 0.0708661 inches
+
+Be careful though
+
+1.5 mm = 0.0590551 inches
+
+So you want it a bit bigger than 1/16" = 0.0625 inches
+
+so 5/64 = 0.078125" thus I am going to buy
+
+25 ft of 1/16" ID and 5/64" ID just in case 1/16" is too small I also purchased 65A durometer instead of 95A so this should be considerably more flexy. Yes. 
+
+1.8 mm!!
+
+Softer Softer Softer
+
+Read the fine print - freaking lubricant

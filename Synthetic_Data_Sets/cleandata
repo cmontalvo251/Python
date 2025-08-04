@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo 'Removing Data files'
+ls data/*.txt
+ls data/*.csv
+rm data/*.txt
+rm data/*.csv
+echo 'Files removed'

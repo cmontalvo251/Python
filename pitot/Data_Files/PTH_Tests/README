@@ -1,0 +1,11 @@
+These two text files are from the FP4
+GPSLOG13.TXT - is from the Mesonet Tower on Thurs March 2
+GPSLOG14.TXT - is from the Municipal park on Fri March 3
+
+These two are text files from FP4-V
+GPSLOG33.TXT - is from Mesonet Tower on Thurs March 2
+GPSLOG34.TXT - is from Municipal park on Fri March 3
+
+Judging by the two files I think the PTH sensor does not make the
+sensor any worse. Thus, I will go ahead and solder on the PTH sensor
+to the FP4-V  
