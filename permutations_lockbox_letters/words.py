@@ -1,5 +1,5 @@
 ###What letters are we permutating????
-letters = 'AACHIMRRT'
+letters = 'ACEeLORSs'
 
 ##Let's figure out how many permutations we have
 total_letters = len(letters)
@@ -63,7 +63,77 @@ print('For the following letters: ',letters)
 print('There are ',permutations,' total possibilities')
 print('The possibilities are.... ')
 print('Too many so we are printing to a file')
-fid = open('words.txt','w')
+print('Before we do that though, some letter combos just do not make sense')
+print('So we are going to remove those first....')
+combinations_dc = []
 for p in combinations:
+    remove = False
+    if p.find('s') < p.find('S'):
+        remove = True
+    if p.find('e') < p.find('E'):
+        remove = True
+    p = p.upper()
+    if p[0:2] == 'RS':
+        remove = True
+    if p[0:2] == 'LR':
+        remove = True
+    if p[0:2] == 'RL':
+        remove = True
+    if p[0:2] == 'LS':
+        remove = True
+    if p[0:2] == 'LC':
+        remove = True
+    if p[0:2] == 'RC':
+        remove = True
+    if p[0:3] == 'SLS' or p[0:3] == 'SLC':
+        remove = True
+    if p[0:4] == 'ACLR':
+        remove = True
+    if p[0:2] == 'CS' or p[0:2] == 'EE':
+        remove = True
+    if p[0:2] == 'SS':
+        remove = True
+    if remove == False:
+        combinations_dc.append(p)
+print('After removing a few combinations there are')
+print(len(combinations_dc),' possibilities')
+print('Printing those to file....')
+filename = 'words0.txt'
+print('Opening = ',filename)
+fid = open(filename,'w')
+count = 0
+filenumber = 0
+for p in combinations_dc:
     fid.write(p+'\n')
+    count += 1
+    if count > 1000000000:
+        filenumber += 1
+        count = 0
+        fid.close()
+        filename = 'words'+str(filenumber)+'.txt'
+        fid = open(filename,'w')
+        print('Opening = ',filename)
 fid.close()
+
+"""
+if p[0] == 'C' and p[1] == 'D':
+        remove = True
+    if p[0] == 'N' and p[1] == 'S':
+        remove = True
+    if p[0] == 'D' and p[1] == 'C':
+        remove = True
+    if p[0] == 'T' and p[1] == 'S':
+        remove = True
+    if p[0] == 'C' and p[1] == 'N':
+        remove = True
+    if p[0] == 'C' and p[1] == 'C':
+        remove = True
+    if p[0] == 'C' and p[1] == 'S':
+        remove = True
+    if p[0] == 'C' and p[1] == 'T':
+        remove = True
+    if p[0] == 'N' and p[1] == 'D':
+        remove = True
+    if p[0] == 'D' and p[1] == 'N':
+        remove = True
+"""
