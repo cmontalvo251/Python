@@ -2,15 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 import control as ctl
+
 # System parameters
 F0 = 1000      # N
 c = 50         # Ns/m
 m = 1000       # kg
+
 # Time vector
 t = np.linspace(0, 200, 1000)
-# Analytic solution from 
+
+# Analytic solution from
 v_analytic = (F0/c) * (1 - np.exp(-c/m * t))
 x_analytic = (F0/c)*t + (F0*m/c**2)*(np.exp(-c/m*t)-1)
+
 # Numerical integration
 def eoms(z, t, F0, c, m):
     x = z[0]
@@ -18,18 +22,22 @@ def eoms(z, t, F0, c, m):
     xdot = v
     xddot = (F0 - c*v)/m
     return [xdot, xddot]
+
 numeric = odeint(eoms, [0, 0], t, args=(F0, c, m))
 v_numeric = numeric[:, 1]
 x_numeric = numeric[:, 0]
+
 # Laplace (transfer function) solution
 num = [c/m]
 den = [1, c/m]
 v_system = ctl.tf(num, den)
-x_system = ctl.tf(num, [1, c/m, 0]) #notice the extra zero for position
+x_system = ctl.tf(num, [1, c/m, 0]) # notice the extra zero for position
+
 t_laplace, v_laplace = ctl.step_response(v_system, T=t)
 t_laplace, x_laplace = ctl.step_response(x_system, T=t)
 v_laplace *= F0/c  # scale for step input magnitude
 x_laplace *= F0/c  # scale for step input magnitude
+
 # Plotting
 plt.figure(figsize=(8,5))
 plt.plot(t, v_analytic, label='Analytic Solution', lw=2)
@@ -49,4 +57,28 @@ plt.xlabel('Time [s]')
 plt.ylabel('Position [m]')
 plt.title('Second Order System Position Response (ω_n=0)')
 plt.grid(True)
+
+# Pole-zero maps for v_system and x_system
+def plot_pz(sys, title=None):
+    p = ctl.poles(sys)
+    z = ctl.zeros(sys)
+    plt.figure(figsize=(6,6))
+    # plot zeros (o) and poles (x)
+    if z.size:
+        plt.plot(np.real(z), np.imag(z), 'o', ms=10, label='Zeros')
+    if p.size:
+        plt.plot(np.real(p), np.imag(p), 'x', ms=10, label='Poles')
+    plt.axhline(0, color='k', lw=0.5)
+    plt.axvline(0, color='k', lw=0.5)
+    plt.xlabel('Real')
+    plt.ylabel('Imag')
+    if title:
+        plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    plt.gca().set_aspect('equal', 'box')
+
+plot_pz(v_system, 'Pole-Zero Map: Velocity')
+plot_pz(x_system, 'Pole-Zero Map: Position')
+
 plt.show()

@@ -37,4 +37,27 @@ plt.ylabel('Position [m]')
 plt.title('Second Order System Position Response')
 plt.legend()
 plt.grid(True)
+
+# Pole-zero maps for v_system and x_system
+def plot_pz(sys, title=None):
+    p = ctl.poles(sys)
+    z = ctl.zeros(sys)
+    plt.figure(figsize=(6,6))
+    # plot zeros (o) and poles (x)
+    if z.size:
+        plt.plot(np.real(z), np.imag(z), 'o', ms=10, label='Zeros')
+    if p.size:
+        plt.plot(np.real(p), np.imag(p), 'x', ms=10, label='Poles')
+    plt.axhline(0, color='k', lw=0.5)
+    plt.axvline(0, color='k', lw=0.5)
+    plt.xlabel('Real')
+    plt.ylabel('Imag')
+    if title:
+        plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    #plt.gca().set_aspect('equal', 'box')
+
+plot_pz(system, 'Pole-Zero Map')
+
 plt.show()
