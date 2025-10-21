@@ -9,12 +9,16 @@ c = 0.75 #ft
 b = 4.92 #ft
 S = b*c #ft^2
 Cmq = -24.45
-Cma = 2.19
+Cma = -2.19
 Cmde = -1.15
 Iyy = 0.09 #slug-ft^2
 l1 = -rho*V**2*S*c*Cmq/(4*Iyy*V)
 l2 = -rho*V**2*S*c*Cma/(2*Iyy)
 kappa = -rho*V**2*S*c*Cmde/(2*Iyy)
+#Calculate Natural frequency and damping
+wn = np.sqrt(l2)
+zeta = l1/(wn*2)
+print('Wn = ',wn,'zeta = ',zeta)
 #Analytic Solution
 t = np.linspace(0,1,1000)
 m = 1
