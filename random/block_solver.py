@@ -209,7 +209,7 @@ def solve(current_grid, blocks_to_place, current_block_id):
 
 # ## Define Grid and Blocks
 # Initialize an NxN occupancy grid filled with zeros
-grid_size = (4, 3)
+grid_size = (6, 4)
 grid = np.zeros(grid_size, dtype=int).tolist() # Convert numpy array to list for easier manipulation
 
 # Define the shape of the 3x2 block as a list of relative coordinates
@@ -227,16 +227,31 @@ block_T = [
     (1, 1)
 ]
 
+block_I = [
+    (0, 0),
+    (0, 1),
+    (0, 2),
+    (0, 3)
+]
+
+block_Z = [
+    (0, 0), (0, 1),
+            (1, 1), (1, 2)
+]
+
 # Define block colors
 block_colors = {
-    1: 'blue', # block_L
-    2: 'purple', # block_T (first instance)
-    3: 'purple'  # block_T (second instance)
+    1: 'red', # block_Z
+    2: 'blue', # block_I (first instance)
+    3: 'blue',  # block_I (second instance)
+    4: 'blue',  # block_L
+    5: 'purple', # block_T
+    6: 'purple' # block_T
 }
 
 # ## Execute and Display Solution
-# Call the solve function with the initial 3x3 grid, a list of the two blocks, and the starting block ID (e.g., 1). Print the resulting grid if a solution is found, otherwise indicate that no solution exists.
-blocks_to_place = [block_L, block_T, block_T]
+# Call the solve function with the initial NxN grid, a list of the two blocks, and the starting block ID (e.g., 1). Print the resulting grid if a solution is found, otherwise indicate that no solution exists.
+blocks_to_place = [block_Z,block_I,block_I,block_L,block_T,block_T]
 starting_block_id = 1
 
 solution = solve(grid, blocks_to_place, starting_block_id)
