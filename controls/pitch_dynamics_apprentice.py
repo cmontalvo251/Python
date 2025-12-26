@@ -14,7 +14,7 @@ Cmde = -1.15
 Iyy = 0.09 #slug-ft^2
 l1 = -rho*V**2*S*c*Cmq/(4*Iyy*V)
 l2 = -rho*V**2*S*c*Cma/(2*Iyy)
-kappa = -rho*V**2*S*c*Cmde/(2*Iyy)
+kappa = -rho*V**2*S*c*Cmde/(2*Iyy) #Negative put in here so plots are positive
 #Calculate Natural frequency and damping
 wn = np.sqrt(l2)
 zeta = l1/(wn*2)
