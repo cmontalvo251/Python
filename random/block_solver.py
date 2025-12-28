@@ -260,37 +260,42 @@ def solve(initial_grid, blocks_to_place):
 
 # Task: Solve an NxN grid puzzle by placing blocks
 
-LEVEL = 1
+LEVEL = 0
 
 # ## Define Grid and Blocks
 # Initialize an NxN occupancy grid filled with zeros
-#grid_size = (6, 4) #Level 4
 if LEVEL == 1:
     grid_size = (4,3) #Level 1
-#grid_size = (5, 4) #Level 3
-#grid_size = (6, 4) #Level 2
-#grid_size = (8, 7) #Ceasars Palace
+if LEVEL == 2:
+    grid_size = (6, 4) #Level 2
+if LEVEL == 3:
+    grid_size = (5, 4) #Level 3
+if LEVEL == 4:
+    grid_size = (6, 4) #Level 4
+if LEVEL == 0:
+    grid_size = (8, 7) #Ceasars Palace
 
 grid = np.zeros(grid_size, dtype=int).tolist() # Convert numpy array to list for easier manipulation
 
-#Cells always blacked out
-#grid[0][6] = -1
-#grid[1][6] = -1
-#grid[7][0] = -1
-#grid[7][1] = -1
-#grid[7][2] = -1
-#grid[7][3] = -1
+if LEVEL == 0:
+    #Cells always blacked out
+    grid[0][6] = -1
+    grid[1][6] = -1
+    grid[7][0] = -1
+    grid[7][1] = -1
+    grid[7][2] = -1
+    grid[7][3] = -1
+    ##Now the Date
+    grid[1][5] = -1 #December
+    grid[5][6] = -1 #28th
+    grid[6][3] = -1 #Sun
 
-##Now the Date
-#grid[1][5] = -1 #December
-#grid[5][6] = -1 #28th
-#grid[6][3] = -1 #Sun
-
-#Add Dead zones in the corners
-#grid[0][0] = -1
-#grid[5][0] = -1
-#grid[0][3] = -1
-#grid[5][3] = -1
+if LEVEL == 2:
+    #Add Dead zones in the corners
+    grid[0][0] = -1
+    grid[5][0] = -1
+    grid[0][3] = -1
+    grid[5][3] = -1
 
 # Define the shape of the 3x2 block as a list of relative coordinates
 block_L = [
@@ -375,48 +380,48 @@ block_Zz = [
 ]
 
 # Define block colors
-"""
-block_colors = {
-    1: 'red',
-    2: 'blue',
-    3: 'yellow',
-    4: 'green',
-    5: 'orange',
-    6: 'cyan',
-    7: 'magenta',
-    8: 'lime',
-    9: 'purple',
-    10: 'brown',
-}
-"""
-"""
-block_colors = {
-    1: 'red',
-    2: 'red',
-    3: 'yellow',
-    4: 'green',
-    5: 'green',
-}
-"""
-"""
-block_colors = {
-    1: 'orange',
-    2: 'yellow',
-    3: 'blue',
-    4: 'blue',
-    5: 'blue',
-}
-"""
-"""
-block_colors = {
-    1: 'red', # block_Z
-    2: 'blue', # block_I (first instance)
-    3: 'blue',  # block_I (second instance)
-    4: 'blue',  # block_L
-    5: 'purple', # block_T
-    6: 'purple' # block_T
-}
-"""
+if LEVEL == 0:
+    block_colors = {
+        1: 'red',
+        2: 'blue',
+        3: 'yellow',
+        4: 'green',
+        5: 'orange',
+        6: 'cyan',
+        7: 'magenta',
+        8: 'lime',
+        9: 'purple',
+        10: 'brown',
+    }
+
+if LEVEL == 2:
+    block_colors = {
+        1: 'red',
+        2: 'red',
+        3: 'yellow',
+        4: 'green',
+        5: 'green',
+    }   
+
+if LEVEL == 3:
+    block_colors = {
+        1: 'orange',
+        2: 'yellow',
+        3: 'cyan',
+        4: 'cyan',
+        5: 'blue',
+    }
+
+if LEVEL == 4:
+    block_colors = {
+        1: 'red', # block_Z
+        2: 'cyan', # block_I (first instance)
+        3: 'cyan',  # block_I (second instance)
+        4: 'blue',  # block_L
+        5: 'purple', # block_T
+        6: 'purple' # block_T
+    }
+
 if LEVEL == 1:
     block_colors = {
         1: 'blue',
@@ -426,48 +431,47 @@ if LEVEL == 1:
 
 # ## Execute and Display Solution
 # Call the solve function with the initial NxN grid, a list of the two blocks, and the starting block ID (e.g., 1). Print the resulting grid if a solution is found, otherwise indicate that no solution exists.
-"""
-blocks_to_place = [
-    (1, block_Zz),
-    (2, block_I),
-    (3, block_A),
-    (4, block_Lll),
-    (5, block_Ll),
-    (6, block_Ss),
-    (7, block_L),
-    (8, block_Tt),
-    (9, block_C),
-    (10, block_Z)
-]
-"""
-"""
-blocks_to_place = [
-    (1, block_Z),
-    (2, block_Z),
-    (3, block_S),
-    (4, block_Z),
-    (5, block_Z),
-]
-"""
-"""
-blocks_to_place = [
-    (1, block_L),
-    (2, block_S),
-    (3, block_I),
-    (4, block_I),
-    (5, block_L),
-]
-"""
-"""
-blocks_to_place = [
-    (1, block_Z),
-    (2, block_I),
-    (3, block_I),
-    (4, block_L),
-    (5, block_T),
-    (6, block_T)
-]
-"""
+if LEVEL == 0:
+    blocks_to_place = [
+        (1, block_Zz),
+        (2, block_I),
+        (3, block_A),
+        (4, block_Lll),
+        (5, block_Ll),
+        (6, block_Ss),
+        (7, block_L),
+        (8, block_Tt),
+        (9, block_C),
+        (10, block_Z)
+    ]   
+
+if LEVEL == 2:
+    blocks_to_place = [
+        (1, block_Z),
+        (2, block_Z),
+        (3, block_S),
+        (4, block_Z),
+        (5, block_Z),
+    ]
+
+if LEVEL == 3:
+    blocks_to_place = [
+        (1, block_L),
+        (2, block_S),
+        (3, block_I),
+        (4, block_I),
+        (5, block_L),
+    ]
+
+if LEVEL == 4:
+    blocks_to_place = [
+        (1, block_Z),
+        (2, block_I),
+        (3, block_I),
+        (4, block_L),
+        (5, block_T),
+        (6, block_T)
+    ]
 
 if LEVEL == 1:
     blocks_to_place = [
@@ -475,7 +479,6 @@ if LEVEL == 1:
         (2, block_T),
         (3, block_T)
     ]
-
 
 # Visualize blocks and grid before solving
 for block_id, block_shape in blocks_to_place:
