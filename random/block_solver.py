@@ -239,21 +239,35 @@ def solve(current_grid, blocks_to_place):
     return None
 
 # Task: Solve an NxN grid puzzle by placing blocks
-starting_time = time.time()
 
 # ## Define Grid and Blocks
 # Initialize an NxN occupancy grid filled with zeros
 #grid_size = (6, 4) #Level 4
 #grid_size = (4,3) #Level 1
 #grid_size = (5, 4) #Level 3
-grid_size = (6, 4) #Level 2
+#grid_size = (6, 4) #Level 2
+grid_size = (8, 7) #Ceasars Palace
+
 grid = np.zeros(grid_size, dtype=int).tolist() # Convert numpy array to list for easier manipulation
 
+#Cells always blacked out
+grid[0][6] = -1
+grid[1][6] = -1
+grid[7][0] = -1
+grid[7][1] = -1
+grid[7][2] = -1
+grid[7][3] = -1
+
+##Now the Date
+grid[1][5] = -1 #December
+grid[5][6] = -1 #28th
+grid[6][3] = -1 #Sun
+
 #Add Dead zones in the corners
-grid[0][0] = -1
-grid[5][0] = -1
-grid[0][3] = -1
-grid[5][3] = -1
+#grid[0][0] = -1
+#grid[5][0] = -1
+#grid[0][3] = -1
+#grid[5][3] = -1
 
 # Define the shape of the 3x2 block as a list of relative coordinates
 block_L = [
@@ -262,9 +276,46 @@ block_L = [
     (2, 0), (2, 1)
 ]
 
+block_Lll = [
+    (0, 0),
+    (1, 0),
+    (2, 0), (2, 1),
+    (2,2)
+]
+
+block_Ll = [
+    (0, 0),
+    (1, 0),
+    (2, 0), 
+    (3, 0),
+    (3, 1)
+]
+
+block_C = [
+    (0,0),
+    (1,0),
+    (2,0),
+    (2,1),
+    (0,1)
+]
+
+block_A = [
+    (0,0),
+    (1,0),
+    (1,1),
+    (1,2),
+    (2,2)   
+]
+
 block_S = [
     (0, 0), (0, 1),
     (1, 0), (1, 1)
+]
+
+block_Ss = [
+    (0, 0), (0, 1),
+    (1, 0), (1, 1),
+    (1,2)
 ]
 
 # Define the shape of the 3x1 block as a list of relative coordinates
@@ -273,6 +324,14 @@ block_T = [
     (0, 1),
     (0, 2),
     (1, 1)
+]
+
+block_Tt = [
+    (0, 0),
+    (0, 1),
+    (0, 2),
+    (1, 1),
+    (2, 1)
 ]
 
 block_I = [
@@ -287,7 +346,25 @@ block_Z = [
             (1, 1), (1, 2)
 ]
 
+block_Zz = [
+    (0, 0), (0, 1),
+            (1, 1), (1, 2),(1,3)
+]
+
 # Define block colors
+block_colors = {
+    1: 'red',
+    2: 'blue',
+    3: 'yellow',
+    4: 'green',
+    5: 'orange',
+    6: 'cyan',
+    7: 'magenta',
+    8: 'lime',
+    9: 'purple',
+    10: 'brown',
+}
+"""
 block_colors = {
     1: 'red',
     2: 'red',
@@ -295,7 +372,7 @@ block_colors = {
     4: 'green',
     5: 'green',
 }
-
+"""
 """
 block_colors = {
     1: 'orange',
@@ -323,12 +400,26 @@ block_colors = {
 # ## Execute and Display Solution
 # Call the solve function with the initial NxN grid, a list of the two blocks, and the starting block ID (e.g., 1). Print the resulting grid if a solution is found, otherwise indicate that no solution exists.
 blocks_to_place = [
+    (1, block_Zz),
+    (2, block_I),
+    (3, block_A),
+    (4, block_Lll),
+    (5, block_Ll),
+    (6, block_Ss),
+    (7, block_L),
+    (8, block_Tt),
+    (9, block_C),
+    (10, block_Z)
+]
+"""
+blocks_to_place = [
     (1, block_Z),
     (2, block_Z),
     (3, block_S),
     (4, block_Z),
     (5, block_Z),
 ]
+"""
 """
 blocks_to_place = [
     (1, block_L),
@@ -354,6 +445,22 @@ blocks_to_place = [
 ]
 """
 
+# Visualize blocks and grid before solving
+for block_id, block_shape in blocks_to_place:
+    norm_shape = normalize_block_shape(block_shape)
+    max_r = max(r for r, c in norm_shape)
+    max_c = max(c for r, c in norm_shape)
+    temp_grid = np.zeros((max_r + 3, max_c + 3), dtype=int).tolist()
+    for r, c in norm_shape:
+        temp_grid[r + 1][c + 1] = block_id
+    plt.figure(f"Block {block_id}")
+    plot_grid(temp_grid, block_colors, current_block_id=block_id, force=True)
+
+plt.figure("Initial Grid")
+plot_grid(grid, block_colors, force=True)
+plt.show()
+
+starting_time = time.time()
 solution = solve(grid, blocks_to_place)
 
 end_time = time.time()
