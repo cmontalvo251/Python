@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import random
 
 # Global flag for video output
 VIDEOFLAG = False # Set to True to see step-by-step placement, False for instant solution
@@ -180,88 +181,110 @@ def plot_grid(grid, block_colors_map, current_block_id=None, force=False):
 
 # ## Develop Recursive Solver
 # Implement a recursive function solve(current_grid, blocks_to_place, current_block_id) to find a solution for placing the blocks.
-def solve(current_grid, blocks_to_place):
+def solve(initial_grid, blocks_to_place):
     """
-    Recursively attempts to place blocks on the grid to find a solution.
+    Iterative solver using random permutations and greedy placement.
+    Loops until a solution is found.
     """
     global iteration_count
-    # Base case: If all blocks are placed, return the current grid as a solution.
-    if not blocks_to_place:
-        return current_grid
-
-    grid_rows = len(current_grid)
-    grid_cols = len(current_grid[0])
-
-    # If there are no empty cells left, check if we have placed all blocks.
-    if not find_first_empty_cell(current_grid):
-        # If we are here, grid is full, but blocks_to_place is not empty. This is a failed path.
-        if DEBUGFLAG:
-            print("Grid is full, but blocks remain. Backtracking.")
-        return None
-
-    # Iterate through all available blocks to choose which one to place next.
-    for i in range(len(blocks_to_place)):
-        block_id, block_shape = blocks_to_place[i]
-        remaining_blocks = blocks_to_place[:i] + blocks_to_place[i+1:]
-
-        if DEBUGFLAG:
-            print(f"\n---\nPicking block {block_id} to place next.")
-
-        # Generate all unique orientations for this block (including flips)
-        orientations = rotate_block(block_shape)
-
-        # Try placing this block at every possible start coordinate (r, c).
-        # This is a less efficient search strategy than filling the 'first empty cell'
-        # because it will try the same set of placements in different orders (permutations).
-        # However, it directly addresses the concern about being 'restricted' to one cell.
-        for r_start in range(grid_rows):
-            for c_start in range(grid_cols):
-                # Optimization: Only try to start a placement on an empty cell.
-                # Since all block shapes are normalized to include a (0,0) point,
-                # attempting to place a block on an already occupied cell will always fail.
-                # This check avoids calling place_block unnecessarily for invalid starting points.
-                if current_grid[r_start][c_start] == 0:
-                    for orientation in orientations:
-                        iteration_count += 1
-                        print(f"Iteration number = {iteration_count}")
-                        # place_block will check for fit and return a new grid or None
-                        new_grid_after_placement = place_block(current_grid, orientation, r_start, c_start, block_id)
-
-                        if new_grid_after_placement is not None:
-                            # If placement was successful, recurse
-                            result = solve(new_grid_after_placement, remaining_blocks)
-                            if result is not None:
-                                return result
-
-    # If we've tried placing every available block everywhere and found no path, backtrack.
-    if DEBUGFLAG:
-        print("Could not find a valid placement for any remaining block. Backtracking.")
-    return None
+    iteration_count = 0
+    
+    # Pre-calculate orientations for all blocks
+    blocks_data = []
+    for b_id, b_shape in blocks_to_place:
+        orientations = rotate_block(b_shape)
+        blocks_data.append((b_id, orientations))
+    
+    print("Starting iterative solver...")
+    
+    while True:
+        iteration_count += 1
+        if iteration_count % 1000 == 0:
+            print(f"Iteration {iteration_count}...")
+            
+        # Shuffle the order of blocks
+        random.shuffle(blocks_data)
+        
+        # Create a working copy of the grid
+        current_grid = [row[:] for row in initial_grid]
+        
+        all_placed = True
+        
+        for b_id, orientations in blocks_data:
+            # Find the first empty cell that needs covering
+            target = find_first_empty_cell(current_grid)
+            
+            if target is None:
+                # Grid is full but we still have blocks to place
+                all_placed = False
+                break
+            
+            target_r, target_c = target
+            placed_this_block = False
+            
+            # Try orientations in random order
+            current_orientations = random.sample(orientations, len(orientations))
+            
+            for orientation in current_orientations:
+                # Try to anchor different cells of the block to the target cell
+                anchor_indices = list(range(len(orientation)))
+                random.shuffle(anchor_indices)
+                
+                for idx in anchor_indices:
+                    dr_anchor, dc_anchor = orientation[idx]
+                    
+                    # Calculate top-left position of the block
+                    start_r = target_r - dr_anchor
+                    start_c = target_c - dc_anchor
+                    
+                    if check_fit(current_grid, orientation, start_r, start_c):
+                        # Place the block manually to avoid overhead
+                        for dr, dc in orientation:
+                            current_grid[start_r + dr][start_c + dc] = b_id
+                            
+                        if VIDEOFLAG:
+                            plot_grid(current_grid, block_colors, b_id)
+                            
+                        placed_this_block = True
+                        break
+                
+                if placed_this_block:
+                    break
+            
+            if not placed_this_block:
+                all_placed = False
+                break
+        
+        if all_placed:
+            return current_grid
 
 # Task: Solve an NxN grid puzzle by placing blocks
+
+LEVEL = 1
 
 # ## Define Grid and Blocks
 # Initialize an NxN occupancy grid filled with zeros
 #grid_size = (6, 4) #Level 4
-#grid_size = (4,3) #Level 1
+if LEVEL == 1:
+    grid_size = (4,3) #Level 1
 #grid_size = (5, 4) #Level 3
 #grid_size = (6, 4) #Level 2
-grid_size = (8, 7) #Ceasars Palace
+#grid_size = (8, 7) #Ceasars Palace
 
 grid = np.zeros(grid_size, dtype=int).tolist() # Convert numpy array to list for easier manipulation
 
 #Cells always blacked out
-grid[0][6] = -1
-grid[1][6] = -1
-grid[7][0] = -1
-grid[7][1] = -1
-grid[7][2] = -1
-grid[7][3] = -1
+#grid[0][6] = -1
+#grid[1][6] = -1
+#grid[7][0] = -1
+#grid[7][1] = -1
+#grid[7][2] = -1
+#grid[7][3] = -1
 
 ##Now the Date
-grid[1][5] = -1 #December
-grid[5][6] = -1 #28th
-grid[6][3] = -1 #Sun
+#grid[1][5] = -1 #December
+#grid[5][6] = -1 #28th
+#grid[6][3] = -1 #Sun
 
 #Add Dead zones in the corners
 #grid[0][0] = -1
@@ -352,6 +375,7 @@ block_Zz = [
 ]
 
 # Define block colors
+"""
 block_colors = {
     1: 'red',
     2: 'blue',
@@ -364,6 +388,7 @@ block_colors = {
     9: 'purple',
     10: 'brown',
 }
+"""
 """
 block_colors = {
     1: 'red',
@@ -391,14 +416,17 @@ block_colors = {
     5: 'purple', # block_T
     6: 'purple' # block_T
 }
-block_colors = {
-    1: 'blue',
-    2: 'purple',
-    3: 'purple',
-}
 """
+if LEVEL == 1:
+    block_colors = {
+        1: 'blue',
+        2: 'purple',
+        3: 'purple',
+    }
+
 # ## Execute and Display Solution
 # Call the solve function with the initial NxN grid, a list of the two blocks, and the starting block ID (e.g., 1). Print the resulting grid if a solution is found, otherwise indicate that no solution exists.
+"""
 blocks_to_place = [
     (1, block_Zz),
     (2, block_I),
@@ -411,6 +439,7 @@ blocks_to_place = [
     (9, block_C),
     (10, block_Z)
 ]
+"""
 """
 blocks_to_place = [
     (1, block_Z),
@@ -438,12 +467,15 @@ blocks_to_place = [
     (5, block_T),
     (6, block_T)
 ]
-blocks_to_place = [
-    (1, block_L),
-    (2, block_T),
-    (3, block_T)
-]
 """
+
+if LEVEL == 1:
+    blocks_to_place = [
+        (1, block_L),
+        (2, block_T),
+        (3, block_T)
+    ]
+
 
 # Visualize blocks and grid before solving
 for block_id, block_shape in blocks_to_place:
