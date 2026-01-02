@@ -7,6 +7,8 @@ import random
 # Global flag for video output
 VIDEOFLAG = False # Set to True to see step-by-step placement, False for instant solution
 DEBUGFLAG = False
+BLOCKFLAG = False #Turn on to view blocks
+MOBILEFLAG = True
 iteration_count = 0
 
 # ## Implement Block Operations
@@ -286,9 +288,12 @@ if LEVEL == 0:
     grid[7][2] = -1
     grid[7][3] = -1
     ##Now the Date
-    grid[1][5] = -1 #December
-    grid[5][6] = -1 #28th
-    grid[6][3] = -1 #Sun
+    #grid[1][5] = -1 #December
+    grid[0][0] = -1 #January
+    #grid[5][6] = -1 #28th
+    grid[2][0] = -1 #1st
+    #grid[6][3] = -1 #Sun
+    grid[7][4] = -1 #Thursday
 
 if LEVEL == 2:
     #Add Dead zones in the corners
@@ -481,19 +486,22 @@ if LEVEL == 1:
     ]
 
 # Visualize blocks and grid before solving
-for block_id, block_shape in blocks_to_place:
-    norm_shape = normalize_block_shape(block_shape)
-    max_r = max(r for r, c in norm_shape)
-    max_c = max(c for r, c in norm_shape)
-    temp_grid = np.zeros((max_r + 3, max_c + 3), dtype=int).tolist()
-    for r, c in norm_shape:
-        temp_grid[r + 1][c + 1] = block_id
-    plt.figure(f"Block {block_id}")
-    plot_grid(temp_grid, block_colors, current_block_id=block_id, force=True)
+if BLOCKFLAG:
+    for block_id, block_shape in blocks_to_place:
+        norm_shape = normalize_block_shape(block_shape)
+        max_r = max(r for r, c in norm_shape)
+        max_c = max(c for r, c in norm_shape)
+        temp_grid = np.zeros((max_r + 3, max_c + 3), dtype=int).tolist()
+        for r, c in norm_shape:
+            temp_grid[r + 1][c + 1] = block_id
+        plt.figure(f"Block {block_id}")
+        plot_grid(temp_grid, block_colors, current_block_id=block_id, force=True)
+    plt.show()
 
-plt.figure("Initial Grid")
-plot_grid(grid, block_colors, force=True)
-plt.show()
+if not MOBILEFLAG:
+    plt.figure("Initial Grid")
+    plot_grid(grid, block_colors, force=True)
+    plt.show()
 
 starting_time = time.time()
 solution = solve(grid, blocks_to_place)
@@ -506,7 +514,9 @@ if solution is not None:
     for row in solution:
         print(row)
     #plot final solution
-    plot_grid(solution, block_colors, force=True)
-    plt.show() # Keep the final plot open
+    if not MOBILEFLAG:
+        plt.figure("Final Solution")
+        plot_grid(solution, block_colors, force=True)
+        plt.show() # Keep the final plot open
 else:
     print("No solution found for the puzzle.")
