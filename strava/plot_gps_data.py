@@ -3,9 +3,15 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 ##String line = time + "," + latitude + "," + longitude + "," + latitude_origin + "," + longitude_origin + "," + X + "," + Y + "," + D + "," + VX_display + "," + VY_display + "," + V_display + "," + gps_speed + "," + CalcBearing + "," + bearing + "," + elevation;
 pdfhandle = PdfPages('plots.pdf')
-data = np.loadtxt('log0.txt',delimiter=',')
+data = np.loadtxt('DR/logCombined.txt',delimiter=',')
 
 time = data[:,0]
+
+#Let's fix time for combined files when time resets to zero
+for i in range(1,len(time)):
+    if time[i]<time[i-1]:
+        time[i:] = time[i:]+time[i-1]-time[i]
+
 latitude = data[:,1]
 longitude = data[:,2]
 latO = data[:,3]
@@ -81,6 +87,32 @@ try:
     plt.plot(time,elevation)
     plt.xlabel('Time (sec)')
     plt.ylabel('Elevation (ft)')
+    plt.grid()
+    pdfhandle.savefig()
+
+    ##Let's also plot velocity on the y-axis and elevation on the x-axis
+    plt.figure()
+    plt.plot(Vgps,elevation,'b-')
+    plt.xlabel('Velocity (mph)')
+    plt.ylabel('Elevation (ft)')
+    plt.grid()
+    pdfhandle.savefig()
+
+    #Let's make a 3D plot with lat/lon and elevation
+    from mpl_toolkits.mplot3d import Axes3D
+    import matplotlib.colors as colors
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(longitude,latitude,elevation,'b-')
+    #Let's make a for loop where we plot a data point in a color that is proportional to velocity
+    cmap = plt.get_cmap('jet') 
+    norm = colors.Normalize(vmin=min(Vgps), vmax=max(Vgps))
+    for i in range(0,len(time),50): # Plot every 10th point
+        this_color = cmap(norm(Vgps[i])) # Get color proportional to velocity
+        ax.scatter(longitude[i],latitude[i],elevation[i],color=this_color)
+    ax.set_xlabel('Longitude (deg)')
+    ax.set_ylabel('Latitude (deg)')
+    ax.set_zlabel('Elevation (ft)')
     plt.grid()
     pdfhandle.savefig()
 except:
