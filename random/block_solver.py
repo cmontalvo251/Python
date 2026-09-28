@@ -7,8 +7,8 @@ import random
 # Global flag for video output
 VIDEOFLAG = False # Set to True to see step-by-step placement, False for instant solution
 DEBUGFLAG = False
-BLOCKFLAG = False #Turn on to view blocks
-MOBILEFLAG = True
+BLOCKFLAG = True #Turn on to view blocks
+MOBILEFLAG = False
 iteration_count = 0
 
 # ## Implement Block Operations
@@ -291,9 +291,11 @@ if LEVEL == 0:
     #grid[1][5] = -1 #December
     grid[0][0] = -1 #January
     #grid[5][6] = -1 #28th
-    grid[2][0] = -1 #1st
+    #grid[2][0] = -1 #1st
+    grid[5][1] = -1 #23rd
     #grid[6][3] = -1 #Sun
-    grid[7][4] = -1 #Thursday
+    #grid[7][4] = -1 #Thursday
+    grid[7][5] = -1 #Friday
 
 if LEVEL == 2:
     #Add Dead zones in the corners
