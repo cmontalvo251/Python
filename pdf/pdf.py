@@ -3,9 +3,9 @@ import sys
 import os
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-import mpl_toolkits.mplot3d as a3
+#from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+#import mpl_toolkits.mplot3d as a3
 
 ##In order to import this toolbox into a python script you need to 
 ##do the following. Copy the following lines of code below
@@ -73,3 +73,14 @@ class PDF():
 # Copyright - Carlos Montalvo 2016
 # You may freely distribute this file but please keep my name in here
 # as the original owner
+
+if __name__ == "__main__":
+    print('Testing pdf')
+    pp = PDF(0,plt)
+
+    x = np.linspace(-5,5,1000)
+    y = x**2
+    plt.plot(x,y)
+    pp.savefig()
+    pp.close()
+
